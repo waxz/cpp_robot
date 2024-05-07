@@ -63,8 +63,8 @@ STRUCT_BEGIN(PoseStamped)
     Quaternion quaternion;
 STRUCT_END(PoseStamped)
 
-PoseStamped_ptr PoseStamped_alloc(u32_t size, const ta_cfg_t* cfg);
-PoseStamped_ptr PoseStamped_realloc(u32_t size, PoseStamped_ptr ptr, const ta_cfg_t* cfg);
+PoseStamped_ptr PoseStamped_alloc( const ta_cfg_t* cfg);
+PoseStamped_ptr PoseStamped_realloc(PoseStamped_ptr ptr, const ta_cfg_t* cfg);
 
 
 
@@ -72,8 +72,8 @@ STRUCT_BEGIN(Twist)
     Point angular;
     Point linear;
 STRUCT_END(Twist)
-Twist_ptr Twist_alloc(u32_t size, const ta_cfg_t* cfg);
-Twist_ptr Twist_realloc(u32_t size, Twist_ptr ptr, const ta_cfg_t* cfg);
+Twist_ptr Twist_alloc(const ta_cfg_t* cfg);
+Twist_ptr Twist_realloc(Twist_ptr ptr, const ta_cfg_t* cfg);
 
 STRUCT_BEGIN(UInt8MultiArray)
     u32_t element_size;
@@ -106,8 +106,8 @@ STRUCT_BEGIN(Odometry)
     f64_t twist_cov[36];
 STRUCT_END(Odometry)
 
-Odometry_ptr Odometry_alloc(u32_t size, const ta_cfg_t* cfg);
-Odometry_ptr Odometry_realloc(u32_t size, Odometry_ptr ptr, const ta_cfg_t* cfg);
+Odometry_ptr Odometry_alloc(const ta_cfg_t* cfg);
+Odometry_ptr Odometry_realloc( Odometry_ptr ptr, const ta_cfg_t* cfg);
 
 
 STRUCT_BEGIN(Path)
@@ -171,7 +171,7 @@ f32_t* LaserScan_get_ranges(LaserScan* t);
 f32_t* LaserScan_get_intensities(LaserScan* t);
 
 
-STRUCT_BEGIN(Pointcloud)
+STRUCT_BEGIN(PointCloud2)
     char frame_id[MSG_STRUCT_MAX_FRAME_ID_LEN];
     u64_t stamp;
     u32_t height;
@@ -179,10 +179,10 @@ STRUCT_BEGIN(Pointcloud)
     u32_t channel;
     bool is_dense;
     f32_t buffer[1];
-STRUCT_END(Pointcloud)
-void Pointcloud_set_buffer(Pointcloud_ptr t, u32_t height, u32_t width, u32_t channel);
-Pointcloud_ptr Pointcloud_alloc(u32_t height, u32_t width, u32_t channel, const ta_cfg_t* cfg);
-Pointcloud_ptr Pointcloud_realloc(u32_t height, u32_t width, u32_t channel, Pointcloud_ptr ptr, const ta_cfg_t* cfg);
+STRUCT_END(PointCloud2)
+void PointCloud2_set_buffer(PointCloud2_ptr t, u32_t height, u32_t width, u32_t channel);
+PointCloud2_ptr PointCloud2_alloc(u32_t height, u32_t width, u32_t channel, const ta_cfg_t* cfg);
+PointCloud2_ptr PointCloud2_realloc(u32_t height, u32_t width, u32_t channel, PointCloud2_ptr ptr, const ta_cfg_t* cfg);
 
 
 

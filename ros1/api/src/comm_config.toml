@@ -1,0 +1,145 @@
+# This is a TOML document.
+
+[general]
+version = 1
+
+
+# http://wiki.ros.org/Remapping%20Arguments
+# config parameter will be passed to ros init function
+[ros.config]
+__name = "ros_helper_test_1"
+
+[ros.channel.scan_pub]
+channel_type = "pub"
+topic_name = "ros_helper_test_1/scan"
+topic_type = "LaserScan"
+qos_queue_size = 1
+
+[ros.channel.scan_sub]
+channel_type = "sub"
+topic_name = "ros_helper_test_2/scan"
+topic_type = "LaserScan"
+qos_queue_size = 10
+
+[ros.channel.twist_pub]
+channel_type = "pub"
+topic_name = "ros_helper_test_1/twist"
+topic_type = "Twist"
+qos_queue_size = 10
+
+[ros.channel.twist_sub]
+channel_type = "sub"
+topic_name = "ros_helper_test_2/twist"
+topic_type = "Twist"
+qos_queue_size = 10
+
+
+[ros.channel.uint8array_pub]
+channel_type = "pub"
+topic_name = "ros_helper_test_1/uint8array"
+topic_type = "UInt8MultiArray"
+qos_queue_size = 10
+
+[ros.channel.uint8array_sub]
+channel_type = "sub"
+topic_name = "ros_helper_test_2/uint8array"
+topic_type = "UInt8MultiArray"
+qos_queue_size = 10
+
+[ros.channel.uint16array_pub]
+channel_type = "pub"
+topic_name = "ros_helper_test_1/uint16array"
+topic_type = "UInt16MultiArray"
+qos_queue_size = 10
+
+[ros.channel.uint16array_sub]
+channel_type = "sub"
+topic_name = "ros_helper_test_2/uint16array"
+topic_type = "UInt16MultiArray"
+qos_queue_size = 10
+
+[ros.channel.tf_pub]
+channel_type = "pub"
+topic_name = "tf"
+topic_type = "map:odom"
+qos_queue_size = 1
+
+[ros.channel.tf_sub]
+channel_type = "sub"
+topic_name = "tf"
+topic_type = "map:odom"
+qos_queue_size = 1
+
+
+#OccupancyGrid
+[ros.channel.map_sub]
+channel_type = "sub"
+topic_name = "map"
+topic_type = "OccupancyGrid"
+qos_queue_size = 10
+
+
+[ros.channel.map_pub]
+channel_type = "pub"
+topic_name = "map"
+topic_type = "OccupancyGrid"
+qos_queue_size = 10
+
+#Odometry
+[ros.channel.odom_pub]
+channel_type = "pub"
+topic_name = "ros_helper_test_1/odom"
+topic_type = "Odometry"
+qos_queue_size = 10
+
+[ros.channel.odom_sub]
+channel_type = "sub"
+topic_name = "ros_helper_test_2/odom"
+topic_type = "Odometry"
+qos_queue_size = 10
+
+
+
+[ros.channel.path_pub]
+channel_type = "pub"
+topic_name = "ros_helper_test_1/path"
+topic_type = "Path"
+qos_queue_size = 10
+[ros.channel.path_sub]
+channel_type = "sub"
+topic_name = "ros_helper_test_2/path"
+topic_type = "Path"
+qos_queue_size = 10
+
+
+[ros.channel.pose_pub]
+channel_type = "pub"
+topic_name = "ros_helper_test_1/pose"
+topic_type = "PoseStamped"
+qos_queue_size = 10
+
+[ros.channel.pose_sub]
+channel_type = "sub"
+topic_name = "ros_helper_test_2/pose"
+topic_type = "PoseStamped"
+qos_queue_size = 10
+
+[ros.channel.pointcloud_sub]
+channel_type = "sub"
+#topic_name = "velodyne_points"
+topic_name = "camera/depth/points"
+topic_type = "PointCloud2"
+qos_queue_size = 1
+
+
+[ros.channel.headerstring_pub]
+channel_type = "pub"
+topic_name = "ros_helper_test_1/headerstring"
+topic_type = "HeaderString"
+qos_queue_size = 10
+[ros.channel.headerstring_sub]
+channel_type = "sub"
+topic_name = "ros_helper_test_2/headerstring"
+topic_type = "HeaderString"
+qos_queue_size = 10
+
