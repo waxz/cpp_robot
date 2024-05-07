@@ -1,0 +1,4 @@
+add_library( message_center_types_tinyalloc STATIC message_center_types.c)
+set_pic( message_center_types_tinyalloc )
+target_include_directories(message_center_types_tinyalloc PUBLIC ${CMAKE_SOURCE_DIR}/include  ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(message_center_types_tinyalloc PUBLIC tinyalloc )
