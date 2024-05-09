@@ -1,28 +1,21 @@
 
 
 [dds.participant]
-xml = "dds_config.xml"
+xml = "bridge_dds_config.xml"
 profile = "participant_discovery_protocol_SIMPLE"
-name = "dds_test_1"
+name = "dds_ros_bridge"
 #interface_allowlist = []
 #interface_blocklist = []
 interface_allowlist = ["lo"]
 interface_blocklist = ["eno1", "enx00e04d71ffe7", "wlp4s0", "wlp3s0", "docker0", "wt0"]
 
-[dds.readers.cloud_sub]
+[dds.readers]
+
+
+[dds.writers.cloud_pub]
 topic_name = "cloud"
 topic_type = "Message::Pointcloud1920x1080x3"
-sub_profile = ""
+pub_profile = ""
 topic_profile = ""
-reader_profile = ""
+writer_profile = ""
 qos_queue_size = 1
-
-#[dds.writers.cloud_pub]
-#topic_name = "cloud2"
-#topic_type = "Message::Pointcloud1920x1080x3"
-#pub_profile = ""
-#topic_profile = ""
-#writer_profile = ""
-#qos_queue_size = 1
-
-[dds.writers]

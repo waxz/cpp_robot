@@ -17,7 +17,7 @@ extern "C" {
 
 typedef struct ChannelBuffer {
     void** buffer;
-    size_t buffer_size;
+    u32_t buffer_size;
 } ChannelBuffer,* ChannelBuffer_ptr;
 
 

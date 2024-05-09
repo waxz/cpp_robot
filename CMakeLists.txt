@@ -57,13 +57,8 @@ endif ()
 
 
 
+add_subdirectory(demo)
 
-
-message(STATUS "libros: ${libros}")
-
-#build_external_project_cmake_git(roscpp_core lib https://github.com/ros/roscpp_core.git 0.7.2)
-add_executable(libros_test main.cpp)
-target_link_libraries(libros_test PUBLIC libros )
 
 
 

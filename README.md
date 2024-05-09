@@ -3,14 +3,12 @@
 # dependencies
 ### for fastdds
 ```shell
-sudo apt install libasio-dev
-sudo apt install libssl-dev
+sudo apt install libasio-dev libssl-dev
 ```
 
 ### for ros1 built from source
 ```shell
-sudo apt install libboost-thread-dev
-sudo apt install libboost-filesystem-dev
+sudo apt install libboost-thread-dev libboost-filesystem-dev
 ```
 
 

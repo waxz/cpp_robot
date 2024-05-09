@@ -18,6 +18,7 @@
 #include "common/data_holder.h"
 #include "common/string_logger.h"
 
+
 static bool program_run = true;
 
 void signal_handler(int sig) {
@@ -338,7 +339,7 @@ int main(int argc, char** argv){
                     for(int i = 0; i <  recv_pointcloud2_buffer->buffer_size;i++){
                         PointCloud2_ptr data =  (PointCloud2_ptr)recv_pointcloud2_buffer->buffer[i];
 
-                        MLOGI("recv PointCloud2: frame: [%s], dim: [%u, %u, %u]\n",
+                        MLOGW("recv PointCloud2: frame: [%s], dim: [%u, %u, %u]\n",
                               data->frame_id, data->height , data->width, data->channel
                         );
                         LOG(

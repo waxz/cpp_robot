@@ -193,10 +193,16 @@ namespace dds_helper {
     }
 
     int DdsHandlerVariant::write_data(const char *name, void **buffer, size_t buffer_size) {
+        if(buffer == nullptr || buffer_size == 0){
+            MLOGW("channel buffer_size [%zu] wrong", buffer_size);
 
+            return 0;
+        }
         auto it = writers_.find(name);
 
         if (it == writers_.end()) {
+            MLOGW("channel [%s] not found", name);
+
             return -1;
         }
         int rt = 0;
@@ -208,11 +214,12 @@ namespace dds_helper {
 
     ChannelBuffer_ptr DdsHandlerVariant::read_data(const char *name) {
 
-        ChannelBuffer_ptr ret_buffer = 0;
+        ChannelBuffer_ptr ret_buffer = nullptr;
 
         auto it = readers_.find(name);
 
         if (it == readers_.end()) {
+            MLOGW("channel [%s] not found", name);
             return ret_buffer;
         }
 

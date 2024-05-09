@@ -331,6 +331,7 @@ namespace dds_helper {
             publisher_->get_datawriter_qos_from_profile(config_.writer_profile, writer_qos);
 
         writer_qos.history().depth = history_depth;
+        writer_qos.data_sharing().automatic("/tmp/");
 
         writer_ = publisher_->create_datawriter(topic_, writer_qos);
         if (writer_ == nullptr) {
@@ -404,6 +405,8 @@ namespace dds_helper {
         FASTDDS_CONST_SEQUENCE(DataSeq, T);
         DataSeq dataseq_;
         MemPoolHandler mem_pool_;
+        ChannelBuffer channel_buffer;
+
         eprosima::fastdds::dds::SampleInfoSeq infoseq_;
         ReaderConfig config_;
 
@@ -469,6 +472,7 @@ namespace dds_helper {
             subscriber_->get_datareader_qos_from_profile(config_.reader_profile, reader_qos);
 
         reader_qos.history().depth = history_depth;
+        reader_qos.data_sharing().automatic("/tmp/");
 
         reader_ = subscriber_->create_datareader(topic_, reader_qos);
 
@@ -483,21 +487,28 @@ namespace dds_helper {
     template<typename T, typename S>
     ChannelBuffer_ptr DdsSimpleReader<T, S>::read_data() {
 
-        eprosima::fastrtps::Duration_t timeout(0, 10);
+        eprosima::fastrtps::Duration_t timeout(0.001);
 
         mem_pool_.count = 0;
 
+
+//        MLOGI("read data %i\n",0);
         if (reader_->wait_for_unread_message(timeout)) {
             if (ReturnCode_t::RETCODE_OK ==
                 reader_->take(dataseq_, infoseq_, 2, eprosima::fastdds::dds::NOT_READ_SAMPLE_STATE)) {
+                MLOGI("read infoseq_.length() %u \n",infoseq_.length());
 
                 for (eprosima::fastdds::dds::LoanableCollection::size_type i = 0; i < infoseq_.length(); ++i) {
+                    MLOGI("read infoseq_[i].valid_data %i \n",infoseq_[i].valid_data);
+
                     if (infoseq_[i].valid_data) {
 
                         // Print your structure data here.
                         const T &sample = dataseq_[i];
+
                         from_dds(sample, &mem_pool_);
 
+                        MLOGI("read mem_pool_.count %i \n",mem_pool_.count);
 
                     }
                 }
@@ -507,13 +518,15 @@ namespace dds_helper {
         }
         if (mem_pool_.count == 0) {
 
-            return 0;
+            return nullptr;
         } else {
-
+            channel_buffer.buffer = mem_pool_.buffer.data();
+            channel_buffer.buffer_size = mem_pool_.count;
+            return &channel_buffer;
         }
 
 
-        return 0;
+        return nullptr;
     }
 
     template<typename T, typename S>

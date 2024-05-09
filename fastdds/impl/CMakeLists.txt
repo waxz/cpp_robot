@@ -1,20 +1,61 @@
+#===
+#add_library(dds_msg_convert_static STATIC dds_message_convert.cpp )
+#set_pic(dds_msg_convert_static )
+#add_library(dds_msg_convert_shared SHARED dds_message_convert.cpp )
+#target_link_libraries(dds_msg_convert_static PUBLIC
+#        dds_message_type_lib
+#        absl::strings  absl::str_format absl::log absl::log_internal_check_impl absl::log_internal_check_op absl::any
+#)
+#target_link_libraries(dds_msg_convert_shared PUBLIC
+#        dds_message_type_lib
+#        absl::strings  absl::str_format absl::log absl::log_internal_check_impl absl::log_internal_check_op absl::any
+#)
+
+#===
+# list of source files
+set(libsrc dds_message_convert.cpp)
+
+# this is the "object library" target: compiles the sources only once
+add_library(dds_msg_convert_objlib OBJECT ${libsrc})
+target_link_libraries(dds_msg_convert_objlib PUBLIC
+        dds_message_type_lib
+        absl::strings  absl::str_format absl::log absl::log_internal_check_impl absl::log_internal_check_op absl::any
+)
+# shared libraries need PIC
+#set_property(TARGET dds_msg_convert_objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
+
+# shared and static libraries built from the same object files
+add_library(dds_msg_convert_shared SHARED $<TARGET_OBJECTS:dds_msg_convert_objlib>)
+add_library(dds_msg_convert_static STATIC $<TARGET_OBJECTS:dds_msg_convert_objlib>)
+set_pic(dds_msg_convert_static )
+target_link_libraries(dds_msg_convert_shared PUBLIC
+        dds_message_type_lib
+        absl::strings  absl::str_format absl::log absl::log_internal_check_impl absl::log_internal_check_op absl::any
+)
+target_link_libraries(dds_msg_convert_static PUBLIC
+        dds_message_type_lib
+        absl::strings  absl::str_format absl::log absl::log_internal_check_impl absl::log_internal_check_op absl::any
+)
+#===
+
+
+
+
+INSTALL(TARGETS dds_msg_convert_static DESTINATION lib)
+INSTALL(TARGETS dds_msg_convert_shared DESTINATION lib)
+
+
+
 add_library(dds_handler_static STATIC dds_handler.cpp dds_handler_variant.cpp )
 set_pic(dds_handler_static )
-add_library(dds_handler_shared SHARED dds_handler.cpp dds_handler_variant.cpp )
+add_library(dds_handler_shared SHARED dds_handler.cpp dds_handler_variant.cpp)
 INSTALL(TARGETS dds_handler_static DESTINATION lib)
 INSTALL(TARGETS dds_handler_shared DESTINATION lib)
 
 target_link_libraries(dds_handler_static PUBLIC
-        dds_message_type_lib
-        toml11::toml11
-        absl::strings  absl::str_format
-        absl::log absl::log_internal_check_impl absl::log_internal_check_op
-        #        absl::statusor
-        #        absl::debugging
-        #        absl::random_random
-        absl::any
-        #        absl::inlined_vector
-        #        absl::flat_hash_map
+        dds_msg_convert_static
+#        dds_message_type_lib
+#        absl::strings  absl::str_format absl::log absl::log_internal_check_impl absl::log_internal_check_op absl::any
 )
 
 target_include_directories(dds_handler_static PUBLIC ${CMAKE_SOURCE_DIR}/include
@@ -24,16 +65,9 @@ target_include_directories(dds_handler_static PUBLIC ${CMAKE_SOURCE_DIR}/include
 set_omp(dds_handler_static)
 
 target_link_libraries(dds_handler_shared PUBLIC
-        dds_message_type_lib
-        toml11::toml11
-        absl::strings  absl::str_format
-        absl::log absl::log_internal_check_impl absl::log_internal_check_op
-        #        absl::statusor
-        #        absl::debugging
-        #        absl::random_random
-        absl::any
-        #        absl::inlined_vector
-        #        absl::flat_hash_map
+        dds_msg_convert_static
+#        dds_message_type_lib
+#        absl::strings  absl::str_format absl::log absl::log_internal_check_impl absl::log_internal_check_op absl::any
 )
 
 target_include_directories(dds_handler_shared PUBLIC ${CMAKE_SOURCE_DIR}/include
@@ -41,6 +75,8 @@ target_include_directories(dds_handler_shared PUBLIC ${CMAKE_SOURCE_DIR}/include
 
 )
 set_omp(dds_handler_shared)
+
+
 
 
 

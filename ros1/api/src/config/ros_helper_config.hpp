@@ -11,19 +11,21 @@
 
 namespace ros_helper{
 
-    /// GEN[TOML] GEN[JSON]
+    /// GEN[TOML]
     struct Channel{
-        std::string channel_type ;
+//        std::string channel_type ;
         std::string  topic_name;
         std::string topic_type;
         int qos_queue_size = 10;
 
     };
 
-    /// GEN[TOML] GEN[JSON]
+    /// GEN[TOML]
     struct Config{
         std::unordered_map<std::string, std::string> config;
-        std::unordered_map<std::string, Channel> channel;
+        std::unordered_map<std::string, Channel> readers;
+        std::unordered_map<std::string, Channel> writers;
+
     };
 }
 

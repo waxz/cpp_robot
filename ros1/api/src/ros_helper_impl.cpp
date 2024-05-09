@@ -328,16 +328,11 @@ int RosHandler::create(const char *filename,const ta_cfg_t* cfg) {
     m_tfl = std::make_shared<tf::TransformListener>();
     m_tfb = std::make_shared<tf::TransformBroadcaster>();
 
-    for(auto& channel: config.channel){
-
+    for(auto& channel: config.readers){
         auto& channel_name = channel.first;
         auto& channel_config = channel.second;
         const char* topic_name = channel_config.topic_name.c_str();
-        const char* channel_type = channel_config.channel_type.c_str();
-
-        if(channel_config.channel_type.empty() || channel_config.topic_name.empty() || channel_config.topic_type.empty() ||
-           !(std::strcmp(channel_config.channel_type.c_str(),m_config_predefine_channel_type_pub) == 0 || std::strcmp(channel_config.channel_type.c_str(),m_config_predefine_channel_type_sub) == 0)
-                ){
+        if( channel_config.topic_name.empty() || channel_config.topic_type.empty() ){
 
             toml::value value =channel_config;
             std::cout << "Detect error in channel_config:\n" << value << std::endl;
@@ -345,68 +340,71 @@ int RosHandler::create(const char *filename,const ta_cfg_t* cfg) {
             return -1;
         }
 
-
-        if(
-            //std::strcmp(topic_type.c_str(), m_config_predefine_topic_type_tf) ==0
-                std::strcmp(topic_name, m_config_predefine_topic_name_tf) ==0
-
-                ){
-            if(std::strcmp(channel_type, m_config_predefine_channel_type_pub) ==0){
-
-                need_tfb = true;
-
-//                auto it = channel_holder_map.emplace(channel_name, ROSTFWriter(m_tfb,mem_pool_manager));
-
-                auto it = channel_writer_map.emplace(channel_name, ROSTFWriter(m_tfb));
-
-
-                int ret =  absl::get<ROSTFWriter>(it.first->second).create(channel_config);
-
-
-            }else{
-
-                need_tfl = true;
+        if( std::strcmp(topic_name, m_config_predefine_topic_name_tf) ==0 ){
+            need_tfl = true;
 
 //                auto it = channel_holder_map.emplace(channel_name, ROSTFReader(m_tfl));
-                auto it = channel_reader_map.emplace(channel_name, ROSTFReader(m_tfl));
+            auto it = channel_reader_map.emplace(channel_name, ROSTFReader(m_tfl));
 
 
 
-                int ret = absl::get<ROSTFReader>(it.first->second).create(channel_config);
+            int ret = absl::get<ROSTFReader>(it.first->second).create(channel_config);
 
-
-            }
         }else{
-            if(std::strcmp(channel_type, m_config_predefine_channel_type_pub) ==0){
-
-//                auto it = channel_holder_map.emplace(channel_name, ROSWriter(mem_pool_manager));
-                auto it = channel_writer_map.emplace(channel_name, ROSWriter());
-
-
-                int ret = absl::get<ROSWriter>(it.first->second).create(channel_config);
-
-                if(ret < 0){
-                    return -1;
-                }
-
-            }else{
 
 //                auto it = channel_holder_map.emplace(channel_name, ROSReader(mem_pool_manager));
-                auto it = channel_reader_map.emplace(channel_name, ROSReader(&mem_cfg));
+            auto it = channel_reader_map.emplace(channel_name, ROSReader(&mem_cfg));
 
 
-                int ret = absl::get<ROSReader>(it.first->second).create(channel_config);
+            int ret = absl::get<ROSReader>(it.first->second).create(channel_config);
 
-                if(ret < 0){
-                    return -1;
-                }
+            if(ret < 0){
+                return -1;
             }
-
-
         }
 
 
+
     }
+    for(auto& channel: config.writers){
+        auto& channel_name = channel.first;
+        auto& channel_config = channel.second;
+        const char* topic_name = channel_config.topic_name.c_str();
+        if( channel_config.topic_name.empty() || channel_config.topic_type.empty() ){
+
+            toml::value value =channel_config;
+            std::cout << "Detect error in channel_config:\n" << value << std::endl;
+
+            return -1;
+        }
+
+        if(std::strcmp(topic_name, m_config_predefine_topic_name_tf) ==0 ){
+            need_tfb = true;
+
+//                auto it = channel_holder_map.emplace(channel_name, ROSTFWriter(m_tfb,mem_pool_manager));
+
+            auto it = channel_writer_map.emplace(channel_name, ROSTFWriter(m_tfb));
+
+
+            int ret =  absl::get<ROSTFWriter>(it.first->second).create(channel_config);
+
+        }else{
+
+//                auto it = channel_holder_map.emplace(channel_name, ROSWriter(mem_pool_manager));
+            auto it = channel_writer_map.emplace(channel_name, ROSWriter());
+
+
+            int ret = absl::get<ROSWriter>(it.first->second).create(channel_config);
+
+            if(ret < 0){
+                return -1;
+            }
+        }
+
+
+
+    }
+
 
 
     std::cout << "[RosHandler]: all channel is created done" << std::endl;
@@ -430,6 +428,10 @@ int RosHandler::stop() {
 }
 
 int RosHandler::write_data(const char *channel_name, void **buffer, u32_t buffer_size) {
+
+    if(buffer == nullptr || buffer_size == 0){
+        return 0;
+    }
 
     auto it = channel_writer_map.find(channel_name);
     if(it == channel_writer_map.end()){
