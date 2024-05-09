@@ -39,10 +39,11 @@ extern "C" {
 };
 #endif
 
-
+bool ros_create(message_handler_ptr_t h, const char* filename, const ta_cfg_t* cfg);
 int ros_write_data (message_handler_ptr_t h, const char* channel_name, void** buffer, u32_t buffer_size);
 ChannelBuffer_ptr ros_read_data (message_handler_ptr_t h, const char* channel_name);
-bool ros_create(message_handler_ptr_t h, const char* filename, const ta_cfg_t* cfg);
+void ros_close(message_handler_ptr_t h);
+bool ros_is_ok(struct message_handler_t* h);
 
 
 //http://wiki.ros.org/Remapping%20Arguments

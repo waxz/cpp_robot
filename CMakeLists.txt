@@ -20,7 +20,7 @@ set(ROS_INSTALL_PATH /opt/ros/${ROS_DISTRO})
 build_external_project(absl lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/abseil-cpp-20230802.1.tar.gz -DABSL_BUILD_TESTING=OFF -DABSL_USE_GOOGLETEST_HEAD=ON -DCMAKE_CXX_STANDARD=14  -DABSL_ENABLE_INSTALL=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON)
 find_package(absl REQUIRED)
 
-build_external_project(toml11 lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/toml11-3.7.1.tar.gz  -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON)
+build_external_project(toml11 lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/toml11-3.8.1.tar.gz  -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_SHARED_LIBS=ON)
 find_package(toml11 REQUIRED)
 
 #--enable-static
@@ -34,6 +34,7 @@ set(tinycc_LIB ${tinycc_ROOT}/lib/libtcc.so)
 
 
 add_library(tinyalloc SHARED  ${CMAKE_SOURCE_DIR}/include/tinyalloc/tinyalloc.c)
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/tinyalloc DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
 
 add_subdirectory(message_center)
 

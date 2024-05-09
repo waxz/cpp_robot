@@ -75,10 +75,26 @@ void ta_print(){
 //
 //}
 
+#include "omp.h"
+#define MLOGI(x...)
+#define LOG(x...)
 
 int main(int argc, char** argv){
+#ifdef _OPENMP
 
+#endif
+#ifdef _OPENMP
 
+//    omp_set_dynamic(0);     // Explicitly disable dynamic teams
+    omp_set_num_threads(8); // Use 4 threads for all consecutive parallel regions
+    printf("use _OPENMP thread num: %i\n",  omp_get_num_threads());
+#pragma omp parallel
+    {
+        int ID = omp_get_thread_num();
+        printf("ID = %i\n", ID);
+
+    }
+#endif
 
 
 
@@ -275,43 +291,75 @@ int main(int argc, char** argv){
         // Record the start time
         start_time = clock();
 
-        handler.write_data(&handler,"scan_pub",send_scan_buffer,1);
+        if(0){
+            handler.write_data(&handler,"scan_pub",send_scan_buffer,1);
 
-        //  100hz
+            //  100hz
 //        usleep(10000);
-        // 1000hz
+            // 1000hz
 //        usleep(1000);
 //
 //        continue;
 
-        handler.write_data(&handler,"twist_pub",send_twist_buffer,1);
-        handler.write_data(&handler,"tf_pub",send_tf_pose_buffer,1);
-        handler.write_data(&handler,"uint8array_pub",send_u8array_pose_buffer,1);
-        handler.write_data(&handler,"uint16array_pub",send_u16array_pose_buffer,1);
-        handler.write_data(&handler,"map_pub",send_map_buffer,1);
-        handler.write_data(&handler,"odom_pub",send_odom_buffer,1);
-        handler.write_data(&handler,"path_pub",send_path_buffer,1);
-        handler.write_data(&handler,"pose_pub",send_pose_buffer,1);
-        handler.write_data(&handler,"headerstring_pub",send_header_string_buffer,1);
-        // Record the end time
-        end_time = clock();
+            handler.write_data(&handler,"twist_pub",send_twist_buffer,1);
+            handler.write_data(&handler,"tf_pub",send_tf_pose_buffer,1);
+            handler.write_data(&handler,"uint8array_pub",send_u8array_pose_buffer,1);
+            handler.write_data(&handler,"uint16array_pub",send_u16array_pose_buffer,1);
+            handler.write_data(&handler,"map_pub",send_map_buffer,1);
+            handler.write_data(&handler,"odom_pub",send_odom_buffer,1);
+            handler.write_data(&handler,"path_pub",send_path_buffer,1);
+            handler.write_data(&handler,"pose_pub",send_pose_buffer,1);
+            handler.write_data(&handler,"headerstring_pub",send_header_string_buffer,1);
+            // Record the end time
+            end_time = clock();
 
-        // Calculate the elapsed time in seconds
-        elapsed_time = 1000.0 * ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
+            // Calculate the elapsed time in seconds
+            elapsed_time = 1000.0 * ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
 
-        if (elapsed_time > elapsed_time_max){
-            elapsed_time_max = elapsed_time;
+            if (elapsed_time > elapsed_time_max){
+                elapsed_time_max = elapsed_time;
+            }
+            if (elapsed_time > elapsed_time_max_all){
+                elapsed_time_max_all = elapsed_time;
+            }
+
+
+            if ((cnt % 100) == 0 ){
+                printf("Time elapsed_time_max: %.4f ms, elapsed_time_max_all: %.4f ms \n", elapsed_time_max,elapsed_time_max_all );
+                elapsed_time_max = 0.0;
+            }
         }
-        if (elapsed_time > elapsed_time_max_all){
-            elapsed_time_max_all = elapsed_time;
+
+
+        {
+            if(1){
+                ChannelBuffer_ptr recv_pointcloud2_buffer = handler.read_data(&handler,"pointcloud_sub");
+                if(recv_pointcloud2_buffer){
+                    for(int i = 0; i <  recv_pointcloud2_buffer->buffer_size;i++){
+                        PointCloud2_ptr data =  (PointCloud2_ptr)recv_pointcloud2_buffer->buffer[i];
+
+                        MLOGI("recv PointCloud2: frame: [%s], dim: [%u, %u, %u]\n",
+                              data->frame_id, data->height , data->width, data->channel
+                        );
+                        LOG(
+                                printf("\npoints\n");
+                                u64_t point_num = data->height * data->width;
+                                for(int j = 0 ; j < point_num ;j++){
+                                    if (!isnan(data->buffer[j*3 + 0]) &&!isnan(data->buffer[j*3 + 1]) && !isnan(data->buffer[j*3 + 2])  ){
+                                        printf("[%.3f, %.3f, %.3f]", data->buffer[j*3 + 0], data->buffer[j*3 + 1], data->buffer[j*3 + 2] );
+                                    }
+
+                                }
+                                printf("\npoints\n");
+                                );
+
+
+                    }
+                }
+            }
+            usleep(1000000);
+            continue;
         }
-
-
-        if ((cnt % 100) == 0 ){
-            printf("Time elapsed_time_max: %.4f ms, elapsed_time_max_all: %.4f ms \n", elapsed_time_max,elapsed_time_max_all );
-            elapsed_time_max = 0.0;
-        }
-
 
         {
             ChannelBuffer_ptr recv_scan_buffer = handler.read_data(&handler, "scan_sub");
@@ -412,28 +460,7 @@ int main(int argc, char** argv){
             }
         }
 
-        {
-            ChannelBuffer_ptr recv_pointcloud2_buffer = handler.read_data(&handler,"pointcloud_sub");
-            if(recv_pointcloud2_buffer){
-                for(int i = 0; i <  recv_pointcloud2_buffer->buffer_size;i++){
-                    PointCloud2_ptr data =  (PointCloud2_ptr)recv_pointcloud2_buffer->buffer[i];
 
-                    MLOGI("recv PointCloud2: frame: [%s], dim: [%u, %u, %u]\n",
-                          data->frame_id, data->height , data->width, data->channel
-                    );
-                    printf("\npoints\n");
-                    u64_t point_num = data->height * data->width;
-                    for(int j = 0 ; j < point_num ;j++){
-                        if (!isnan(data->buffer[j*3 + 0]) &&!isnan(data->buffer[j*3 + 1]) && !isnan(data->buffer[j*3 + 2])  ){
-                            printf("[%.3f, %.3f, %.3f]", data->buffer[j*3 + 0], data->buffer[j*3 + 1], data->buffer[j*3 + 2] );
-                        }
-
-                    }
-                    printf("\npoints\n");
-
-                }
-            }
-        }
         {
             ChannelBuffer_ptr recv_odom_buffer = handler.read_data(&handler,"odom_sub");
 

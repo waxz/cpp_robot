@@ -12,7 +12,7 @@ struct MemPoolHandler {
 
     static constexpr size_t BUFFER_SIZE = 100;
     absl::InlinedVector<void *, BUFFER_SIZE> buffer;
-    ta_cfg_t cfg = {0};
+    ta_cfg_t cfg = {nullptr, nullptr,0,0,0};
     size_t count = 0;
     size_t max_size = BUFFER_SIZE;
 

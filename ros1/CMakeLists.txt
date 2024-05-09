@@ -42,9 +42,11 @@ else()
     #    build_external_project(Boost lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/boost-1.82.0.tar.xz -DCMAKE_BUILD_TYPE=Release '-DBOOST_INCLUDE_LIBRARIES=thread;chrono;filesystem;system;date_time;regex' -DBUILD_SHARED_LIBS=ON )
 
 
+#    set(BOOST_REQUIRED_MODULES thread chrono filesystem system date_time regex)
     set(BOOST_REQUIRED_MODULES thread chrono filesystem system date_time regex)
 
-    find_package(Boost 1.82.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
+
+    find_package(Boost 1.71.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
     message(STATUS "Boost_ROOT: ${Boost_ROOT}")
 
 
@@ -181,7 +183,7 @@ else()
     target_include_directories(libros PUBLIC ${LIBROS_INCLUDE_DIR} )
     target_link_libraries(libros PUBLIC ${Boost_LIBRARIES} console_bridge)
     INSTALL(TARGETS libros DESTINATION lib)
-    INSTALL(DIRECTORY ${LIBROS_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
+#    INSTALL(DIRECTORY ${LIBROS_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
     #    install_external_project(Boost)
     #    set(shared_dirs ${Boost_ROOT}/lib )

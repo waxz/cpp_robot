@@ -20,7 +20,7 @@
 
 //#include "ros_helper_message.h"
 #include "message_center_types.h"
-
+#include "common/clock_time.h"
 
 //LaserScan
 int from_common_LaserScan(ros::Publisher& publisher,void** buffer, uint32_t buffer_size);
@@ -877,8 +877,8 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
     size_t point_num = height*width;
     channel = 3;
 
-    std::cout << "to_common_PointCloud2 allocate buffer, point_num: " << point_num << std::endl;
-    std::cout << "1 to_common_PointCloud2 allocate buffer, option->mem_pool->buffer.size(): " << option->mem_pool->buffer.size() << std::endl;
+//    std::cout << "to_common_PointCloud2 allocate buffer, point_num: " << point_num << std::endl;
+//    std::cout << "1 to_common_PointCloud2 allocate buffer, option->mem_pool->buffer.size(): " << option->mem_pool->buffer.size() << std::endl;
 
     PointCloud2* ptr_target = nullptr;
     if (option->mem_pool->count >= option->mem_pool->buffer.size() ){
@@ -890,7 +890,7 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
         ptr_target = PointCloud2_realloc( height,width,channel,ptr_target,& option->mem_pool->cfg );
 
     }
-    std::cout << "2 to_common_PointCloud2 allocate buffer, option->mem_pool->buffer.size(): " << option->mem_pool->buffer.size() << std::endl;
+//    std::cout << "2 to_common_PointCloud2 allocate buffer, option->mem_pool->buffer.size(): " << option->mem_pool->buffer.size() << std::endl;
 
     if (!ptr_target){
         std::cout << __FUNCTION__  << " fail to allocate, need "<< point_num*3*4*1e-6 << " MB" << std::endl;
@@ -938,36 +938,53 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
     }
 
 
-    std::cout << "to_common_PointCloud2: point_num: " << point_num
-    <<", valid_data_type: " << valid_data_type
-    << ", valid_filed_x: " << valid_filed_x
-            << ", valid_filed_y: " << valid_filed_y
-            << ", valid_filed_z: " << valid_filed_z
-            << ", valid_filed_x_id: " << valid_filed_x_id
-            << ", valid_filed_y_id: " << valid_filed_y_id
-            << ", valid_filed_z_id: " << valid_filed_z_id
-
-            << "\n"
-;
+//    std::cout << "to_common_PointCloud2: point_num: " << point_num
+//    <<", valid_data_type: " << valid_data_type
+//    << ", valid_filed_x: " << valid_filed_x
+//            << ", valid_filed_y: " << valid_filed_y
+//            << ", valid_filed_z: " << valid_filed_z
+//            << ", valid_filed_x_id: " << valid_filed_x_id
+//            << ", valid_filed_y_id: " << valid_filed_y_id
+//            << ", valid_filed_z_id: " << valid_filed_z_id
+//
+//            << "\n"
+//;
 
     if(valid_data_type && valid_filed_x && valid_filed_y && valid_filed_z){
 
 
-        float x = 0.0, y = 0.0, z = 0.0;
+        common::Time t1 = common::FromUnixNow();
+//        float x = 0.0, y = 0.0, z = 0.0;
+#if 0
         for(size_t i = 0 ; i < point_num;i++){
-            ptr_target->buffer[i*3 + 0 ] = x = *((float *) (msg->data.data() + (i*point_step + valid_filed_x_id)));
-            ptr_target->buffer[i*3 + 1 ] = y = *((float *) (msg->data.data() + (i*point_step + valid_filed_y_id)));
-            ptr_target->buffer[i*3 + 2 ] = z = *((float *) (msg->data.data() + (i*point_step + valid_filed_z_id)));
-
-//            if(i > (point_num - 100)){
-//                std::cout << "bytes: ";
-//
-//                for(int j = 0 ; j < 12 ;j++){
-//                    printf("0x%02x ,",msg->data[i*point_step + j] );
-//                }
-//                std::cout <<"\n[" << x << ", " << y << ", " << z << "]\n";
-//            }
+            ptr_target->buffer[i*3 + 0 ] = *((float *) (msg->data.data() + (i*point_step + valid_filed_x_id)));
+            ptr_target->buffer[i*3 + 1 ] = *((float *) (msg->data.data() + (i*point_step + valid_filed_y_id)));
+            ptr_target->buffer[i*3 + 2 ] = *((float *) (msg->data.data() + (i*point_step + valid_filed_z_id)));
         }
+#endif
+
+#if 1
+        {
+            size_t i = 0;
+            const unsigned char * src_data = msg->data.data();
+            float* target_data = ptr_target->buffer;
+            //schedule(static,2048)
+#ifdef _OPENMP
+#pragma omp parallel for default(none) private(i) shared(point_num,target_data, src_data,point_step,valid_filed_x_id, valid_filed_y_id,  valid_filed_z_id) schedule(static)
+#endif
+            for(i = 0 ; i < point_num;i++){
+                target_data[i*3 + 0 ] = *((float *) (src_data + (i*point_step + valid_filed_x_id)));
+                target_data[i*3 + 1 ] = *((float *) (src_data + (i*point_step + valid_filed_y_id)));
+                target_data[i*3 + 2 ] = *((float *) (src_data + (i*point_step + valid_filed_z_id)));
+            }
+
+        }
+#endif
+
+
+
+
+        std::cout << __FUNCTION__  << "for loop use time: " << common::ToMillSeconds(common::FromUnixNow() - t1) << " ms\n";
 //        std::cout << "\n";
 
         option->mem_pool->count+=1;
@@ -980,7 +997,7 @@ ROSTopicReader create_reader_PointCloud2(ros::NodeHandle& nh, reader_option* opt
     ROSTopicReader target;
     target.valid = true;
 
-    target.reader = nh.subscribe<sensor_msgs::PointCloud2>(option->topic_name, option->queue_size, [option](sensor_msgs::PointCloud2ConstPtr msg){
+    target.reader = nh.subscribe<sensor_msgs::PointCloud2>(option->topic_name, 1, [option](sensor_msgs::PointCloud2ConstPtr msg){
 
         to_common_PointCloud2(msg, option);
     });

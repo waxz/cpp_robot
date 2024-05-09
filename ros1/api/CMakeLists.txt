@@ -28,7 +28,7 @@
 
 #target_link_libraries(ros_helper_message PUBLIC tinyalloc)
 add_library(ros_helper_impl SHARED  src/ros_helper_impl.cpp src/ros_helper_topic.cpp)
-
+set_omp(ros_helper_impl)
 #target_include_directories( ros_helper_message PUBLIC
 #        ${CMAKE_CURRENT_SOURCE_DIR}/include
 #)
@@ -50,6 +50,11 @@ target_link_libraries(ros_helper_impl PUBLIC
 #        absl::inlined_vector
 #        absl::flat_hash_map
 )
+target_include_directories(
+        ros_helper_impl PUBLIC
+        ${toml11_ROOT}/include
+
+)
 
 add_library(ros_helper SHARED src/ros_helper.cpp)
 target_link_libraries(ros_helper PRIVATE libros)
@@ -57,6 +62,7 @@ target_link_libraries(ros_helper PRIVATE libros)
 target_link_libraries(ros_helper PUBLIC ros_helper_impl)
 add_executable(ros_helper_test src/ros_helper_test.c)
 target_link_libraries( ros_helper_test PUBLIC ros_helper)
+
 set_asan(ros_helper_test)
 
 
@@ -90,5 +96,4 @@ INSTALL(TARGETS tinyalloc DESTINATION lib)
 INSTALL(TARGETS ros_helper_impl DESTINATION lib)
 INSTALL(TARGETS ros_helper DESTINATION lib)
 #INSTALL(TARGETS ros_helper_message DESTINATION lib)
-INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/tinyalloc DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
 

@@ -1,0 +1,64 @@
+module Message{
+
+    @final
+    struct Request{
+        unsigned long long stamp;
+        char data[50];
+    };
+
+
+
+    @final
+    struct Pointcloud1200x800x4
+    {
+        char frame_id[50];
+        unsigned long long stamp;
+        unsigned long height;
+        unsigned long width;
+        unsigned long channel;
+
+        float data[1200*800*4];
+    };
+
+    @final
+    struct Pointcloud1920x1080x3
+    {
+        char frame_id[50];
+        unsigned long long stamp;
+        unsigned long height;
+        unsigned long width;
+        unsigned long channel;
+
+        float data[1920*1080*3];
+    };
+    @final
+    struct Laserscan1500{
+        char frame_id[50];
+        unsigned long long stamp;
+        float range_min;
+        float range_max;
+        float angle_min;
+        float angle_max;
+        float angle_increment;
+        unsigned long ranges_size;
+        float ranges[1500];
+        float intensities[1500];
+    };
+
+
+
+    @final
+    struct Scalar{
+        unsigned long long stamp;
+        char name[50];
+        float value;
+    };
+
+    @final
+    struct ScalarList20{
+        Scalar data[20];
+    };
+
+
+
+};
