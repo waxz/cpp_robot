@@ -20,7 +20,6 @@
 
 //#include "dds_handler_demo.h"
 
-using namespace eprosima::fastdds::dds;
 #define STATIC_MEMORY_SIZE 100000000
 static unsigned char memory_pool[STATIC_MEMORY_SIZE];
 static const ta_cfg_t memory_pool_cfg = {
@@ -74,10 +73,9 @@ int main(int argc, char** argv){
     }
 
 
-
     if (xml_file.empty()
-    || name.empty()
-    || profile.empty()){
+        || name.empty()
+        || profile.empty()) {
         std::cout << cli << std::endl;
     }
 
@@ -100,7 +98,7 @@ int main(int argc, char** argv){
 #endif
 
 
-    ParticipantConfig config;
+    dds_helper::ParticipantConfig config;
     config.xml = xml_file;
     config.profile = profile;
     config.name = name;

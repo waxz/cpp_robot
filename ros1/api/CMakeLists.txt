@@ -21,13 +21,13 @@
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 
-#add_library(ros_helper_message SHARED src/ros_helper_message.c)
+#add_library(ros_helper_message SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/ros_helper_message.c)
 
 #add_library(tinyalloc SHARED ${CMAKE_CURRENT_SOURCE_DIR}/include/tinyalloc/tinyalloc.c)
 
 
 #target_link_libraries(ros_helper_message PUBLIC tinyalloc)
-add_library(ros_helper_impl SHARED  src/ros_helper_impl.cpp src/ros_helper_topic.cpp)
+add_library(ros_helper_impl SHARED  ${CMAKE_CURRENT_SOURCE_DIR}/src/ros_helper_impl.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/ros_helper_topic.cpp)
 set_omp(ros_helper_impl)
 #target_include_directories( ros_helper_message PUBLIC
 #        ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -56,11 +56,13 @@ target_include_directories(
 
 )
 
-add_library(ros_helper SHARED src/ros_helper.cpp)
+add_library(ros_helper SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/ros_helper.cpp)
 target_link_libraries(ros_helper PRIVATE libros)
 
 target_link_libraries(ros_helper PUBLIC ros_helper_impl)
-add_executable(ros_helper_test src/ros_helper_test.c)
+target_include_directories(ros_helper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src )
+
+add_executable(ros_helper_test ${CMAKE_CURRENT_SOURCE_DIR}/src/ros_helper_test.c)
 target_link_libraries( ros_helper_test PUBLIC ros_helper)
 
 set_asan(ros_helper_test)

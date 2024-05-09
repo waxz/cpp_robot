@@ -3,9 +3,8 @@
 #include <string>
 #include <unordered_map>
 #include <toml.hpp>
-
-
 #include <nlohmann/json.hpp>
+namespace dds_helper{
 /// GEN[TOML] GEN[JSON]
 struct ParticipantConfig{
      std::string xml;
@@ -54,6 +53,8 @@ struct ParticipantConfig{
     to_json(value["interface_blocklist"], object.interface_blocklist);
 
  }
+}
+namespace dds_helper{
 /// GEN[TOML] GEN[JSON]
 struct ReaderConfig{
      std::string topic_name;
@@ -107,6 +108,8 @@ struct ReaderConfig{
     to_json(value["qos_queue_size"], object.qos_queue_size);
 
  }
+}
+namespace dds_helper{
 /// GEN[TOML] GEN[JSON]
 struct WriterConfig{
      std::string topic_name;
@@ -160,6 +163,8 @@ struct WriterConfig{
     to_json(value["qos_queue_size"], object.qos_queue_size);
 
  }
+}
+namespace dds_helper{
 /// GEN[TOML] GEN[JSON]
 struct DdsConfig{
      ParticipantConfig participant;
@@ -198,3 +203,4 @@ struct DdsConfig{
     to_json(value["writers"], object.writers);
 
  }
+}

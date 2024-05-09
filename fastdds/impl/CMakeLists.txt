@@ -68,6 +68,12 @@ target_link_libraries(dds_helper_shared PUBLIC
 target_link_libraries(dds_helper_static PUBLIC
         dds_handler_static
 )
+target_include_directories(dds_helper_static PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_include_directories(dds_helper_shared PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
 INSTALL(TARGETS dds_helper_shared DESTINATION lib)
 
 
@@ -79,12 +85,12 @@ target_link_libraries(dds_helper_test PUBLIC dds_helper_shared )
 copy_files_with_pattern("${CMAKE_CURRENT_SOURCE_DIR}/" "*toml" "${EXECUTABLE_OUTPUT_PATH}" TOML_COPIED_FILES)
 copy_files_with_pattern("${CMAKE_CURRENT_SOURCE_DIR}/" "*xml" "${EXECUTABLE_OUTPUT_PATH}" XML_COPIED_FILES)
 list(APPEND COMBINED_LIST ${TOML_COPIED_FILES} ${XML_COPIED_FILES})
-
 message("TOML_COPIED_FILES ${TOML_COPIED_FILES}")
 message("XML_COPIED_FILES ${XML_COPIED_FILES}")
 message("COMBINED_LIST ${COMBINED_LIST}")
-
 add_custom_target(dds_test_file_copy DEPENDS ${COMBINED_LIST})
+
+
 add_dependencies(dds_helper_test dds_test_file_copy)
 set_asan(dds_helper_test)
 
