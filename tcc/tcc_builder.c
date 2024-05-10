@@ -145,7 +145,7 @@ int tcc_compile(void* ptcc, const char* code){
     }
 
     TCCState* tcc = ptcc;
-    MLOGI("tcc_compile, code: %s",code);
+    MLOGI("tcc_compile, code: \n%s",code);
 
     int ret = tcc_compile_string(tcc, code);
     MLOGW("run %s, ret: %i ", "tcc_compile_string",ret);
