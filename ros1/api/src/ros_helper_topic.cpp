@@ -2,7 +2,7 @@
 // Created by waxz on 10/19/23.
 //
 
-#include "ros_helper_topic.h"
+#include "ros_helper_topic.hpp"
 #include <string>
 
 #include <sensor_msgs/LaserScan.h>

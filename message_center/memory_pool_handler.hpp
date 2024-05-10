@@ -2,8 +2,8 @@
 // Created by waxz on 5/7/24.
 //
 
-#ifndef LIBROSCPP_MEMORY_POOL_HANDLER_H
-#define LIBROSCPP_MEMORY_POOL_HANDLER_H
+#ifndef LIBROSCPP_MEMORY_POOL_HANDLER_HPP
+#define LIBROSCPP_MEMORY_POOL_HANDLER_HPP
 
 #include <absl/container/inlined_vector.h>
 #include "tinyalloc/tinyalloc.h"
@@ -20,4 +20,4 @@ struct MemPoolHandler {
 
 };
 
-#endif //LIBROSCPP_MEMORY_POOL_HANDLER_H
+#endif //LIBROSCPP_MEMORY_POOL_HANDLER_HPP

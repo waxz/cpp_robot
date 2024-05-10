@@ -65,7 +65,7 @@ target_include_directories(ros_helper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src )
 add_executable(ros_helper_test ${CMAKE_CURRENT_SOURCE_DIR}/src/ros_helper_test.c)
 target_link_libraries( ros_helper_test PUBLIC ros_helper)
 
-set_asan(ros_helper_test)
+#set_asan(ros_helper_test)
 
 
 #===copy
@@ -94,8 +94,9 @@ set_target_properties(ros_helper PROPERTIES
 #set_target_properties(ros_helper_impl PROPERTIES  POSITION_INDEPENDENT_CODE TRUE )
 #set_target_properties(ros_helper PROPERTIES  POSITION_INDEPENDENT_CODE TRUE )
 
-INSTALL(TARGETS tinyalloc DESTINATION lib)
 INSTALL(TARGETS ros_helper_impl DESTINATION lib)
 INSTALL(TARGETS ros_helper DESTINATION lib)
+#INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/ DESTINATION  include FILES_MATCHING PATTERN "*helper.h*")
+INSTALL(FILES "src/ros_helper.h" DESTINATION include)
 #INSTALL(TARGETS ros_helper_message DESTINATION lib)
 

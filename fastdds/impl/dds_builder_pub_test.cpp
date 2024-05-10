@@ -4,8 +4,8 @@
 
 #include "config/dds_builder_config_gen.hpp"
 
-#include "dds_handler.h"
-#include "dds_handler_variant.h"
+#include "dds_handler.hpp"
+#include "dds_handler_variant.hpp"
 
 #include "common/functions.h"
 #include "common/signals.h"
@@ -77,16 +77,25 @@ int main(int argc, char** argv){
 
     ta_init(&memory_pool_cfg);
 
-    {
-        dds_helper::DdsHandlerVariant dds_handler;
-        dds_handler.create("dds_config.toml", &memory_pool_cfg);
-        std::cout << "destroy DdsHandlerVariant" << std::endl;
+
+    dds_helper::DdsHandlerVariant dds_handler;
+    dds_handler.create("dds_config.toml", &memory_pool_cfg);
+    std::cout << "destroy DdsHandlerVariant" << std::endl;
+
+
+    while (program_run){
+
+
+
     }
+
     std::cout<< "start Exit" << std::endl;
+
 
 //    dds_handler.read_data("test");
 //
 //    dds_handler.write_data("test",0,0);
+
 
 
 

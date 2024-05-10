@@ -11,7 +11,7 @@
 #include <tf/transform_listener.h>
 #include <tf/transform_broadcaster.h>
 
-#include "ros_helper_option.h"
+#include "ros_helper_option.hpp"
 //#include "ros_helper_message.h"
 #include "message_center_types.h"
 

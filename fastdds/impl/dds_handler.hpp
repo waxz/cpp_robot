@@ -2,8 +2,8 @@
 // Created by waxz on 4/17/24.
 //
 
-#ifndef CMAKE_SUPER_BUILD_DDS_HANDLER_H
-#define CMAKE_SUPER_BUILD_DDS_HANDLER_H
+#ifndef MESSAGE_CENTER_BUILD_DDS_HANDLER_H
+#define MESSAGE_CENTER_BUILD_DDS_HANDLER_H
 
 
 #include <thread>
@@ -28,7 +28,7 @@
 #include <fastdds/dds/subscriber/Subscriber.hpp>
 
 
-#include "dds_message_convert.h"
+#include "dds_message_convert.hpp"
 
 #include "config/dds_builder_config_gen.hpp"
 
@@ -548,4 +548,4 @@ namespace dds_helper {
 }
 
 
-#endif //CMAKE_SUPER_BUILD_DDS_HANDLER_H
+#endif //MESSAGE_CENTER_BUILD_DDS_HANDLER_H

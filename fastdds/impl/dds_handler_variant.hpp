@@ -5,7 +5,7 @@
 #ifndef CMAKE_SUPER_BUILD_DDS_HANDLER_VARIANT_H
 #define CMAKE_SUPER_BUILD_DDS_HANDLER_VARIANT_H
 
-#include "dds_handler.h"
+#include "dds_handler.hpp"
 
 #include <absl/types/variant.h>
 

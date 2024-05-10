@@ -10,7 +10,7 @@
 #include "MessagePubSubTypes.h"
 #include "message_center_types.h"
 #include "message_center_handler.h"
-#include "memory_pool_handler.h"
+#include "memory_pool_handler.hpp"
 
 //#include <absl/container/inlined_vector.h>
 //

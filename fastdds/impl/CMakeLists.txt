@@ -85,11 +85,11 @@ set_omp(dds_handler_shared)
 add_executable(dds_builder_pub_test dds_builder_pub_test.cpp)
 target_link_libraries(dds_builder_pub_test PUBLIC dds_handler_shared )
 
-set_asan(dds_builder_pub_test)
+#set_asan(dds_builder_pub_test)
 
 add_executable(dds_builder_sub_test dds_builder_sub_test.cpp)
 target_link_libraries(dds_builder_sub_test PUBLIC dds_handler_shared )
-set_asan(dds_builder_sub_test)
+#set_asan(dds_builder_sub_test)
 
 
 add_dependencies(dds_builder_pub_test dds_test_file_copy)
@@ -111,6 +111,7 @@ target_include_directories(dds_helper_shared PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 INSTALL(TARGETS dds_helper_shared DESTINATION lib)
+INSTALL(FILES "dds_helper.h" DESTINATION include)
 
 
 
@@ -128,7 +129,7 @@ add_custom_target(dds_test_file_copy DEPENDS ${COMBINED_LIST})
 
 
 add_dependencies(dds_helper_test dds_test_file_copy)
-set_asan(dds_helper_test)
+#set_asan(dds_helper_test)
 
 
 
@@ -144,5 +145,5 @@ target_include_directories( dds_simple_participant PUBLIC ${CMAKE_SOURCE_DIR}/in
         ${toml11_ROOT}/include
 )
 add_dependencies(dds_simple_participant dds_test_file_copy)
-set_asan(dds_simple_participant )
+#set_asan(dds_simple_participant )
 install(TARGETS dds_simple_participant DESTINATION bin)

@@ -2,7 +2,7 @@
 // Created by waxz on 5/9/24.
 //
 
-#include "dds_message_convert.h"
+#include "dds_message_convert.hpp"
 #include "common/string_logger.h"
 
 namespace dds_helper {

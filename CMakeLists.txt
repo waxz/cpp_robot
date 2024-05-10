@@ -33,8 +33,7 @@ set(tinycc_TCCLIB_INCLUDE_DIR ${tinycc_ROOT}/lib/tcc/include)
 set(tinycc_LIB ${tinycc_ROOT}/lib/libtcc.so)
 
 
-add_library(tinyalloc SHARED  ${CMAKE_SOURCE_DIR}/include/tinyalloc/tinyalloc.c)
-INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/tinyalloc DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
+
 
 add_subdirectory(message_center)
 
@@ -79,3 +78,25 @@ install_external_project(tinycc)
 #                PATTERN ".svn" EXCLUDE)
 #    endif()
 #endforeach()
+
+#https://cmake.org/cmake/help/latest/command/cmake_parse_arguments.html#command:cmake_parse_arguments
+macro(my_install)
+    set(options OPTIONAL FAST)
+    set(oneValueArgs DESTINATION RENAME)
+    set(multiValueArgs TARGETS CONFIGURATIONS)
+    cmake_parse_arguments(MY_INSTALL "${options}" "${oneValueArgs}"
+            "${multiValueArgs}" ${ARGN} )
+
+    message(STATUS "MY_INSTALL_OPTIONAL: ${MY_INSTALL_OPTIONAL}")
+    message(STATUS "MY_INSTALL_FAST: ${MY_INSTALL_FAST}")
+    message(STATUS "MY_INSTALL_DESTINATION: ${MY_INSTALL_DESTINATION}")
+    message(STATUS "MY_INSTALL_RENAME: ${MY_INSTALL_RENAME}")
+    message(STATUS "MY_INSTALL_TARGETS: ${MY_INSTALL_TARGETS}")
+    message(STATUS "MY_INSTALL_CONFIGURATIONS: ${MY_INSTALL_CONFIGURATIONS}")
+
+    message(STATUS "MY_INSTALL_UNPARSED_ARGUMENTS: ${MY_INSTALL_UNPARSED_ARGUMENTS}")
+    message(STATUS "MY_INSTALL_KEYWORDS_MISSING_VALUES: ${MY_INSTALL_KEYWORDS_MISSING_VALUES}")
+    message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+
+endmacro()
+my_install(TARGETS foo bar DESTINATION bin OPTIONAL blub CONFIGURATIONS a b c )

@@ -11,7 +11,7 @@ if (BUILD_DDS AND BUILD_ROS1)
     message(STATUS "build demo with dds+ros1")
     add_executable(dds_ros_bridge dds_ros_bridge.cpp)
     target_link_libraries( dds_ros_bridge PUBLIC ros_helper dds_helper_shared)
-    set_asan(dds_ros_bridge)
+#    set_asan(dds_ros_bridge)
     add_dependencies(dds_ros_bridge test_file_copy)
 
 

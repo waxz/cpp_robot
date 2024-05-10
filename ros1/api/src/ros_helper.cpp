@@ -21,7 +21,7 @@
 #include "geometry_msgs/Twist.h"
 
 #include "ros_helper.h"
-#include "ros_helper_impl.h"
+#include "ros_helper_impl.hpp"
 
 #include "common/data_holder.h"
 #include "common/string_logger.h"

@@ -45,9 +45,9 @@
 #include "message_center_types.h"
 
 // option
-#include "ros_helper_option.h"
+#include "ros_helper_option.hpp"
 //#include "ros_helper_message.h"
-#include "ros_helper_topic.h"
+#include "ros_helper_topic.hpp"
 #include "config/ros_helper_config_gen.hpp"
 
 //#include "message_center.h"

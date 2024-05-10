@@ -15,8 +15,8 @@
 #include "common/task.h"
 
 
-#include "dds_handler.h"
-#include "dds_handler_variant.h"
+#include "dds_handler.hpp"
+#include "dds_handler_variant.hpp"
 
 //#include "dds_handler_demo.h"
 

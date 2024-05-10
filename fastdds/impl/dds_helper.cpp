@@ -3,7 +3,7 @@
 //
 
 #include "dds_helper.h"
-#include "dds_handler_variant.h"
+#include "dds_handler_variant.hpp"
 #include "common/string_logger.h"
 
 bool dds_create(message_handler_ptr_t h, const char *filename, const ta_cfg_t *cfg);
