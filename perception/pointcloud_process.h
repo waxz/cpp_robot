@@ -14,9 +14,9 @@ extern "C" {
     // pointcloud:  float[height*width*3]
 
 
-    int pointcloud_clip(float* src_buffer, u32_t height, u32_t width,float* dst_buffer ,u32_t filter_height_min, u32_t filter_height_max, u32_t filter_width_min, u32_t filter_width_max  );
+    int pointcloud_clip(float* src_buffer, u64_t height, u64_t width,float* dst_buffer ,u64_t filter_height_min, u64_t filter_height_max, u64_t filter_width_min, u64_t filter_width_max  );
 
-    int pointcloud_transform(float* src_buffer, u32_t point_num, float* dst_buffer , f32_t tx, f32_t ty, f32_t tz,  f32_t roll, f32_t pitch, f32_t yaw);
+    int pointcloud_transform(float* src_buffer, u64_t point_num, float* dst_buffer , f32_t tx, f32_t ty, f32_t tz,  f32_t roll, f32_t pitch, f32_t yaw);
 
 
 

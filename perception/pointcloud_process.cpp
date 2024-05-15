@@ -15,7 +15,7 @@ typedef Eigen::Matrix<float,3,Eigen::Dynamic,Eigen::ColMajor> Matrix3xf;
 typedef Eigen::Map<Matrix3xf> Matrix3xfMap;
 typedef Eigen::Map<const Matrix3xf> Matrix3xfMapConst;   // a read-only map
 
-int pointcloud_clip(float* src_buffer, u32_t height, u32_t width,float* dst_buffer ,u32_t filter_height_min, u32_t filter_height_max, u32_t filter_width_min, u32_t filter_width_max  ){
+int pointcloud_clip(float* src_buffer, u64_t height, u64_t width,float* dst_buffer ,u64_t filter_height_min, u64_t filter_height_max, u64_t filter_width_min, u64_t filter_width_max  ){
 
     if(filter_height_min >=filter_height_max
     || filter_height_max >  height
@@ -26,18 +26,20 @@ int pointcloud_clip(float* src_buffer, u32_t height, u32_t width,float* dst_buff
         return -1;
     }
 
-    size_t row_byte = width*3;
-
+    size_t width_offset = width*3;
+//
     size_t clip_width = filter_width_max - filter_width_min;
+    size_t clip_width_offset = clip_width*3;
+
     size_t clip_height = filter_height_max - filter_height_min;
-    size_t clip_row_byte = clip_width*3;
-    size_t clip_row_start = filter_width_min*3;
+    size_t clip_width_byte = clip_width_offset* sizeof(float);
+    size_t filter_width_min_offset= filter_width_min*3;
 
 
     for(size_t i = 0 ; i < clip_height; i++){
-        float* src = src_buffer + (filter_height_min + i ) * row_byte + clip_row_start;
-        float* dst = dst_buffer + i*clip_row_byte;
-        memcpy(dst, src,clip_row_byte);
+        float* src = src_buffer + (filter_height_min + i )*width_offset + filter_width_min_offset;
+        float* dst = dst_buffer + i*clip_width_offset;
+        memcpy(dst, src, clip_width_byte);
     }
 
 
@@ -45,7 +47,7 @@ int pointcloud_clip(float* src_buffer, u32_t height, u32_t width,float* dst_buff
 }
 
 
-int pointcloud_transform(float* src_buffer, u32_t point_num, float* dst_buffer , f32_t tx, f32_t ty, f32_t tz,  f32_t roll, f32_t pitch, f32_t yaw){
+int pointcloud_transform(float* src_buffer, u64_t point_num, float* dst_buffer , f32_t tx, f32_t ty, f32_t tz,  f32_t roll, f32_t pitch, f32_t yaw){
     auto transform = transform::createSe3(tx,ty,tz,roll,pitch,yaw);
     std::cout << "transform:\n" << transform.matrix() << "\n";
     auto src_mat = Matrix3xfMapConst(src_buffer, 3, point_num);

@@ -35,6 +35,9 @@ int main(int argc, char** argv){
     src_buffer[10] = 0.0;
     src_buffer[11] = 0.1;
 
+
+
+
     pointcloud_clip(src_buffer,100,100,src_clip_buffer,0,1,1,4);
 
     pointcloud_transform(src_clip_buffer,
