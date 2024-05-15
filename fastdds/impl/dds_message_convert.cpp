@@ -139,6 +139,8 @@ namespace dds_helper {
             ptr_target = PointCloud2_realloc(height, width, channel, ptr_target, &mem_pool->cfg);
         }
         if (!ptr_target) {
+            MLOGW("allocate memory fail, [%u, %u, %u], mem: [%p, %p, %zu, %zu, %zu]", height, width,channel,  mem_pool->cfg.base, mem_pool->cfg.limit, mem_pool->cfg.alignment,  ta_num_free(&mem_pool->cfg), ta_num_used(&mem_pool->cfg));
+
             return;
         }
         mem_pool->count += 1;

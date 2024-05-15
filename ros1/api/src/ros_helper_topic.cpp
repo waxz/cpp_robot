@@ -21,7 +21,7 @@
 //#include "ros_helper_message.h"
 #include "message_center_types.h"
 #include "common/clock_time.h"
-
+#include "common/string_logger.h"
 //LaserScan
 int from_common_LaserScan(ros::Publisher& publisher,void** buffer, uint32_t buffer_size);
 
@@ -870,37 +870,6 @@ ROSTopicReader create_reader_HeaderString(ros::NodeHandle& nh, reader_option* op
 
 void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* option){
 
-    size_t height = msg->height;
-    size_t width = msg->width;
-    size_t channel = msg->fields.size();
-
-    size_t point_num = height*width;
-    channel = 3;
-
-//    std::cout << "to_common_PointCloud2 allocate buffer, point_num: " << point_num << std::endl;
-//    std::cout << "1 to_common_PointCloud2 allocate buffer, option->mem_pool->buffer.size(): " << option->mem_pool->buffer.size() << std::endl;
-
-    PointCloud2* ptr_target = nullptr;
-    if (option->mem_pool->count >= option->mem_pool->buffer.size() ){
-        ptr_target = PointCloud2_alloc( height,width,channel,& option->mem_pool->cfg );
-        if(ptr_target)
-        option->mem_pool->buffer.push_back(ptr_target);
-    }else{
-        ptr_target = (PointCloud2*)option->mem_pool->buffer[option->mem_pool->count];
-        ptr_target = PointCloud2_realloc( height,width,channel,ptr_target,& option->mem_pool->cfg );
-
-    }
-//    std::cout << "2 to_common_PointCloud2 allocate buffer, option->mem_pool->buffer.size(): " << option->mem_pool->buffer.size() << std::endl;
-
-    if (!ptr_target){
-        std::cout << __FUNCTION__  << " fail to allocate, need "<< point_num*3*4*1e-6 << " MB" << std::endl;
-        return;
-    }
-
-    ptr_target->stamp = msg->header.stamp.toNSec();
-    strncpy(ptr_target->frame_id, msg->header.frame_id.c_str(),MSG_STRUCT_MAX_FRAME_ID_LEN);
-
-    ptr_target->is_dense = msg->is_dense;
 
     bool valid_data_type = true;
     bool valid_filed_x = false, valid_filed_y = false,valid_filed_z = false;
@@ -937,6 +906,45 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
         }
     }
 
+    if( ! (valid_data_type && valid_filed_x && valid_filed_y && valid_filed_z)){
+        return;
+    }
+
+
+    size_t height = msg->height;
+    size_t width = msg->width;
+    size_t channel = msg->fields.size();
+
+    size_t point_num = height*width;
+    channel = 3;
+
+//    std::cout << "to_common_PointCloud2 allocate buffer, point_num: " << point_num << std::endl;
+//    std::cout << "1 to_common_PointCloud2 allocate buffer, option->mem_pool->buffer.size(): " << option->mem_pool->buffer.size() << std::endl;
+
+    PointCloud2* ptr_target = nullptr;
+    if (option->mem_pool->count >= option->mem_pool->buffer.size() ){
+        ptr_target = PointCloud2_alloc( height,width,channel,& option->mem_pool->cfg );
+        if(ptr_target)
+        option->mem_pool->buffer.push_back(ptr_target);
+    }else{
+        ptr_target = (PointCloud2*)option->mem_pool->buffer[option->mem_pool->count];
+        ptr_target = PointCloud2_realloc( height,width,channel,ptr_target,& option->mem_pool->cfg );
+
+    }
+//    std::cout << "2 to_common_PointCloud2 allocate buffer, option->mem_pool->buffer.size(): " << option->mem_pool->buffer.size() << std::endl;
+
+    if (!ptr_target){
+        std::cout << __FUNCTION__  << " fail to allocate, need "<< point_num*3*4*1e-6 << " MB" << std::endl;
+        return;
+    }
+
+    ptr_target->stamp = msg->header.stamp.toNSec();
+    strncpy(ptr_target->frame_id, msg->header.frame_id.c_str(),MSG_STRUCT_MAX_FRAME_ID_LEN);
+
+    ptr_target->is_dense = msg->is_dense;
+
+
+
 
 //    std::cout << "to_common_PointCloud2: point_num: " << point_num
 //    <<", valid_data_type: " << valid_data_type
@@ -950,7 +958,8 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
 //            << "\n"
 //;
 
-    if(valid_data_type && valid_filed_x && valid_filed_y && valid_filed_z){
+
+    {
 
 
         common::Time t1 = common::FromUnixNow();
@@ -970,12 +979,22 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
             float* target_data = ptr_target->buffer;
             //schedule(static,2048)
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(i) shared(point_num,target_data, src_data,point_step,valid_filed_x_id, valid_filed_y_id,  valid_filed_z_id) schedule(static)
+#pragma omp parallel for default(none) private(i) shared(point_num,target_data, src_data,point_step,valid_filed_x_id, valid_filed_y_id,  valid_filed_z_id) schedule(static,1024)
 #endif
             for(i = 0 ; i < point_num;i++){
-                target_data[i*3 + 0 ] = *((float *) (src_data + (i*point_step + valid_filed_x_id)));
-                target_data[i*3 + 1 ] = *((float *) (src_data + (i*point_step + valid_filed_y_id)));
-                target_data[i*3 + 2 ] = *((float *) (src_data + (i*point_step + valid_filed_z_id)));
+                float x = 0.0,y = 0.0,z = 0.0;
+                x = *((float *) (src_data + (i*point_step + valid_filed_x_id)));
+                y = *((float *) (src_data + (i*point_step + valid_filed_y_id)));
+                z = *((float *) (src_data + (i*point_step + valid_filed_z_id)));
+
+                bool valid = (isfinite(x) && isfinite(y) && isfinite(z));
+                target_data[i*3 + 0 ] = valid ? x:0.0f;
+                target_data[i*3 + 1 ] = valid ? y:0.0f;
+                target_data[i*3 + 2 ] = valid ? z:0.0f;
+
+//                target_data[i*3 + 0 ] = *((float *) (src_data + (i*point_step + valid_filed_x_id)));
+//                target_data[i*3 + 1 ] = *((float *) (src_data + (i*point_step + valid_filed_y_id)));
+//                target_data[i*3 + 2 ] = *((float *) (src_data + (i*point_step + valid_filed_z_id)));
             }
 
         }
@@ -984,12 +1003,13 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
 
 
 
+
         std::cout << __FUNCTION__  << "for loop use time: " << common::ToMillSeconds(common::FromUnixNow() - t1) << " ms\n";
 //        std::cout << "\n";
 
         option->mem_pool->count+=1;
-    }else{
     }
+
 
 }
 

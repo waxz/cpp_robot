@@ -496,10 +496,10 @@ namespace dds_helper {
         if (reader_->wait_for_unread_message(timeout)) {
             if (ReturnCode_t::RETCODE_OK ==
                 reader_->take(dataseq_, infoseq_, 2, eprosima::fastdds::dds::NOT_READ_SAMPLE_STATE)) {
-                MLOGI("read infoseq_.length() %u \n",infoseq_.length());
+//                MLOGI("read infoseq_.length() %u \n",infoseq_.length());
 
                 for (eprosima::fastdds::dds::LoanableCollection::size_type i = 0; i < infoseq_.length(); ++i) {
-                    MLOGI("read infoseq_[i].valid_data %i \n",infoseq_[i].valid_data);
+//                    MLOGI("read infoseq_[i].valid_data %i \n",infoseq_[i].valid_data);
 
                     if (infoseq_[i].valid_data) {
 
@@ -508,7 +508,7 @@ namespace dds_helper {
 
                         from_dds(sample, &mem_pool_);
 
-                        MLOGI("read mem_pool_.count %i \n",mem_pool_.count);
+//                        MLOGI("read mem_pool_.count %i \n",mem_pool_.count);
 
                     }
                 }

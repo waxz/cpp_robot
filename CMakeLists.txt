@@ -33,6 +33,14 @@ set(tinycc_TCCLIB_INCLUDE_DIR ${tinycc_ROOT}/lib/tcc/include)
 set(tinycc_LIB ${tinycc_ROOT}/lib/libtcc.so)
 
 
+# Eigen3
+build_external_project(Eigen3 lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen-3.4.0.zip  -DCMAKE_BUILD_TYPE=Release )
+message(Eigen3_ROOT : ${Eigen3_ROOT} )
+
+set(Eigen3_ROOT ${Eigen3_ROOT}/share/eigen3/cmake)
+find_package(Eigen3 3.4.0 REQUIRED HINTS ${Eigen3_ROOT})
+message(new eigen: EIGEN3_INCLUDE_DIRS : ${EIGEN3_INCLUDE_DIRS} )
+
 
 
 add_subdirectory(message_center)
@@ -57,7 +65,7 @@ endif ()
 
 
 add_subdirectory(demo)
-
+add_subdirectory(perception)
 
 
 

@@ -10,7 +10,10 @@ sudo apt install libasio-dev libssl-dev
 ```shell
 sudo apt install libboost-thread-dev libboost-filesystem-dev
 ```
-
+### fot optim
+```shell
+sudo apt-get install libblas-dev liblapack-dev
+```
 
 # reference
 ### pic option

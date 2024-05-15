@@ -36,7 +36,6 @@ namespace dds_helper {
 
     int DdsHandlerVariant::create_handler() {
 
-        MLOGI("run %i", 0);
 
         try {
 
@@ -52,14 +51,11 @@ namespace dds_helper {
 
                 participant_ = std::make_shared<DdsSimpleParticipant>();
                 int rt = participant_->init(config.participant);
-                MLOGI("participant_->init %i", rt);
 
                 if (rt < 0) {
-                    MLOGI("cancel create %i\n", rt);
 
                     return -1;
                 }
-                MLOGI("participant_->init %i", rt);
 
 
                 for (auto &r: config.readers) {
@@ -69,14 +65,11 @@ namespace dds_helper {
                         MLOGW("topic type %s not found", r.second.topic_type.c_str());
                     } else {
 
-                        MLOGW("check drop %i", 0);
                         auto reader = reader_builder_functions[r.second.topic_type](
                                 &mem_cfg, participant_, r.second
                         );
-                        MLOGW("check drop %i", 0);
 
                         readers_.emplace(r.first, std::move(reader));
-                        MLOGW("check drop %i", 0);
 
                     }
                 }
@@ -97,15 +90,11 @@ namespace dds_helper {
 #endif
 
 #if 1
-                        MLOGW("check drop %i", 0);
 
                         auto writer = writer_builder_functions[r.second.topic_type](
                                 participant_, r.second);
-                        MLOGW("check drop %i", 0);
 
                         writers_.emplace(r.first, std::move(writer));
-                        MLOGW("check drop %i", 0);
-
 
 #endif
 
@@ -140,36 +129,29 @@ namespace dds_helper {
         try {
             toml_data = toml::parse(filename);
         } catch (const std::runtime_error &e) {
-            printf("DdsHandlerVariant::create:toml::parse(%s) failed, runtime_error: %s\n", filename, e.what());
+            MLOGW("DdsHandlerVariant::create:toml::parse(%s) failed, runtime_error: %s\n", filename, e.what());
             return -1;
         } catch (const toml::syntax_error &e) {
-            printf("DdsHandlerVariant::create:toml::parse(%s) failed, syntax_error: %s\n", filename, e.what());
+            MLOGW("DdsHandlerVariant::create:toml::parse(%s) failed, syntax_error: %s\n", filename, e.what());
             return -1;
         } catch (...) {
-            printf("DdsHandlerVariant::create:toml::parse(%s) failed, error: %s\n", filename, "Unknown");
+            MLOGW("DdsHandlerVariant::create:toml::parse(%s) failed, error: %s\n", filename, "Unknown");
             return -1;
         }
 
         // get config
-        MLOGI("run %i", 0);
 
         std::cout << "toml_data:\n" << toml_data << std::endl;
 
         //
         bool config_is_valid = false;
-        MLOGI("run %i", 0);
 
 
         try {
-            if (toml_data.contains("dds")) {
-                config = DdsConfig(toml_data.at("dds"));
-                toml::value config_data = config;
-                std::cout << "config_data:\n" << config_data << "\n";
-                config_is_valid = true;
-            } else {
-                MLOGW("run %i", 0);
-
-            }
+            config = DdsConfig(toml_data.at("dds"));
+            toml::value config_data = config;
+            std::cout << "config_data:\n" << config_data << "\n";
+            config_is_valid = true;
         } catch (const std::exception &e) {
             printf("DdsHandlerVariant::create:toml::parse_config(%s) failed, error: %s\n", filename, e.what());
             return -1;
@@ -179,16 +161,13 @@ namespace dds_helper {
         }
 
 
-        MLOGI("run %i", 0);
         std::cout << "create participant ret" << std::endl;
-        MLOGI("config_is_valid %i", config_is_valid);
 
         int create_handler_rt = -1;
         if (config_is_valid) {
             create_handler_rt = create_handler();
         }
 
-        std::cout << "create_handler_rt: " << create_handler_rt << std::endl;
         return create_handler_rt;
     }
 

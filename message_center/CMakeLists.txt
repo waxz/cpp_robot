@@ -24,6 +24,7 @@ target_sources(message_center_types_tinyalloc
         ${CMAKE_CURRENT_SOURCE_DIR}/message_center_handler.h
         ${CMAKE_CURRENT_SOURCE_DIR}/message_center_types.h
         ${CMAKE_SOURCE_DIR}/include/common/c_style.h
+        ${CMAKE_SOURCE_DIR}/include/common/types.h
 )
 
 target_include_directories(message_center_types_tinyalloc PUBLIC ${CMAKE_SOURCE_DIR}/include  ${CMAKE_CURRENT_SOURCE_DIR})
