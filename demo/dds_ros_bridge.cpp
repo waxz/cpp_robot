@@ -34,13 +34,6 @@ static const ta_cfg_t memory_pool_cfg = {
 int main(int argc, char **argv) {
 
 
-    std::atomic_bool program_run(true);
-    auto my_handler = common::fnptr<void(int)>([&](int sig) {
-        std::cout << "get sig " << sig;
-        program_run = false;
-    });
-    set_signal_handler(my_handler);
-
     bool get_help = false;
     std::string exe_name;
     std::string dds_toml;
@@ -260,6 +253,14 @@ int main(int argc, char **argv) {
     }
 
 
+
+
+    std::atomic_bool program_run(true);
+    auto my_handler = common::fnptr<void(int)>([&](int sig) {
+        std::cout << "get sig " << sig;
+        program_run = false;
+    });
+    set_signal_handler(my_handler);
     while (program_run) {
         taskManager.run();
     }

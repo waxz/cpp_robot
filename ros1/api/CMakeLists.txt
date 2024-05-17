@@ -29,6 +29,8 @@
 #target_link_libraries(ros_helper_message PUBLIC tinyalloc)
 add_library(ros_helper_impl SHARED  ${CMAKE_CURRENT_SOURCE_DIR}/src/ros_helper_impl.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/ros_helper_topic.cpp)
 set_omp(ros_helper_impl)
+set_rpath_origin(ros_helper_impl)
+
 #target_include_directories( ros_helper_message PUBLIC
 #        ${CMAKE_CURRENT_SOURCE_DIR}/include
 #)
@@ -58,6 +60,7 @@ target_include_directories(
 
 add_library(ros_helper SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/ros_helper.cpp)
 target_link_libraries(ros_helper PRIVATE libros)
+set_rpath_origin(ros_helper)
 
 target_link_libraries(ros_helper PUBLIC ros_helper_impl)
 target_include_directories(ros_helper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src )
@@ -82,12 +85,15 @@ add_custom_target(ros_test_file_copy DEPENDS ${COMBINED_LIST})
 add_dependencies(ros_helper_test ros_test_file_copy)
 #==
 
-set_target_properties(ros_helper_impl PROPERTIES
-        BUILD_WITH_INSTALL_RPATH FALSE
-        LINK_FLAGS "-Wl,-rpath,$ORIGIN/../lib")
-set_target_properties(ros_helper PROPERTIES
-        BUILD_WITH_INSTALL_RPATH FALSE
-        LINK_FLAGS "-Wl,-rpath,$ORIGIN/../lib")
+#set_target_properties(ros_helper_impl PROPERTIES
+#        BUILD_WITH_INSTALL_RPATH FALSE
+#        LINK_FLAGS "-Wl,-rpath,$ORIGIN/../lib")
+#set_target_properties(ros_helper PROPERTIES
+#        BUILD_WITH_INSTALL_RPATH FALSE
+#        LINK_FLAGS "-Wl,-rpath,$ORIGIN/../lib")
+
+#set_target_properties(ros_helper_impl PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
+#set_target_properties(ros_helper PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
 
 # state that SqrtLibrary need PIC when the default is shared libraries
 #set_target_properties(ros_helper_impl PROPERTIES  POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS} )

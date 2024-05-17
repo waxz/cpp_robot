@@ -182,6 +182,8 @@ else()
     add_library(libros SHARED ${LIBROS_SOURCE_FILES})
     target_include_directories(libros PUBLIC ${LIBROS_INCLUDE_DIR} )
     target_link_libraries(libros PUBLIC ${Boost_LIBRARIES} console_bridge)
+    set_rpath_origin(libros)
+
     INSTALL(TARGETS libros DESTINATION lib)
 #    INSTALL(DIRECTORY ${LIBROS_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
 

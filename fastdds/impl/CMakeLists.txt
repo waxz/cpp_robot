@@ -26,6 +26,8 @@ target_link_libraries(dds_msg_convert_objlib PUBLIC
 
 # shared and static libraries built from the same object files
 add_library(dds_msg_convert_shared SHARED $<TARGET_OBJECTS:dds_msg_convert_objlib>)
+set_rpath_origin(dds_msg_convert_shared)
+
 add_library(dds_msg_convert_static STATIC $<TARGET_OBJECTS:dds_msg_convert_objlib>)
 set_pic(dds_msg_convert_static )
 target_link_libraries(dds_msg_convert_shared PUBLIC
@@ -49,6 +51,8 @@ INSTALL(TARGETS dds_msg_convert_shared DESTINATION lib)
 add_library(dds_handler_static STATIC dds_handler.cpp dds_handler_variant.cpp )
 set_pic(dds_handler_static )
 add_library(dds_handler_shared SHARED dds_handler.cpp dds_handler_variant.cpp)
+set_rpath_origin(dds_handler_shared)
+
 INSTALL(TARGETS dds_handler_static DESTINATION lib)
 INSTALL(TARGETS dds_handler_shared DESTINATION lib)
 
@@ -96,7 +100,9 @@ add_dependencies(dds_builder_pub_test dds_test_file_copy)
 add_dependencies(dds_builder_sub_test dds_test_file_copy)
 
 add_library(dds_helper_shared SHARED dds_helper.cpp)
-add_library(dds_helper_static SHARED dds_helper.cpp)
+add_library(dds_helper_static STATIC dds_helper.cpp)
+set_rpath_origin(dds_helper_shared)
+
 set_pic(dds_helper_static )
 target_link_libraries(dds_helper_shared PUBLIC
         dds_handler_static
@@ -144,6 +150,8 @@ target_link_libraries(dds_simple_participant PUBLIC
 target_include_directories( dds_simple_participant PUBLIC ${CMAKE_SOURCE_DIR}/include
         ${toml11_ROOT}/include
 )
+set_rpath_origin(dds_simple_participant)
+
 add_dependencies(dds_simple_participant dds_test_file_copy)
 #set_asan(dds_simple_participant )
 install(TARGETS dds_simple_participant DESTINATION bin)

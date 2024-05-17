@@ -77,6 +77,8 @@ target_link_libraries(pointcloud_process PUBLIC autodiff::autodiff )
 add_executable(pointcloud_process_test pointcloud_process_test.c)
 target_link_libraries(pointcloud_process_test PUBLIC pointcloud_process )
 
+add_executable(pointcloud_process_cpp_test pointcloud_process_test.cpp)
+target_link_libraries(pointcloud_process_cpp_test PUBLIC pointcloud_process )
 
 INSTALL(TARGETS pointcloud_process DESTINATION lib)
 INSTALL(FILES "pointcloud_process.h" DESTINATION include)

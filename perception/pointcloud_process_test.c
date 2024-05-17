@@ -16,6 +16,9 @@ int main(int argc, char** argv){
 
     f32_t tx = 1.0, ty = 0.5, tz = 2.0;
     f32_t roll = 0.0, pitch = 0.0, yaw = M_PI_2;
+    {
+
+    }
 
 
     src_buffer[0] = 0.1;
