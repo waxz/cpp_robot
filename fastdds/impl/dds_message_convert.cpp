@@ -4,7 +4,7 @@
 
 #include "dds_message_convert.hpp"
 #include "common/string_logger.h"
-
+#include "common/clock_time.h"
 namespace dds_helper {
     // to_dds
     void from_dds(const Message::Laserscan1500 &dds_value, MemPoolHandler *mem_pool) {
@@ -116,6 +116,42 @@ namespace dds_helper {
         std::strcpy(ptr_target->frame_id, frame_id.data());
         std::copy(data.begin(), data.begin() + float_num, ptr_target->buffer);
     }
+    void from_dds(const Message::Pointcloud640x480x3 &dds_value, MemPoolHandler *mem_pool){
+
+        static_cast<void>(dds_value);
+        static_cast<void>(mem_pool);
+
+        u32_t height = dds_value.height();
+        u32_t width = dds_value.width();
+        u32_t channel = dds_value.channel();
+        size_t stamp = dds_value.stamp();
+
+        size_t float_num = height * width * channel;
+
+        PointCloud2_ptr ptr_target = nullptr;
+        if (mem_pool->count >= mem_pool->buffer.size()) {
+            ptr_target = PointCloud2_alloc(height, width, channel, &mem_pool->cfg);
+            if (ptr_target)
+                mem_pool->buffer.push_back(ptr_target);
+        } else {
+            ptr_target = (PointCloud2_ptr) mem_pool->buffer[mem_pool->count];
+            ptr_target = PointCloud2_realloc(height, width, channel, ptr_target, &mem_pool->cfg);
+        }
+        if (!ptr_target) {
+            MLOGW("allocate memory fail, [%u, %u, %u], mem: [%p, %p, %zu, %zu, %zu]", height, width,channel,  mem_pool->cfg.base, mem_pool->cfg.limit, mem_pool->cfg.alignment,  ta_num_free(&mem_pool->cfg), ta_num_used(&mem_pool->cfg));
+
+            return;
+        }
+        mem_pool->count += 1;
+
+        ptr_target->stamp = stamp;
+        auto& frame_id = dds_value.frame_id();
+
+
+        auto &data = dds_value.data();
+        std::strcpy(ptr_target->frame_id, frame_id.data());
+        std::copy(data.begin(), data.begin() + float_num, ptr_target->buffer);
+    }
 
     void from_dds(const Message::Pointcloud1920x1080x3 &dds_value, MemPoolHandler *mem_pool) {
 
@@ -173,6 +209,28 @@ namespace dds_helper {
 
         return 0;
     }
+    int to_dds(Message::Pointcloud640x480x3 *dds_value, void *common_ptr){
+        PointCloud2_ptr target_ptr = (PointCloud2_ptr) common_ptr;
+        dds_value->channel(target_ptr->channel);
+        dds_value->height(target_ptr->height);
+        dds_value->width(target_ptr->width);
+        size_t float_num = target_ptr->channel * target_ptr->height * target_ptr->width;
+        auto &data = dds_value->data();
+        if (float_num > data.size()) {
+            return -1;
+        }
+
+        common::Time t1 = common::FromUnixNow();
+        auto& frame_id = dds_value->frame_id();
+        std::copy(target_ptr->frame_id, target_ptr->frame_id + 50, frame_id.begin());
+
+        std::copy(target_ptr->buffer, target_ptr->buffer + float_num, data.begin());
+        dds_value->stamp(target_ptr->stamp);
+
+        MLOGI("to_dds Pointcloud640x480x3 use time %ld ms", common::ToMillSeconds( common::FromUnixNow() -t1 ));
+        return 0;
+    }
+
 
     int to_dds(Message::Pointcloud1920x1080x3 *dds_value, void *common_ptr) {
         PointCloud2_ptr target_ptr = (PointCloud2_ptr) common_ptr;

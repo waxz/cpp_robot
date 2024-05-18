@@ -334,7 +334,7 @@ int main(int argc, char** argv){
 
         {
             if(1){
-                ChannelBuffer_ptr recv_pointcloud2_buffer = handler.read_data(&handler,"pointcloud_sub");
+                ChannelBuffer_ptr recv_pointcloud2_buffer = handler.read_data(&handler,"cloud_sub");
                 if(recv_pointcloud2_buffer){
                     for(int i = 0; i <  recv_pointcloud2_buffer->buffer_size;i++){
                         PointCloud2_ptr data =  (PointCloud2_ptr)recv_pointcloud2_buffer->buffer[i];
@@ -358,7 +358,7 @@ int main(int argc, char** argv){
                     }
                 }
             }
-            usleep(1000000);
+            usleep(100000);
             continue;
         }
 

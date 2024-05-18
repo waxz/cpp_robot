@@ -20,13 +20,17 @@ namespace dds_helper {
     using DdsReaderVariant = absl::variant<
             std::shared_ptr<DdsSimpleReader<Message::Laserscan1500, Message::Laserscan1500PubSubType>>,
             std::shared_ptr<DdsSimpleReader<Message::Pointcloud1200x800x4, Message::Pointcloud1200x800x4PubSubType>>,
-            std::shared_ptr<DdsSimpleReader<Message::Pointcloud1920x1080x3, Message::Pointcloud1920x1080x3PubSubType>>
+            std::shared_ptr<DdsSimpleReader<Message::Pointcloud1920x1080x3, Message::Pointcloud1920x1080x3PubSubType>>,
+            std::shared_ptr<DdsSimpleReader<Message::Pointcloud640x480x3, Message::Pointcloud640x480x3PubSubType>>
+
     >;
 
     using DdsWriterVariant = absl::variant<
             std::shared_ptr<DdsSimpleWriter<Message::Laserscan1500, Message::Laserscan1500PubSubType>>,
             std::shared_ptr<DdsSimpleWriter<Message::Pointcloud1200x800x4, Message::Pointcloud1200x800x4PubSubType>>,
-            std::shared_ptr<DdsSimpleWriter<Message::Pointcloud1920x1080x3, Message::Pointcloud1920x1080x3PubSubType>>
+            std::shared_ptr<DdsSimpleWriter<Message::Pointcloud1920x1080x3, Message::Pointcloud1920x1080x3PubSubType>>,
+            std::shared_ptr<DdsSimpleWriter<Message::Pointcloud640x480x3, Message::Pointcloud640x480x3PubSubType>>
+
     >;
 
 //    using DdsReaderVariantBuilder = generic::TypeRegistry<DdsReaderVariant, ta_cfg_t* ,const  std::shared_ptr<DdsSimpleParticipant>&, const char*, const char*, const char*, const char*>;

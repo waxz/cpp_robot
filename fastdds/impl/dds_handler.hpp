@@ -327,11 +327,13 @@ namespace dds_helper {
 
         // CREATE THE WRITER
         eprosima::fastdds::dds::DataWriterQos writer_qos = eprosima::fastdds::dds::DATAWRITER_QOS_DEFAULT;
-        if (!config_.writer_profile.empty())
-            publisher_->get_datawriter_qos_from_profile(config_.writer_profile, writer_qos);
+        if (!config_.writer_profile.empty()) {
+            MLOGI("load writer profile %s\n", config_.writer_profile.c_str() );
 
+            publisher_->get_datawriter_qos_from_profile(config_.writer_profile, writer_qos);
+        }
         writer_qos.history().depth = history_depth;
-        writer_qos.data_sharing().automatic("/tmp/");
+//        writer_qos.data_sharing().automatic("/tmp/");
 
         writer_ = publisher_->create_datawriter(topic_, writer_qos);
         if (writer_ == nullptr) {
@@ -467,12 +469,12 @@ namespace dds_helper {
 
         //CREATE READER
         eprosima::fastdds::dds::DataReaderQos reader_qos = eprosima::fastdds::dds::DATAREADER_QOS_DEFAULT;
-        if (!config_.reader_profile.empty())
-
+        if (!config_.reader_profile.empty()) {
+            MLOGI("load reader profile %s\n", config_.reader_profile.c_str() );
             subscriber_->get_datareader_qos_from_profile(config_.reader_profile, reader_qos);
-
+        }
         reader_qos.history().depth = history_depth;
-        reader_qos.data_sharing().automatic("/tmp/");
+//        reader_qos.data_sharing().automatic("/tmp/");
 
         reader_ = subscriber_->create_datareader(topic_, reader_qos);
 

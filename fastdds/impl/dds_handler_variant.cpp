@@ -223,6 +223,7 @@ namespace dds_helper {
         BIND_DDS(Message::Laserscan1500)
         BIND_DDS(Message::Pointcloud1920x1080x3)
         BIND_DDS(Message::Pointcloud1200x800x4)
+        BIND_DDS(Message::Pointcloud640x480x3)
 
     }
 

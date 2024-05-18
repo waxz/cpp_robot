@@ -65,7 +65,7 @@ find_package(fastcdr REQUIRED)
 # -DTHIRDPARTY_Asio=FORCE
 # -DTHIRDPARTY_TinyXML2=FORCE
 #-DAsio_INCLUDE_DIR=${Boost_ROOT}/include/boost -DTHIRDPARTY_BOOST_INCLUDE_DIR=${Boost_ROOT}/include
-build_external_project(fastrtps lib ${THIRD_PARTY_DIR}/Fast-DDS-2.14.0.tar.gz  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -Dfoonathan_memory_ROOT=${foonathan_memory_ROOT} -Dfastcdr_ROOT=${fastcdr_ROOT}  -DBUILD_SHARED_LIBS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DFASTDDS_STATISTICS=OFF -DTinyXML2_ROOT=${tinyxml2_ROOT} )
+build_external_project(fastrtps lib ${THIRD_PARTY_DIR}/Fast-DDS-2.14.0.tar.gz  -DCMAKE_BUILD_TYPE=Release -Dfoonathan_memory_ROOT=${foonathan_memory_ROOT} -Dfastcdr_ROOT=${fastcdr_ROOT}  -DBUILD_SHARED_LIBS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DFASTDDS_STATISTICS=OFF -DTinyXML2_ROOT=${tinyxml2_ROOT} )
 
 find_package(fastrtps REQUIRED)
 install_external_project(fastrtps)

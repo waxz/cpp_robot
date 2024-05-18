@@ -20,6 +20,18 @@ module Message{
         float data[1200*800*4];
     };
 
+
+    @final
+    struct Pointcloud640x480x3
+    {
+        char frame_id[50];
+        unsigned long long stamp;
+        unsigned long height;
+        unsigned long width;
+        unsigned long channel;
+
+        float data[640*480*3];
+    };
     @final
     struct Pointcloud1920x1080x3
     {

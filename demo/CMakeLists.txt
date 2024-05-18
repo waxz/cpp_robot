@@ -14,12 +14,13 @@ if (BUILD_DDS AND BUILD_ROS1)
 #    set_asan(dds_ros_bridge)
     add_dependencies(dds_ros_bridge test_file_copy)
 
+    set_rpath_origin(dds_ros_bridge)
 #    set_rpath(dds_ros_bridge)
 #    set_target_properties(dds_ros_bridge PROPERTIES
 #            BUILD_WITH_INSTALL_RPATH FALSE
 #            BUILD_RPATH_USE_ORIGIN TRUE
 #            LINK_FLAGS "-Wl,-rpath,$ORIGIN/../lib")
-    set_target_properties(dds_ros_bridge PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
+#    set_target_properties(dds_ros_bridge PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
     INSTALL(TARGETS dds_ros_bridge DESTINATION bin )
     INSTALL(FILES  ${COMBINED_LIST} DESTINATION bin )
 

@@ -11,8 +11,9 @@
 #include "common/signals.h"
 
 #include "lyra/lyra.hpp"
+#include "common/task.h"
 
-
+#include "message_center_types.h"
 // 10000000 Byte = 10 MB
 // 100000000 Byte = 100 MB
 
@@ -77,12 +78,37 @@ int main(int argc, char** argv){
 
     ta_init(&memory_pool_cfg);
 
-    {
-        dds_helper::DdsHandlerVariant dds_handler;
-        dds_handler.create("dds_config.toml", &memory_pool_cfg);
-        std::cout << "destroy DdsHandlerVariant" << std::endl;
+
+    dds_helper::DdsHandlerVariant dds_handler;
+    dds_handler.create("dds_config_recv.toml", &memory_pool_cfg);
+    std::cout << "destroy DdsHandlerVariant" << std::endl;
+
+
+    auto cloud = PointCloud2_alloc(480,640,3,&memory_pool_cfg);
+
+    void* cloud_buffer[] = {cloud};
+
+    common::TaskManager taskManager(10);
+
+
+    taskManager.set_loop(100.0,0);
+
+    taskManager.add_task("send", [&dds_handler,&cloud_buffer]{
+        ChannelBuffer_ptr recv_buffer = dds_handler.read_data("cloud_sub");
+        if (recv_buffer && recv_buffer->buffer_size > 0){
+            MLOGI("recv data %u", recv_buffer->buffer_size);
+        }
+        return true;
+        },10.0);
+
+    while (program_run){
+
+        taskManager.run();
+
     }
+
     std::cout<< "start Exit" << std::endl;
+
 
 //    dds_handler.read_data("test");
 //

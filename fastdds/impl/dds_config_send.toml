@@ -9,20 +9,22 @@ name = "dds_test_1"
 interface_allowlist = ["lo"]
 interface_blocklist = ["eno1", "enx00e04d71ffe7", "wlp4s0", "wlp3s0", "docker0", "wt0"]
 
-[dds.readers.cloud_sub]
-topic_name = "cloud"
-topic_type = "Message::Pointcloud1920x1080x3"
-sub_profile = ""
-topic_profile = ""
-reader_profile = ""
-qos_queue_size = 1
+[dds.readers]
 
-#[dds.writers.cloud_pub]
-#topic_name = "cloud2"
+#[dds.readers.cloud_sub]
+#topic_name = "cloud"
 #topic_type = "Message::Pointcloud1920x1080x3"
-#pub_profile = ""
+#sub_profile = ""
 #topic_profile = ""
-#writer_profile = ""
+#reader_profile = ""
 #qos_queue_size = 1
 
-[dds.writers]
+[dds.writers.cloud_pub]
+topic_name = "cloud"
+topic_type = "Message::Pointcloud1920x1080x3"
+pub_profile = ""
+topic_profile = ""
+writer_profile = ""
+qos_queue_size = 1
+
+#[dds.writers]

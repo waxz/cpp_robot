@@ -916,6 +916,8 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
     size_t channel = msg->fields.size();
 
     size_t point_num = height*width;
+    size_t point_num_use_omp = 1000*1000;
+
     channel = 3;
 
 //    std::cout << "to_common_PointCloud2 allocate buffer, point_num: " << point_num << std::endl;
@@ -934,7 +936,11 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
 //    std::cout << "2 to_common_PointCloud2 allocate buffer, option->mem_pool->buffer.size(): " << option->mem_pool->buffer.size() << std::endl;
 
     if (!ptr_target){
-        std::cout << __FUNCTION__  << " fail to allocate, need "<< point_num*3*4*1e-6 << " MB" << std::endl;
+
+        std::cout << __FUNCTION__  << " fail to allocate, need "<< point_num*3*4*1e-6 << " MB\n"
+        << "free: " << ta_num_free(&option->mem_pool->cfg)<< "\n"
+        << "used: " << ta_num_used(&option->mem_pool->cfg)<< "\n"
+        ;
         return;
     }
 
@@ -962,17 +968,59 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
     {
 
 
+
         common::Time t1 = common::FromUnixNow();
 //        float x = 0.0, y = 0.0, z = 0.0;
-#if 0
-        for(size_t i = 0 ; i < point_num;i++){
-            ptr_target->buffer[i*3 + 0 ] = *((float *) (msg->data.data() + (i*point_step + valid_filed_x_id)));
-            ptr_target->buffer[i*3 + 1 ] = *((float *) (msg->data.data() + (i*point_step + valid_filed_y_id)));
-            ptr_target->buffer[i*3 + 2 ] = *((float *) (msg->data.data() + (i*point_step + valid_filed_z_id)));
+#if 1
+        if(point_num < point_num_use_omp){
+
+            const unsigned char * src_data = msg->data.data();
+            float* target_data = ptr_target->buffer;
+            for(size_t i = 0 ; i < point_num;i++){
+                float x = 0.0,y = 0.0,z = 0.0;
+                x = *((float *) (src_data + (i*point_step + valid_filed_x_id)));
+                y = *((float *) (src_data + (i*point_step + valid_filed_y_id)));
+                z = *((float *) (src_data + (i*point_step + valid_filed_z_id)));
+                bool valid = (isfinite(x) && isfinite(y) && isfinite(z));
+                target_data[i*3 + 0 ] = valid ? x:0.0f;
+                target_data[i*3 + 1 ] = valid ? y:0.0f;
+                target_data[i*3 + 2 ] = valid ? z:0.0f;
+
+//                ptr_target->buffer[i*3 + 0 ] = *((float *) (msg->data.data() + (i*point_step + valid_filed_x_id)));
+//                ptr_target->buffer[i*3 + 1 ] = *((float *) (msg->data.data() + (i*point_step + valid_filed_y_id)));
+//                ptr_target->buffer[i*3 + 2 ] = *((float *) (msg->data.data() + (i*point_step + valid_filed_z_id)));
+            }
+        }else{
+            std::cout << __FUNCTION__  <<" use omp\n";
+            size_t i = 0;
+            const unsigned char * src_data = msg->data.data();
+            float* target_data = ptr_target->buffer;
+            //schedule(static,2048)
+#ifdef _OPENMP
+#pragma omp parallel for default(none) private(i) shared(point_num,target_data, src_data,point_step,valid_filed_x_id, valid_filed_y_id,  valid_filed_z_id) schedule(static,point_num/2) num_threads(2)
+#endif
+            for(i = 0 ; i < point_num;i++){
+                float x = 0.0,y = 0.0,z = 0.0;
+                x = *((float *) (src_data + (i*point_step + valid_filed_x_id)));
+                y = *((float *) (src_data + (i*point_step + valid_filed_y_id)));
+                z = *((float *) (src_data + (i*point_step + valid_filed_z_id)));
+
+                bool valid = (isfinite(x) && isfinite(y) && isfinite(z));
+                target_data[i*3 + 0 ] = valid ? x:0.0f;
+                target_data[i*3 + 1 ] = valid ? y:0.0f;
+                target_data[i*3 + 2 ] = valid ? z:0.0f;
+
+//                target_data[i*3 + 0 ] = *((float *) (src_data + (i*point_step + valid_filed_x_id)));
+//                target_data[i*3 + 1 ] = *((float *) (src_data + (i*point_step + valid_filed_y_id)));
+//                target_data[i*3 + 2 ] = *((float *) (src_data + (i*point_step + valid_filed_z_id)));
+            }
+
         }
+
+
 #endif
 
-#if 1
+#if 0
         {
             size_t i = 0;
             const unsigned char * src_data = msg->data.data();
@@ -1004,7 +1052,7 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
 
 
 
-        std::cout << __FUNCTION__  << "for loop use time: " << common::ToMillSeconds(common::FromUnixNow() - t1) << " ms\n";
+        std::cout << __FUNCTION__  << " for loop use time: " << common::ToMillSeconds(common::FromUnixNow() - t1) << " ms\n";
 //        std::cout << "\n";
 
         option->mem_pool->count+=1;

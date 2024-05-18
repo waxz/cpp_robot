@@ -392,6 +392,211 @@ private:
 
 
 /*!
+ * @brief This class represents the structure Pointcloud640x480x3 defined by the user in the IDL file.
+ * @ingroup Message
+ */
+class Pointcloud640x480x3
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport Pointcloud640x480x3();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~Pointcloud640x480x3();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object Message::Pointcloud640x480x3 that will be copied.
+     */
+    eProsima_user_DllExport Pointcloud640x480x3(
+            const Pointcloud640x480x3& x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object Message::Pointcloud640x480x3 that will be copied.
+     */
+    eProsima_user_DllExport Pointcloud640x480x3(
+            Pointcloud640x480x3&& x) noexcept;
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object Message::Pointcloud640x480x3 that will be copied.
+     */
+    eProsima_user_DllExport Pointcloud640x480x3& operator =(
+            const Pointcloud640x480x3& x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object Message::Pointcloud640x480x3 that will be copied.
+     */
+    eProsima_user_DllExport Pointcloud640x480x3& operator =(
+            Pointcloud640x480x3&& x) noexcept;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::Pointcloud640x480x3 object to compare.
+     */
+    eProsima_user_DllExport bool operator ==(
+            const Pointcloud640x480x3& x) const;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::Pointcloud640x480x3 object to compare.
+     */
+    eProsima_user_DllExport bool operator !=(
+            const Pointcloud640x480x3& x) const;
+
+    /*!
+     * @brief This function copies the value in member frame_id
+     * @param _frame_id New value to be copied in member frame_id
+     */
+    eProsima_user_DllExport void frame_id(
+            const std::array<char, 50>& _frame_id);
+
+    /*!
+     * @brief This function moves the value in member frame_id
+     * @param _frame_id New value to be moved in member frame_id
+     */
+    eProsima_user_DllExport void frame_id(
+            std::array<char, 50>&& _frame_id);
+
+    /*!
+     * @brief This function returns a constant reference to member frame_id
+     * @return Constant reference to member frame_id
+     */
+    eProsima_user_DllExport const std::array<char, 50>& frame_id() const;
+
+    /*!
+     * @brief This function returns a reference to member frame_id
+     * @return Reference to member frame_id
+     */
+    eProsima_user_DllExport std::array<char, 50>& frame_id();
+
+
+    /*!
+     * @brief This function sets a value in member stamp
+     * @param _stamp New value for member stamp
+     */
+    eProsima_user_DllExport void stamp(
+            uint64_t _stamp);
+
+    /*!
+     * @brief This function returns the value of member stamp
+     * @return Value of member stamp
+     */
+    eProsima_user_DllExport uint64_t stamp() const;
+
+    /*!
+     * @brief This function returns a reference to member stamp
+     * @return Reference to member stamp
+     */
+    eProsima_user_DllExport uint64_t& stamp();
+
+
+    /*!
+     * @brief This function sets a value in member height
+     * @param _height New value for member height
+     */
+    eProsima_user_DllExport void height(
+            uint32_t _height);
+
+    /*!
+     * @brief This function returns the value of member height
+     * @return Value of member height
+     */
+    eProsima_user_DllExport uint32_t height() const;
+
+    /*!
+     * @brief This function returns a reference to member height
+     * @return Reference to member height
+     */
+    eProsima_user_DllExport uint32_t& height();
+
+
+    /*!
+     * @brief This function sets a value in member width
+     * @param _width New value for member width
+     */
+    eProsima_user_DllExport void width(
+            uint32_t _width);
+
+    /*!
+     * @brief This function returns the value of member width
+     * @return Value of member width
+     */
+    eProsima_user_DllExport uint32_t width() const;
+
+    /*!
+     * @brief This function returns a reference to member width
+     * @return Reference to member width
+     */
+    eProsima_user_DllExport uint32_t& width();
+
+
+    /*!
+     * @brief This function sets a value in member channel
+     * @param _channel New value for member channel
+     */
+    eProsima_user_DllExport void channel(
+            uint32_t _channel);
+
+    /*!
+     * @brief This function returns the value of member channel
+     * @return Value of member channel
+     */
+    eProsima_user_DllExport uint32_t channel() const;
+
+    /*!
+     * @brief This function returns a reference to member channel
+     * @return Reference to member channel
+     */
+    eProsima_user_DllExport uint32_t& channel();
+
+
+    /*!
+     * @brief This function copies the value in member data
+     * @param _data New value to be copied in member data
+     */
+    eProsima_user_DllExport void data(
+            const std::array<float, 640*480*3>& _data);
+
+    /*!
+     * @brief This function moves the value in member data
+     * @param _data New value to be moved in member data
+     */
+    eProsima_user_DllExport void data(
+            std::array<float, 640*480*3>&& _data);
+
+    /*!
+     * @brief This function returns a constant reference to member data
+     * @return Constant reference to member data
+     */
+    eProsima_user_DllExport const std::array<float, 640*480*3>& data() const;
+
+    /*!
+     * @brief This function returns a reference to member data
+     * @return Reference to member data
+     */
+    eProsima_user_DllExport std::array<float, 640*480*3>& data();
+
+private:
+
+    std::array<char, 50> m_frame_id{0};
+    uint64_t m_stamp{0};
+    uint32_t m_height{0};
+    uint32_t m_width{0};
+    uint32_t m_channel{0};
+    std::array<float, 640*480*3> m_data{0.0};
+
+};
+
+
+/*!
  * @brief This class represents the structure Pointcloud1920x1080x3 defined by the user in the IDL file.
  * @ingroup Message
  */

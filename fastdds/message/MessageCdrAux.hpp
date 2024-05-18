@@ -39,6 +39,9 @@ constexpr uint32_t Message_Pointcloud1200x800x4_max_key_cdr_typesize {0UL};
 constexpr uint32_t Message_Pointcloud1920x1080x3_max_cdr_typesize {24883276UL};
 constexpr uint32_t Message_Pointcloud1920x1080x3_max_key_cdr_typesize {0UL};
 
+constexpr uint32_t Message_Pointcloud640x480x3_max_cdr_typesize {3686476UL};
+constexpr uint32_t Message_Pointcloud640x480x3_max_key_cdr_typesize {0UL};
+
 constexpr uint32_t Message_Scalar_max_cdr_typesize {64UL};
 constexpr uint32_t Message_Scalar_max_key_cdr_typesize {0UL};
 
@@ -60,6 +63,12 @@ eProsima_user_DllExport void serialize_key(
 eProsima_user_DllExport void serialize_key(
         eprosima::fastcdr::Cdr& scdr,
         const Message::Pointcloud1200x800x4& data);
+
+
+
+eProsima_user_DllExport void serialize_key(
+        eprosima::fastcdr::Cdr& scdr,
+        const Message::Pointcloud640x480x3& data);
 
 
 

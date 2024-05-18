@@ -21,14 +21,16 @@
 #include "config/ros_helper_config_gen.hpp"
 #include "config/dds_builder_config_gen.hpp"
 
-#define STATIC_MEMORY_SIZE 50000000
+#include "message_center_types.h"
+
+#define STATIC_MEMORY_SIZE 100000000
 static unsigned char memory_pool[STATIC_MEMORY_SIZE];
 static const ta_cfg_t memory_pool_cfg = {
-        .base = memory_pool,
-        .limit = &memory_pool[sizeof(memory_pool)],
-        .max_blocks = 512,
-        .split_thresh = 16,
-        .alignment = 8,
+        memory_pool,
+        &memory_pool[sizeof(memory_pool)],
+        512,
+        16,
+        8,
 };
 
 int main(int argc, char **argv) {
@@ -42,6 +44,7 @@ int main(int argc, char **argv) {
 
     float frequency = 100.0;
 
+    int program = 0;
     // get topic xml
     auto cli
             = lyra::exe_name(exe_name)
@@ -49,6 +52,7 @@ int main(int argc, char **argv) {
               | lyra::opt(dds_toml, "dds_toml")["-d"]["--dds_toml"]("dds_toml")
               | lyra::opt(ros_toml, "ros_toml")["-r"]["--ros_toml"]("ros_toml")
               | lyra::opt(bridge_toml, "bridge_toml")["-b"]["--bridge_toml"]("bridge_toml")
+                | lyra::opt(program, "program")["-p"]["--program"]("program")
 
               | lyra::opt(frequency, "frequency")["-f"]["--frequency"]("frequency");
     auto result = cli.parse({argc, argv});
@@ -130,7 +134,7 @@ int main(int argc, char **argv) {
         ros_handler.close(&ros_handler);
         return 0;
     }
-
+#if 1
     message_handler_t dds_handler = dds_handler_create();
     bool dds_rt = dds_handler.create(&dds_handler, dds_toml.c_str(), &memory_pool_cfg);
     if (!dds_rt) {
@@ -140,11 +144,25 @@ int main(int argc, char **argv) {
         return 0;
     }
 
+#endif
+
 
     common::TaskManager taskManager{20};
     taskManager.set_loop(100.0, 0);
 
 
+    auto cloud = PointCloud2_alloc(480,640,3,&memory_pool_cfg);
+
+    void* cloud_buffer[] = {cloud};
+
+#if 0
+    taskManager.add_task("send", [&dds_handler,&cloud_buffer]{
+        dds_handler.write_data(&dds_handler, "cloud_pub",cloud_buffer,1);
+        return true;
+    },10.0);
+#endif
+
+#if 1
     for (auto &c: bridgeConfig.bridge) {
         const auto &name = c.first;
 
@@ -187,18 +205,33 @@ int main(int argc, char **argv) {
                     const char* ros_channel = from_channel.c_str();
                     const char* dds_channel = to_channel.c_str();
 
-                    taskManager.add_task(name.c_str(),[&ros_handler,&dds_handler,ros_channel,dds_channel]{
+                    taskManager.add_task(name.c_str(),[&cloud_buffer, program, &ros_handler,&dds_handler,ros_channel,dds_channel]{
 
+#if 0
+                        dds_handler.write_data(&dds_handler, "cloud_pub",cloud_buffer,1);
+
+#endif
+
+#if 1
                         auto recv = ros_handler.read_data(&ros_handler, ros_channel);
 
                         if(recv && recv->buffer_size>0){
-                            std::cout << "recv data send to dds " << std::endl;
+                            PointCloud2_ptr ptr =(PointCloud2_ptr ) recv->buffer[0];
+
+#if 1
+                            common::Time  t1 = common::FromUnixNow();
+                            std::cout << "recv data send to dds, size "<< recv->buffer_size << "\n";
+                            std::cout << "recv data send to dds, frame_id "<< ptr->frame_id << ", " <<ptr->height << ", "  <<ptr->width << ", "  <<ptr->channel << ", "  << "\n";
+
                             dds_handler.write_data(&dds_handler,dds_channel, recv->buffer,recv->buffer_size );
-                        }
+                            std::cout << "recv data send to dds use time: " << common::ToMillSeconds(common::FromUnixNow() - t1) << " ms\n";
+#endif
 
-                        {
+
 
                         }
+#endif
+
 
                         return true;
                     }, interval);
@@ -235,7 +268,7 @@ int main(int argc, char **argv) {
                         auto recv =  dds_handler.read_data(&dds_handler, dds_channel);
 
                         if(recv && recv->buffer_size>0){
-                            std::cout << "recv data send to ros " << std::endl;
+                            std::cout << "recv data send to ros \n";
 
                             ros_handler.write_data(&ros_handler,ros_channel, recv->buffer,recv->buffer_size );
                         }
@@ -252,6 +285,7 @@ int main(int argc, char **argv) {
 
     }
 
+#endif
 
 
 
@@ -261,12 +295,26 @@ int main(int argc, char **argv) {
         program_run = false;
     });
     set_signal_handler(my_handler);
+    common::Suspend suspend;
+    common::Time  loop_stamp = common::FromUnixNow();
+
     while (program_run) {
+#if 1
+
         taskManager.run();
+#endif
+#if 0
+        auto recv = ros_handler.read_data(&ros_handler, "cloud_sub");
+        suspend.sleep(100.0);
+
+        std::cout << "loop_stamp use time: " << common::ToMillSeconds(common::FromUnixNow() - loop_stamp) << " ms\n";
+        loop_stamp = common::FromUnixNow();
+#endif
     }
 
 
     ros_handler.close(&ros_handler);
+#if 1
     dds_handler.close(&dds_handler);
-
+#endif
 }

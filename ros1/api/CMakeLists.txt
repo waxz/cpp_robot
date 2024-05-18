@@ -68,6 +68,11 @@ target_include_directories(ros_helper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src )
 add_executable(ros_helper_test ${CMAKE_CURRENT_SOURCE_DIR}/src/ros_helper_test.c)
 target_link_libraries( ros_helper_test PUBLIC ros_helper)
 
+add_executable(ros_helper_cloud_sub_test src/ros_helper_cloud_sub_test.cpp)
+target_link_libraries( ros_helper_cloud_sub_test PUBLIC ros_helper)
+add_executable(ros_helper_cloud_sub_test_c src/ros_helper_cloud_sub_test.c)
+target_link_libraries( ros_helper_cloud_sub_test_c PUBLIC ros_helper)
+
 #set_asan(ros_helper_test)
 
 
@@ -83,6 +88,9 @@ message("COMBINED_LIST ${COMBINED_LIST}")
 
 add_custom_target(ros_test_file_copy DEPENDS ${COMBINED_LIST})
 add_dependencies(ros_helper_test ros_test_file_copy)
+add_dependencies(ros_helper_cloud_sub_test ros_test_file_copy)
+add_dependencies(ros_helper_cloud_sub_test_c ros_test_file_copy)
+
 #==
 
 #set_target_properties(ros_helper_impl PROPERTIES

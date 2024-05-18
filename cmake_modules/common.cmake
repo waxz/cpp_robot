@@ -7,7 +7,6 @@ find_package(Threads REQUIRED)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF) # use -std=c++... instead of -std=gnu++...
 
-#set(CMAKE_INSTALL_RPATH "$origin/../lib")
 # ---------------------------------------------------------------------------------------------------------
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

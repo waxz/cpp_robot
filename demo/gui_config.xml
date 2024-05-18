@@ -52,17 +52,6 @@
     <profiles>
         <transport_descriptors>
 
-            <!-- Create a descriptor for the new transport -->
-            <transport_descriptor>
-                <transport_id>shm_transport</transport_id>
-                <type>SHM</type> <!-- REQUIRED -->
-<!--                <maxMessageSize>524288</maxMessageSize> &lt;!&ndash; OPTIONAL uint32 valid of all transports&ndash;&gt;-->
-<!--                <segment_size>104857600</segment_size> &lt;!&ndash; OPTIONAL uint32 SHM only&ndash;&gt;-->
-<!--                <port_queue_capacity>1024</port_queue_capacity> &lt;!&ndash; OPTIONAL uint32 SHM only&ndash;&gt;-->
-<!--                <healthy_check_timeout_ms>250</healthy_check_timeout_ms> &lt;!&ndash; OPTIONAL uint32 SHM only&ndash;&gt;-->
-<!--                <rtps_dump_file>test_file.dump</rtps_dump_file> &lt;!&ndash; OPTIONAL string SHM only&ndash;&gt;-->
-            </transport_descriptor>
-
             <!-- TCPv4 sample transport descriptor -->
 
             <transport_descriptor>
@@ -277,13 +266,12 @@
                 <name>participant_discovery_protocol_SIMPLE app</name>
 
 
+                <useBuiltinTransports>false</useBuiltinTransports>
                 <userTransports>
                     <transport_id>FILTER_UDPv4_TRANSPORT_DESCRIPTOR</transport_id>
                     <transport_id>FILTER_TCPv4_TRANSPORT_DESCRIPTOR</transport_id>
-                    <transport_id>shm_transport</transport_id>
                 </userTransports>
-                <useBuiltinTransports>false</useBuiltinTransports>
-<!--                <ignore_non_matching_locators>true</ignore_non_matching_locators>-->
+                <ignore_non_matching_locators>true</ignore_non_matching_locators>
 
 
                 <builtin>
@@ -329,7 +317,7 @@
                 </historyQos>
             </topic>
         </data_writer>
-        <data_reader profile_name="shm_subscriber_profile" is_default_profile="true">
+        <data_reader profile_name="shm_reader_profile" is_default_profile="true">
             <qos>
                 <reliability>
                     <kind>BEST_EFFORT</kind>

@@ -5,7 +5,8 @@ set(CMAKE_SKIP_BUILD_RPATH FALSE)
 # (but later on when installing)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+#set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+set(CMAKE_INSTALL_RPATH $ORIGIN)
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
@@ -21,6 +22,8 @@ endif("${isSystemDir}" STREQUAL "-1")
 # for secondary dependency
 # every target should add this macro
 #https://stackoverflow.com/questions/74290411/how-to-set-rpath-with-gcc
+# sometimes '$ORIGIN/../lib' will become '/../lib'
+# use set_rpath_origin instead
 macro(set_rpath)
     message(STATUS "Configuring rpath for target(s) ${ARGV0}")
     set_target_properties(${ARGV0} PROPERTIES
@@ -28,6 +31,7 @@ macro(set_rpath)
             LINK_FLAGS "-Wl,-rpath,$ORIGIN/../lib")
 endmacro()
 
+#https://stackoverflow.com/questions/30398238/cmake-rpath-not-working-could-not-find-shared-object-file
 macro(set_rpath_origin)
     message(STATUS "Configuring rpath for target(s) ${ARGV0}")
 #    set_target_properties(${ARGV0} PROPERTIES

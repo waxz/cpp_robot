@@ -433,6 +433,275 @@ std::array<float, 1200*800*4>& Pointcloud1200x800x4::data()
 
 
 
+Pointcloud640x480x3::Pointcloud640x480x3()
+{
+}
+
+Pointcloud640x480x3::~Pointcloud640x480x3()
+{
+}
+
+Pointcloud640x480x3::Pointcloud640x480x3(
+        const Pointcloud640x480x3& x)
+{
+    m_frame_id = x.m_frame_id;
+    m_stamp = x.m_stamp;
+    m_height = x.m_height;
+    m_width = x.m_width;
+    m_channel = x.m_channel;
+    m_data = x.m_data;
+}
+
+Pointcloud640x480x3::Pointcloud640x480x3(
+        Pointcloud640x480x3&& x) noexcept
+{
+    m_frame_id = std::move(x.m_frame_id);
+    m_stamp = x.m_stamp;
+    m_height = x.m_height;
+    m_width = x.m_width;
+    m_channel = x.m_channel;
+    m_data = std::move(x.m_data);
+}
+
+Pointcloud640x480x3& Pointcloud640x480x3::operator =(
+        const Pointcloud640x480x3& x)
+{
+
+    m_frame_id = x.m_frame_id;
+    m_stamp = x.m_stamp;
+    m_height = x.m_height;
+    m_width = x.m_width;
+    m_channel = x.m_channel;
+    m_data = x.m_data;
+    return *this;
+}
+
+Pointcloud640x480x3& Pointcloud640x480x3::operator =(
+        Pointcloud640x480x3&& x) noexcept
+{
+
+    m_frame_id = std::move(x.m_frame_id);
+    m_stamp = x.m_stamp;
+    m_height = x.m_height;
+    m_width = x.m_width;
+    m_channel = x.m_channel;
+    m_data = std::move(x.m_data);
+    return *this;
+}
+
+bool Pointcloud640x480x3::operator ==(
+        const Pointcloud640x480x3& x) const
+{
+    return (m_frame_id == x.m_frame_id &&
+           m_stamp == x.m_stamp &&
+           m_height == x.m_height &&
+           m_width == x.m_width &&
+           m_channel == x.m_channel &&
+           m_data == x.m_data);
+}
+
+bool Pointcloud640x480x3::operator !=(
+        const Pointcloud640x480x3& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function copies the value in member frame_id
+ * @param _frame_id New value to be copied in member frame_id
+ */
+void Pointcloud640x480x3::frame_id(
+        const std::array<char, 50>& _frame_id)
+{
+    m_frame_id = _frame_id;
+}
+
+/*!
+ * @brief This function moves the value in member frame_id
+ * @param _frame_id New value to be moved in member frame_id
+ */
+void Pointcloud640x480x3::frame_id(
+        std::array<char, 50>&& _frame_id)
+{
+    m_frame_id = std::move(_frame_id);
+}
+
+/*!
+ * @brief This function returns a constant reference to member frame_id
+ * @return Constant reference to member frame_id
+ */
+const std::array<char, 50>& Pointcloud640x480x3::frame_id() const
+{
+    return m_frame_id;
+}
+
+/*!
+ * @brief This function returns a reference to member frame_id
+ * @return Reference to member frame_id
+ */
+std::array<char, 50>& Pointcloud640x480x3::frame_id()
+{
+    return m_frame_id;
+}
+
+
+/*!
+ * @brief This function sets a value in member stamp
+ * @param _stamp New value for member stamp
+ */
+void Pointcloud640x480x3::stamp(
+        uint64_t _stamp)
+{
+    m_stamp = _stamp;
+}
+
+/*!
+ * @brief This function returns the value of member stamp
+ * @return Value of member stamp
+ */
+uint64_t Pointcloud640x480x3::stamp() const
+{
+    return m_stamp;
+}
+
+/*!
+ * @brief This function returns a reference to member stamp
+ * @return Reference to member stamp
+ */
+uint64_t& Pointcloud640x480x3::stamp()
+{
+    return m_stamp;
+}
+
+
+/*!
+ * @brief This function sets a value in member height
+ * @param _height New value for member height
+ */
+void Pointcloud640x480x3::height(
+        uint32_t _height)
+{
+    m_height = _height;
+}
+
+/*!
+ * @brief This function returns the value of member height
+ * @return Value of member height
+ */
+uint32_t Pointcloud640x480x3::height() const
+{
+    return m_height;
+}
+
+/*!
+ * @brief This function returns a reference to member height
+ * @return Reference to member height
+ */
+uint32_t& Pointcloud640x480x3::height()
+{
+    return m_height;
+}
+
+
+/*!
+ * @brief This function sets a value in member width
+ * @param _width New value for member width
+ */
+void Pointcloud640x480x3::width(
+        uint32_t _width)
+{
+    m_width = _width;
+}
+
+/*!
+ * @brief This function returns the value of member width
+ * @return Value of member width
+ */
+uint32_t Pointcloud640x480x3::width() const
+{
+    return m_width;
+}
+
+/*!
+ * @brief This function returns a reference to member width
+ * @return Reference to member width
+ */
+uint32_t& Pointcloud640x480x3::width()
+{
+    return m_width;
+}
+
+
+/*!
+ * @brief This function sets a value in member channel
+ * @param _channel New value for member channel
+ */
+void Pointcloud640x480x3::channel(
+        uint32_t _channel)
+{
+    m_channel = _channel;
+}
+
+/*!
+ * @brief This function returns the value of member channel
+ * @return Value of member channel
+ */
+uint32_t Pointcloud640x480x3::channel() const
+{
+    return m_channel;
+}
+
+/*!
+ * @brief This function returns a reference to member channel
+ * @return Reference to member channel
+ */
+uint32_t& Pointcloud640x480x3::channel()
+{
+    return m_channel;
+}
+
+
+/*!
+ * @brief This function copies the value in member data
+ * @param _data New value to be copied in member data
+ */
+void Pointcloud640x480x3::data(
+        const std::array<float, 640*480*3>& _data)
+{
+    m_data = _data;
+}
+
+/*!
+ * @brief This function moves the value in member data
+ * @param _data New value to be moved in member data
+ */
+void Pointcloud640x480x3::data(
+        std::array<float, 640*480*3>&& _data)
+{
+    m_data = std::move(_data);
+}
+
+/*!
+ * @brief This function returns a constant reference to member data
+ * @return Constant reference to member data
+ */
+const std::array<float, 640*480*3>& Pointcloud640x480x3::data() const
+{
+    return m_data;
+}
+
+/*!
+ * @brief This function returns a reference to member data
+ * @return Reference to member data
+ */
+std::array<float, 640*480*3>& Pointcloud640x480x3::data()
+{
+    return m_data;
+}
+
+
+
+
 Pointcloud1920x1080x3::Pointcloud1920x1080x3()
 {
 }

@@ -7,120 +7,12 @@ version = 1
 # http://wiki.ros.org/Remapping%20Arguments
 # config parameter will be passed to ros init function
 [ros.config]
-__name = "ros_helper_test_1"
+__name = "dds_ros_bridge"
 
-[ros.writers.scan_pub]
-topic_name = "ros_helper_test_1/scan"
-topic_type = "LaserScan"
-qos_queue_size = 1
+[ros.writers]
 
-[ros.readers.scan_sub]
-topic_name = "ros_helper_test_2/scan"
-topic_type = "LaserScan"
-qos_queue_size = 10
-
-[ros.writers.twist_pub]
-topic_name = "ros_helper_test_1/twist"
-topic_type = "Twist"
-qos_queue_size = 10
-
-[ros.readers.twist_sub]
-topic_name = "ros_helper_test_2/twist"
-topic_type = "Twist"
-qos_queue_size = 10
-
-
-[ros.writers.uint8array_pub]
-topic_name = "ros_helper_test_1/uint8array"
-topic_type = "UInt8MultiArray"
-qos_queue_size = 10
-
-[ros.readers.uint8array_sub]
-topic_name = "ros_helper_test_2/uint8array"
-topic_type = "UInt8MultiArray"
-qos_queue_size = 10
-
-[ros.writers.uint16array_pub]
-topic_name = "ros_helper_test_1/uint16array"
-topic_type = "UInt16MultiArray"
-qos_queue_size = 10
-
-[ros.readers.uint16array_sub]
-topic_name = "ros_helper_test_2/uint16array"
-topic_type = "UInt16MultiArray"
-qos_queue_size = 10
-
-[ros.writers.tf_pub]
-topic_name = "tf"
-topic_type = "map:odom"
-qos_queue_size = 1
-
-[ros.readers.tf_sub]
-topic_name = "tf"
-topic_type = "map:odom"
-qos_queue_size = 1
-
-
-#OccupancyGrid
-[ros.readers.map_sub]
-topic_name = "map"
-topic_type = "OccupancyGrid"
-qos_queue_size = 10
-
-
-[ros.writers.map_pub]
-topic_name = "map"
-topic_type = "OccupancyGrid"
-qos_queue_size = 10
-
-#Odometry
-[ros.writers.odom_pub]
-topic_name = "ros_helper_test_1/odom"
-topic_type = "Odometry"
-qos_queue_size = 10
-
-[ros.readers.odom_sub]
-topic_name = "ros_helper_test_2/odom"
-topic_type = "Odometry"
-qos_queue_size = 10
-
-
-
-[ros.writers.path_pub]
-topic_name = "ros_helper_test_1/path"
-topic_type = "Path"
-qos_queue_size = 10
-[ros.readers.path_sub]
-topic_name = "ros_helper_test_2/path"
-topic_type = "Path"
-qos_queue_size = 10
-
-
-[ros.writers.pose_pub]
-channel_type = "pub"
-topic_name = "ros_helper_test_1/pose"
-topic_type = "PoseStamped"
-qos_queue_size = 10
-
-[ros.readers.pose_sub]
-topic_name = "ros_helper_test_2/pose"
-topic_type = "PoseStamped"
-qos_queue_size = 10
-
-[ros.readers.pointcloud_sub]
+[ros.readers.cloud_sub]
 #topic_name = "velodyne_points"
 topic_name = "camera/depth/points"
 topic_type = "PointCloud2"
 qos_queue_size = 1
-
-
-[ros.writers.headerstring_pub]
-channel_type = "pub"
-topic_name = "ros_helper_test_1/headerstring"
-topic_type = "HeaderString"
-qos_queue_size = 10
-[ros.readers.headerstring_sub]
-topic_name = "ros_helper_test_2/headerstring"
-topic_type = "HeaderString"
-qos_queue_size = 10
-
