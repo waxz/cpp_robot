@@ -57,6 +57,29 @@ PointCloudBuffer_ptr detector_filter_ground(struct pointcloud_pallet_detector_t*
     }
     return 0;
 }
+PointCloudBuffer_ptr detector_filter_vertical (struct pointcloud_pallet_detector_t* h, u32_t output_mode){
+    if(h->handler){
+        perception::PalletDetector* handler = (perception::PalletDetector*)h->handler;
+        return handler->filter_vertical(output_mode );
+    }
+    return 0;
+}
+
+PointCloudBuffer_ptr detector_filter_pallet (struct pointcloud_pallet_detector_t* h, u32_t output_mode){
+    if(h->handler){
+        perception::PalletDetector* handler = (perception::PalletDetector*)h->handler;
+        return handler->filter_pallet(output_mode );
+    }
+    return 0;
+}
+
+void detector_set_ground_uncertain_thresh (struct pointcloud_pallet_detector_t* h,  f32_t far_uncertain_z_max, f32_t far_uncertain_x_change_min,f32_t far_uncertain_adaptive_z_max, i32_t far_uncertain_row){
+    if(h->handler){
+        perception::PalletDetector* handler = (perception::PalletDetector*)h->handler;
+        return handler->set_ground_uncertain_thresh(far_uncertain_z_max,far_uncertain_x_change_min,far_uncertain_adaptive_z_max, far_uncertain_row  );
+    }
+}
+
 
 void detector_set_ground_init_dim(struct pointcloud_pallet_detector_t* h, u64_t height_min , u64_t height_max ,u64_t width_min, u64_t width_max){
     if(h->handler){
@@ -89,8 +112,11 @@ pointcloud_pallet_detector_t pointcloud_pallet_detector_create(){
     target.set_ground_init_dim = detector_set_ground_init_dim;
     target.set_ground_init_thresh = detector_set_ground_init_thresh;
     target.set_ground_adaptive_thresh = detector_set_ground_adaptive_thresh;
+    target.set_ground_uncertain_thresh = detector_set_ground_uncertain_thresh;
 
     target.filter_ground = detector_filter_ground;
+    target.filter_vertical = detector_filter_vertical;
+    target.filter_pallet = detector_filter_pallet;
 
 
 

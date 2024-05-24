@@ -45,9 +45,13 @@ namespace perception{
         void set_ground_init_dim( u64_t height_min , u64_t height_max ,u64_t width_min, u64_t width_max);
         void set_ground_init_thresh( f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max, f32_t nz_min);
         void set_ground_adaptive_thresh(  f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max);
+        void set_ground_uncertain_thresh(  f32_t far_uncertain_z_max, f32_t far_uncertain_x_change_min,f32_t far_uncertain_adaptive_z_max,i32_t far_uncertain_row);
 
 
+        i8_t filter_ground_status = 0;
         PointCloudBuffer_ptr filter_ground(u32_t output_mode);
+        PointCloudBuffer_ptr filter_vertical(u32_t output_mode);
+        PointCloudBuffer_ptr filter_pallet(u32_t output_mode);
 
     };
 }

@@ -7,6 +7,7 @@
 #include <iostream>
 #include "common/string_logger.h"
 #include "common/clock_time.h"
+#include "math/math_basic.h"
 
 namespace perception{
     int PalletDetector::create(const char *filename, const ta_cfg_t *cfg) {
@@ -75,6 +76,8 @@ namespace perception{
         viewpoint_y = vy;
         viewpoint_z = vz;
 
+        filter_ground_status = 0;
+
     }
 
     void PalletDetector::set_ground_init_dim(u64_t height_min, u64_t height_max, u64_t width_min, u64_t width_max) {
@@ -85,6 +88,15 @@ namespace perception{
 
     }
 
+    void PalletDetector::set_ground_uncertain_thresh(f32_t far_uncertain_z_max, f32_t far_uncertain_x_change_min,
+                                                     f32_t far_uncertain_adaptive_z_max,
+                                                     i32_t far_uncertain_row) {
+        config.filter_ground.far_uncertain_row = far_uncertain_row;
+        config.filter_ground.far_uncertain_z_max =far_uncertain_z_max;
+        config.filter_ground.far_uncertain_adaptive_z_max = far_uncertain_adaptive_z_max;
+        config.filter_ground.far_uncertain_x_change_min =far_uncertain_x_change_min;
+
+    }
     void PalletDetector::set_ground_adaptive_thresh(f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max) {
 
         MLOGI("set_ground_adaptive_thresh: [%f, %f], [%f, %f], [%f, %f]", x_min, x_max, y_min, y_max, z_min, z_max)
@@ -104,6 +116,21 @@ namespace perception{
         config.filter_ground.init_ground_cz_min = z_min;
         config.filter_ground.init_ground_cz_max = z_max;
         config.filter_ground.init_ground_nz_min = nz_min;
+
+    }
+
+    PointCloudBuffer_ptr PalletDetector::filter_vertical(u32_t output_mode) {
+
+
+
+
+
+        return 0;
+    }
+
+    PointCloudBuffer_ptr PalletDetector::filter_pallet(u32_t output_mode) {
+
+        return 0;
 
     }
 
@@ -128,6 +155,13 @@ namespace perception{
 
         float adaptive_z_thresh_min = config.filter_ground.adaptive_z_min;
         float adaptive_z_thresh_max = config.filter_ground.adaptive_z_max;
+        int search_direction = config.filter_ground.search_direction;
+        float  far_uncertain_z_max = config.filter_ground.far_uncertain_z_max;
+        float  far_uncertain_x_change_min = config.filter_ground.far_uncertain_x_change_min;
+        float far_uncertain_adaptive_z_max = config.filter_ground.far_uncertain_adaptive_z_max;
+
+        int far_uncertain_row = config.filter_ground.far_uncertain_row > init_ground_height ? init_ground_height:config.filter_ground.far_uncertain_row ;
+
 
 
         MLOGI("init_ground_height  : [%i, %i]", init_ground_height_min ,init_ground_height_max);
@@ -140,6 +174,7 @@ namespace perception{
         ){
             MLOGI("init_ground_dim contains zero value: [%i, %i}]",init_ground_height, init_ground_width );
 
+            filter_ground_status = -1;
             return 0;
         }
 
@@ -157,6 +192,7 @@ namespace perception{
 
         ){
             MLOGW("PalletDetector: create buffer fail: %p, %p, %p", ground_init_buffer, ground_output_buffer,cloud_label_table);
+            filter_ground_status = -2;
             return nullptr;
         }
 
@@ -193,7 +229,8 @@ namespace perception{
 
         if(valid_num < config.filter_ground.init_valid_num_min){
             MLOGW("valid_num: %i < %i", valid_num, config.filter_ground.init_valid_num_min);
-
+            memcpy(ground_output_buffer, cloud_buffer, cloud_dim_height*cloud_dim_width*3*4);
+            filter_ground_status = -3;
             return nullptr;
         }
 
@@ -253,6 +290,7 @@ namespace perception{
 
 
 
+        filter_ground_status = 1;
         if (output_mode == 0){
 
             ground_cloud_buffer.buffer = ground_init_buffer;
@@ -291,6 +329,166 @@ namespace perception{
             ground_cloud_buffer.float_num = cloud_dim_height*cloud_dim_width*3;
             MLOGI("filter_ground use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
             return &ground_cloud_buffer;
+        }else if(output_mode == 3){
+
+            MLOGI("search_direction: %i  : [%f, %f]", search_direction, adaptive_z_thresh_min ,adaptive_z_thresh_max);
+            MLOGI("init_ground_height_min: %i, init_ground_height_max: %i, cloud_dim_height: %i",
+                  init_ground_height_min, init_ground_height_max, cloud_dim_height);
+
+            if(search_direction == 1){
+
+                // max to min
+                // cloud_dim_height init_ground_height_max  init_ground_height_min 0
+                //                                                    |--> search direction
+                for(int i = cloud_dim_height-1  ; i  > init_ground_height_min ;i--){
+                    int i_w = i * cloud_dim_width;
+                    for(int j = 0 ;j < cloud_dim_width;j++){
+                        int k = (i_w + j);
+                        int l = (i_w + j)*3;
+//                        f32_t *p = cloud_buffer + l;
+                        f32_t *p_dst = ground_output_buffer + l;
+                        i8_t *t = cloud_label_table+k;
+                        t[0] = 1;
+//                        p_dst[2] = ((p_dst[2]> adaptive_z_thresh_min) && (p_dst[2] < adaptive_z_thresh_max) ) ? p_dst[2] - 0.5: p_dst[2];
+//                        p_dst[2] -= 0.5;
+                    }
+                }
+
+                for(int i =init_ground_height_min; i>=0; i-- ){
+                    int i_w = i * cloud_dim_width;
+                    int i_w_last = (i+far_uncertain_row) * cloud_dim_width;
+                    int i_w_last_1 = (i+1) * cloud_dim_width;
+                    int i_w_last_2 = (i+2) * cloud_dim_width;
+                    int i_w_last_3 = (i+3) * cloud_dim_width;
+
+                    for(int j = 0 ;j < cloud_dim_width;j++){
+                        int k = (i_w + j);
+                        int l = (i_w + j)*3;
+                        int k_last = (i_w_last + j);
+                        int l_last = (i_w_last + j)*3;
+
+                        int k_last_1 = (i_w_last_1 + j);
+                        int l_last_1 = (i_w_last_1 + j)*3;
+                        int k_last_2 = (i_w_last_2 + j);
+                        int l_last_2 = (i_w_last_2 + j)*3;
+                        int k_last_3 = (i_w_last_3 + j);
+                        int l_last_3 = (i_w_last_3 + j)*3;
+//                        f32_t *p = cloud_buffer + l;
+                        f32_t *p_dst = ground_output_buffer + l;
+                        f32_t *p_dst_last= ground_output_buffer + l_last;
+                        f32_t *p_dst_last_1= ground_output_buffer + l_last_1;
+                        f32_t *p_dst_last_2= ground_output_buffer + l_last_2;
+                        f32_t *p_dst_last_3= ground_output_buffer + l_last_3;
+
+
+                        i8_t *t = cloud_label_table+k;
+                        i8_t *t_last = cloud_label_table+k_last;
+                        i8_t *t_last_1 = cloud_label_table+k_last_1;
+                        i8_t *t_last_2 = cloud_label_table+k_last_2;
+                        i8_t *t_last_3 = cloud_label_table+k_last_3;
+
+                        bool is_ground = ((p_dst[2]> adaptive_z_thresh_min) && (p_dst[2] < adaptive_z_thresh_max) )
+                                || ((p_dst[2] <far_uncertain_z_max)
+//                                && ( t_last_1[0] == 1 && t_last_2[0]==1 && t_last_3[0]==1 )
+                                && (!(p_dst[2] > p_dst_last_1[2]
+                                && p_dst_last_1[2] > p_dst_last_2[2]
+                                && p_dst_last_2[2] > p_dst_last_3[2])
+                                || ( (p_dst[0] -p_dst_last[0] ) > far_uncertain_x_change_min)
+                                || ( (p_dst[0] -p_dst_last_3[0] ) > far_uncertain_x_change_min)
+                                )  )
+
+                                ;
+
+                        t[0] = is_ground;
+
+//                        p_dst[2] = is_ground ? p_dst[2] - 0.5: p_dst[2];
+//                        p_dst_last[2] = is_ground ? p_dst_last[2] - 0.5: p_dst_last[2];
+
+//                        p_dst[2] -= 0.5;
+                    }
+                }
+
+                float rolling_mean_z = cz;
+
+                int row_scan_fold = 4;
+
+                for(int i =init_ground_height_min; i>=0; i-- ){
+                    int i_w = i * cloud_dim_width;
+                    int i_w_last = (i+far_uncertain_row) * cloud_dim_width;
+                    int i_w_last_1 = (i+1) * cloud_dim_width;
+                    int i_w_last_2 = (i+2) * cloud_dim_width;
+                    int i_w_last_3 = (i+3) * cloud_dim_width;
+
+                    //rolling mean z
+                    //
+                    float row_rolling_mean_z_array[4] ={0.0,0.0,0.0,0.0};
+
+                    for(int f = 0 ; f < row_scan_fold; f++){
+
+                        int start = cloud_dim_width*(f)/row_scan_fold;
+                        int end = cloud_dim_width*(f+1)/row_scan_fold;
+
+                        {
+                            float row_rolling_mean_z = rolling_mean_z;
+                            int row_rolling_mean_z_num = 1;
+
+                            for(int j = start ;j < end;j++){
+                                int k = (i_w + j);
+                                int l = (i_w + j)*3;
+                                f32_t *p_dst = ground_output_buffer + l;
+                                i8_t *t = cloud_label_table+k;
+
+                                row_rolling_mean_z_num +=  (t[0] == 1);
+                                row_rolling_mean_z += p_dst[2]*(t[0] == 1);
+
+                            }
+                            row_rolling_mean_z /= float(row_rolling_mean_z_num);
+                            row_rolling_mean_z_array[f] = row_rolling_mean_z;
+
+                            for(int j = start ;j < end;j++){
+                                int k = (i_w + j);
+                                int l = (i_w + j)*3;
+                                f32_t *p_dst = ground_output_buffer + l;
+                                i8_t *t = cloud_label_table+k;
+
+                                if( (p_dst[2] -row_rolling_mean_z ) < far_uncertain_adaptive_z_max){
+                                    t[0] = 1;
+                                }
+                            }
+                        }
+
+                    }
+                    rolling_mean_z = row_rolling_mean_z_array[0];
+
+                }
+
+                for(int i = 0 ; i < cloud_dim_height;i++){
+                    int i_w = i * cloud_dim_width;
+                    for(int j = 0 ;j < cloud_dim_width;j++){
+                        int k = (i_w + j);
+                        int l = (i_w + j)*3;
+                        f32_t *p = cloud_buffer + l;
+                        f32_t *p_dst = ground_output_buffer + l;
+                        i8_t *t = cloud_label_table+k;
+
+
+                        p_dst[2] = t[0] == 1 ? p_dst[2] - 0.5: p_dst[2];
+//                    p_dst[2] = 0.0;
+                    }
+                }
+
+
+
+                ground_cloud_buffer.buffer = ground_output_buffer;
+                ground_cloud_buffer.float_num = cloud_dim_height*cloud_dim_width*3;
+                MLOGI("filter_ground use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
+                return &ground_cloud_buffer;
+
+
+            }else{
+                return 0;
+            }
+
         }
 
 

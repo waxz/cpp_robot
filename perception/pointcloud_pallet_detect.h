@@ -39,13 +39,17 @@ extern "C" {
         void(*set_ground_init_dim)(struct pointcloud_pallet_detector_t* h, u64_t height_min , u64_t height_max ,u64_t width_min, u64_t width_max);
         void(*set_ground_init_thresh)(struct pointcloud_pallet_detector_t* h,  f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max, f32_t nz_min);
         void(*set_ground_adaptive_thresh)(struct pointcloud_pallet_detector_t* h,  f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max);
+        //    far_uncertain_z_max :f32,
+        //    far_uncertain_x_change_min : f32,
+        //    far_uncertain_row : u64
+        void(*set_ground_uncertain_thresh)(struct pointcloud_pallet_detector_t* h,  f32_t far_uncertain_z_max, f32_t far_uncertain_x_change_min, f32_t far_uncertain_adaptive_z_max, i32_t far_uncertain_row);
 
 
 
         //find cargo
-        PointCloudBuffer_ptr(*filter_cargo)(struct pointcloud_pallet_detector_t* h);
+        PointCloudBuffer_ptr(*filter_vertical)(struct pointcloud_pallet_detector_t* h, u32_t output_mode);
 
-        PointCloudBuffer_ptr(*filter_pallet)(struct pointcloud_pallet_detector_t* h);
+        PointCloudBuffer_ptr(*filter_pallet)(struct pointcloud_pallet_detector_t* h, u32_t output_mode);
 
         PointCloudBuffer_ptr(*find_pallet)(struct pointcloud_pallet_detector_t* h);
 
