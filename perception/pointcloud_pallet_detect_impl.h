@@ -8,7 +8,8 @@
 #include "common/c_style.h"
 #include "config/pallet_detect_config_gen.hpp"
 #include "pointcloud_pallet_detect.h"
-
+#include "math/geometry/point_vector3.h"
+#include <list>
 namespace perception{
 
     struct StableFilter{
@@ -16,16 +17,85 @@ namespace perception{
 
     };
 
+    struct LineMark{
+        geometry::float3 point_left;
+        geometry::float3 point_center;
+        geometry::float3 point_right;
+        geometry::float3 dir_left_to_right;
+        geometry::float3 intersection_to_a_axis;
 
+        geometry::float3 filtered_line_center;
+        geometry::float3 filtered_line_dir;
+
+        u32_t index_center;
+        u32_t index_left;
+        u32_t index_right;
+
+        int valid_status;
+
+    };
+
+    struct LineMarkMatcherPair{
+        int left_id;
+        int right_id;
+        int accumulate_count;
+        // valid
+        int valid_status;
+        // line direction vec
+        geometry::float3 line_direction_vec;
+        // line direction yaw = atan2(y,x)
+        float line_direction_xy;
+
+        // line_direction_vec intersect with the x-axis
+        geometry::float3 intersection_point;
+
+    };
+    struct LineMarkMatcher{
+        // left_id, right_id, accumulate_count
+        std::vector <LineMarkMatcherPair> marker_pairs;
+        float intersect_dist = 0.02f;
+        float direction_yaw_diff = 0.02f;
+
+        int accumulate_count_min = 1;
+
+        void clear();
+        void add_marker();
+        bool match();
+        void set(float intersect_dist_, int accumulate_count_min_);
+        LineMarkMatcher()=default;
+
+    };
+
+    struct Cluster{
+
+        f32_t center[3] = {0.0,0.0,0.0};
+        std::vector<u64_t> index;
+        Cluster()=default;
+
+    };
 
     struct PalletDetector{
 
         PalletDetector()=default;
         perception::DetectorConfig config;
         ta_cfg_t mem_cfg = {0};
-        PointCloudBuffer ground_cloud_buffer;
+        PointCloudBuffer output_cloud_buffer;
         f32_t * ground_init_buffer = nullptr;
         f32_t * ground_output_buffer = nullptr;
+        i32_t * ground_pixel_count_buffer = nullptr;
+        f32_t * vertical_center_buffer = nullptr;
+        f32_t * vertical_output_buffer = nullptr;
+        u32_t * vertical_center_index_buffer = nullptr;
+        u32_t * vertical_center_index_row_valid_num_buffer = nullptr;
+        u32_t * vertical_center_vertical_index_buffer = nullptr;
+        u64_t * vertical_filter_index_buffer = nullptr;
+        u32_t * vertical_output_index_buffer = nullptr;
+
+
+        std::list<u64_t> vertical_filter_index_list;
+        std::vector<u64_t> vertical_filter_index_vec;
+
+        std::vector<LineMark> center_line_markers;
 
         // 0: not define
         // 1: ground
@@ -41,15 +111,21 @@ namespace perception{
         f32_t viewpoint_x = 0.0;
         f32_t viewpoint_y = 0.0;
         f32_t viewpoint_z = 0.0;
-        void set_input(  f32_t * buffer,u64_t height, u64_t width, f32_t vx, f32_t vy, f32_t vz);
+        void set_input( f32_t * buffer,u64_t height, u64_t width, f32_t vx, f32_t vy, f32_t vz);
+
         void set_ground_init_dim( u64_t height_min , u64_t height_max ,u64_t width_min, u64_t width_max);
         void set_ground_init_thresh( f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max, f32_t nz_min);
         void set_ground_adaptive_thresh(  f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max);
         void set_ground_uncertain_thresh(  f32_t far_uncertain_z_max, f32_t far_uncertain_x_change_min,f32_t far_uncertain_adaptive_z_max,i32_t far_uncertain_row);
 
+        void set_vertical_init_dim( u64_t height_min , u64_t height_max ,u64_t width_min, u64_t width_max);
+        void set_vertical_init_thresh( f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max,  f32_t jx_max, f32_t jy_max, f32_t jz_max );
+
+//        std::unordered_map<u64_t, std::vector<Cluster>> ray_filter;
 
         i8_t filter_ground_status = 0;
         PointCloudBuffer_ptr filter_ground(u32_t output_mode);
+        i8_t filter_vertical_status = 0;
         PointCloudBuffer_ptr filter_vertical(u32_t output_mode);
         PointCloudBuffer_ptr filter_pallet(u32_t output_mode);
 

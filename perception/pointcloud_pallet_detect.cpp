@@ -88,10 +88,25 @@ void detector_set_ground_init_dim(struct pointcloud_pallet_detector_t* h, u64_t 
     }
 
 }
+void detector_set_vertical_init_dim(struct pointcloud_pallet_detector_t* h, u64_t height_min , u64_t height_max ,u64_t width_min, u64_t width_max){
+    if(h->handler){
+        perception::PalletDetector* handler = (perception::PalletDetector*)h->handler;
+        handler->set_vertical_init_dim(height_min,height_max,width_min,width_max);
+    }
+
+}
+
 void detector_set_ground_init_thresh(struct pointcloud_pallet_detector_t* h,  f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max, f32_t nz_min){
     if(h->handler){
         perception::PalletDetector* handler = (perception::PalletDetector*)h->handler;
         handler->set_ground_init_thresh(x_min, x_max, y_min, y_max,z_min,z_max,nz_min );
+    }
+}
+
+void detector_set_vertical_init_thresh(struct pointcloud_pallet_detector_t* h,  f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max, f32_t jx_max, f32_t jy_max, f32_t jz_max){
+    if(h->handler){
+        perception::PalletDetector* handler = (perception::PalletDetector*)h->handler;
+        handler->set_vertical_init_thresh(x_min, x_max, y_min, y_max,z_min,z_max,jx_max, jy_max, jz_max );
     }
 }
 void detector_set_ground_adaptive_thresh(struct pointcloud_pallet_detector_t* h,  f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max){
@@ -113,6 +128,10 @@ pointcloud_pallet_detector_t pointcloud_pallet_detector_create(){
     target.set_ground_init_thresh = detector_set_ground_init_thresh;
     target.set_ground_adaptive_thresh = detector_set_ground_adaptive_thresh;
     target.set_ground_uncertain_thresh = detector_set_ground_uncertain_thresh;
+
+    target.set_vertical_init_dim = detector_set_vertical_init_dim;
+    target.set_vertical_init_thresh = detector_set_vertical_init_thresh;
+
 
     target.filter_ground = detector_filter_ground;
     target.filter_vertical = detector_filter_vertical;

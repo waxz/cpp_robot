@@ -70,10 +70,18 @@ target_include_directories(optimlib_test PUBLIC ${CMAKE_SOURCE_DIR}/include  ${o
 target_link_libraries(optimlib_test PUBLIC autodiff::autodiff )
 
 
-add_library(pointcloud_process SHARED pointcloud_process.cpp)
-target_include_directories(pointcloud_process PUBLIC ${CMAKE_SOURCE_DIR}/include  ${optim_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIRS} )
-target_link_libraries(pointcloud_process PUBLIC autodiff::autodiff )
+add_library(pointcloud_process SHARED pointcloud_process.cpp pointcloud_calib_optim.cpp  pointcloud_pallet_detect_impl.cpp  pointcloud_pallet_detect.cpp )
+target_include_directories(pointcloud_process PUBLIC ${CMAKE_SOURCE_DIR}/include  ${optim_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIRS}
+        ${toml11_ROOT}/include
 
+)
+
+target_link_libraries(pointcloud_process PUBLIC Ceres::ceres)
+target_link_libraries (pointcloud_process PUBLIC Eigen3::Eigen)
+target_link_libraries (pointcloud_process PUBLIC tinyalloc)
+
+target_link_libraries(pointcloud_process PUBLIC autodiff::autodiff )
+#set_asan(pointcloud_process)
 add_executable(pointcloud_process_test pointcloud_process_test.c)
 target_link_libraries(pointcloud_process_test PUBLIC pointcloud_process )
 
@@ -82,3 +90,5 @@ target_link_libraries(pointcloud_process_cpp_test PUBLIC pointcloud_process )
 
 INSTALL(TARGETS pointcloud_process DESTINATION lib)
 INSTALL(FILES "pointcloud_process.h" DESTINATION include)
+INSTALL(FILES "pointcloud_calib_optim.h" DESTINATION include)
+INSTALL(FILES "pointcloud_pallet_detect.h" DESTINATION include)
