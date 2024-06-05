@@ -138,7 +138,9 @@ endfunction()
 #https://stackoverflow.com/questions/78322480/improve-g-compiler-flags-for-debug-and-release
 #https://developers.redhat.com/articles/2022/06/02/use-compiler-flags-stack-protection-gcc-and-clang#control_flow_integrity
 # -fsplit-stack may cause crash
-
+# https://stackoverflow.com/questions/47703436/isnan-does-not-work-correctly-with-ofast-flags
+#  -Ofast, among other things, activates GCC's -ffast-math mode, and -ffast-math, among other things, causes the compiler to generate code that assumes that NaN (and Inf) never occur.
+# Therefore, if you need to use NaN or Inf, you must not use -Ofast. There is no workaround.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wformat=2 -Wconversion -Wtrampolines -Wshadow ")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer  -fstack-protector -fstack-protector-strong  -fstack-protector-all -fstack-protector-explicit  -fsplit-stack")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer  -fstack-protector -fstack-protector-strong  -fstack-protector-all -fstack-protector-explicit")
@@ -156,7 +158,7 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -O3 -march=native -ftree-vectorize -fopt-info-vec-optimized -ffp-contract=fast -flto")
 
 # release
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -O3 -march=native -ftree-vectorize -fopt-info-vec-optimized")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -march=native -ftree-vectorize -fopt-info-vec-optimized")
 
     # debug
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g  -ffast-math -march=native")
@@ -173,6 +175,7 @@ endif ()
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -O3 -march=native -ftree-vectorize -fopt-info-vec-optimized ")
 #
 #endif ()
+
 if (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
     #-Wall -Wextra -pedantic
     #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}   -Ofast  -ffast-math -ftree-vectorize   -march=native -funsafe-loop-optimizations -mavx -mfma")
@@ -191,7 +194,7 @@ if (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
 
     #==============new
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -Og -D_GLIBCXX_DEBUG -D_GLIBCXX_ASSERTIONS ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g  -ffast-math -march=native")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g  -ffast-math -march=native")
 
     #https://developers.redhat.com/articles/2022/06/02/use-compiler-flags-stack-protection-gcc-and-clang#
 

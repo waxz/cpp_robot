@@ -970,6 +970,7 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
 
 
         common::Time t1 = common::FromUnixNow();
+        int is_invalid_num = 0;
 //        float x = 0.0, y = 0.0, z = 0.0;
 #if 1
         if(point_num < point_num_use_omp){
@@ -981,7 +982,10 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
                 x = *((float *) (src_data + (i*point_step + valid_filed_x_id)));
                 y = *((float *) (src_data + (i*point_step + valid_filed_y_id)));
                 z = *((float *) (src_data + (i*point_step + valid_filed_z_id)));
-                bool valid = (isfinite(x) && isfinite(y) && isfinite(z));
+                bool valid = (std::isfinite(x) && std::isfinite(y) && std::isfinite(z)
+                 && !std::isnan(x) && !std::isnan(y) && !std::isnan(z)
+                        );
+                is_invalid_num += !valid;
                 target_data[i*3 + 0 ] = valid ? x:0.0f;
                 target_data[i*3 + 1 ] = valid ? y:0.0f;
                 target_data[i*3 + 2 ] = valid ? z:0.0f;
@@ -1004,8 +1008,11 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
                 x = *((float *) (src_data + (i*point_step + valid_filed_x_id)));
                 y = *((float *) (src_data + (i*point_step + valid_filed_y_id)));
                 z = *((float *) (src_data + (i*point_step + valid_filed_z_id)));
+                bool valid = (std::isfinite(x) && std::isfinite(y) && std::isfinite(z)
+                              && !std::isnan(x) && !std::isnan(y) && !std::isnan(z)
+                );
+//                is_invalid_num += !valid;
 
-                bool valid = (isfinite(x) && isfinite(y) && isfinite(z));
                 target_data[i*3 + 0 ] = valid ? x:0.0f;
                 target_data[i*3 + 1 ] = valid ? y:0.0f;
                 target_data[i*3 + 2 ] = valid ? z:0.0f;
@@ -1052,7 +1059,7 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
 
 
 
-        std::cout << __FUNCTION__  << " for loop use time: " << common::ToMillSeconds(common::FromUnixNow() - t1) << " ms\n";
+        std::cout << __FUNCTION__  << " for loop use time: " << common::ToMillSeconds(common::FromUnixNow() - t1) << " ms, is_invalid_num: " << is_invalid_num << "\n";
 //        std::cout << "\n";
 
         option->mem_pool->count+=1;
