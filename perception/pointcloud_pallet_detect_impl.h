@@ -9,6 +9,8 @@
 #include "config/pallet_detect_config_gen.hpp"
 #include "pointcloud_pallet_detect.h"
 #include "math/geometry/point_vector3.h"
+#include "math/transform/eigen_transform.h"
+
 #include <list>
 namespace perception{
 
@@ -32,6 +34,40 @@ namespace perception{
         u32_t index_right;
 
         int valid_status;
+
+        u32_t raw_index_center[2];
+        u32_t raw_index_left[2];
+        u32_t raw_index_right[2];
+
+    };
+
+    struct PalletCandidate{
+
+//        LineMark line;
+        u32_t raw_index_center[2];
+
+        geometry::float3 pallet_center;
+        f32_t pallet_direction;
+        //
+        transform::Transform<double> pallet_pose;
+        transform::Transform<double> pallet_pose_inv;
+        transform::Transform<double> pallet_pose_in_start;
+
+        int valid_status;
+
+        int cluster_id;
+    };
+
+    struct PalletCluster{
+        std::vector<PalletCandidate> candidates;
+
+        transform::Transform<double> est_pose;
+        transform::Transform<double> est_pose_inv;
+
+        i32_t valid_status;
+
+        u32_t top_row_high;
+        u32_t top_row_low;
 
     };
 
@@ -91,11 +127,26 @@ namespace perception{
         u64_t * vertical_filter_index_buffer = nullptr;
         u32_t * vertical_output_index_buffer = nullptr;
 
+        u32_t * vertical_line_continuous_buffer;
+//        u32_t * vertical_line_continuous_right_buffer;
+
+        f32_t * pallet_pocket_buffer = nullptr;
+        f32_t * pallet_output_buffer = nullptr;
+
 
         std::list<u64_t> vertical_filter_index_list;
         std::vector<u64_t> vertical_filter_index_vec;
 
         std::vector<LineMark> center_line_markers;
+        std::vector<PalletCandidate> pallet_candidates;
+        std::vector<PalletCluster> pallet_cluster;
+
+        std::vector<geometry::float3> pallet_space_left;
+        std::vector<geometry::float3> pallet_pocket_left;
+        std::vector<geometry::float3> pallet_space_center;
+        std::vector<geometry::float3> pallet_pocket_right;
+        std::vector<geometry::float3> pallet_space_right;
+
 
         // 0: not define
         // 1: ground
@@ -121,12 +172,17 @@ namespace perception{
         void set_vertical_init_dim( u64_t height_min , u64_t height_max ,u64_t width_min, u64_t width_max);
         void set_vertical_init_thresh( f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max,  f32_t jx_max, f32_t jy_max, f32_t jz_max );
 
+        void set_pallet_row(i32_t row_high, i32_t row_low);
+        void set_pallet_thresh( f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max,  f32_t jx_max, f32_t jy_max, f32_t jz_max);
+
 //        std::unordered_map<u64_t, std::vector<Cluster>> ray_filter;
 
         i8_t filter_ground_status = 0;
         PointCloudBuffer_ptr filter_ground(u32_t output_mode);
         i8_t filter_vertical_status = 0;
         PointCloudBuffer_ptr filter_vertical(u32_t output_mode);
+        i8_t filter_pallet_status = 0;
+
         PointCloudBuffer_ptr filter_pallet(u32_t output_mode);
 
     };

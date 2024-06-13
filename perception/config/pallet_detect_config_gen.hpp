@@ -271,6 +271,185 @@ struct GroundFilter{
 }
 namespace perception{
 /// GEN[TOML]
+struct PalletFilter{
+     int output_mode;
+     // 0 height min to max
+     // 1 height max to min
+     // 2 width min to max
+     // 3 width max to min
+     int search_direction;
+     // split candidates to cluster
+     float cluster_filter_split_last_dist;
+     float cluster_filter_split_start_dist;
+     float cluster_filter_split_last_z;
+     float cluster_filter_split_start_z;
+     float cluster_filter_split_last_x;
+     float cluster_filter_split_start_x;
+     float cluster_filter_split_last_yaw;
+     float cluster_filter_split_start_yaw;
+     float cluster_filter_pose_weight;
+     int cluster_filter_num_min;
+     // filter pocket region
+     // check pocket hole existence
+     int filter_pallet_row_high;
+     int filter_pallet_row_low;
+     // filter
+     float filter_pallet_x_min;
+     float filter_pallet_x_max;
+     float filter_pallet_y_min;
+     float filter_pallet_y_max;
+     float filter_pallet_z_min;
+     float filter_pallet_z_max;
+     // check between [ z_pocket, z_pocket + filter_pallet_z_pocket]
+     float filter_pallet_z_pocket;
+     float filter_pallet_jx;
+     float filter_pallet_jy;
+     float filter_pallet_jz;
+     float filter_space_continuous_dist;
+     int filter_space_continuous_num;
+     float filter_space_continuous_thresh;
+     float pallet_space_direction_diff_max;
+     float pallet_space_center_to_line_dist_max;
+     float pallet_pocket_empty_x;
+     int pallet_space_valid_num;
+     // check if a line is pallet marker ot not
+     // 1. check if the line continuous, compute center position
+     // not real fork size, just for checking cloud shape
+     float fork_shape_width;
+     float fork_shape_height;
+     float fork_pos_y;
+     // 2. check pocket hole
+     // transform cloud to pallet frame
+     // filter with x,y,z limit
+ //        float pocket_hole_x_min;
+ //        float pocket_hole_x_max;
+ //        float pocket_hole_y_min;
+ //        float pocket_hole_y_max;
+ //        float pocket_hole_z_min;
+ //        float pocket_hole_z_max;
+     // filter for each pixel
+ //        float pocket_pixel_x_min;
+ //        float pocket_pixel_x_max;
+ //        float pocket_pixel_y_min;
+ //        float pocket_pixel_y_max;
+ //        float pocket_pixel_z_min;
+ //        float pocket_pixel_z_max;
+     //
+ //        float pocket_continuous_dist;
+ //        int pocket_pixel_valid_num;
+     /*
+
+         |----------------------------------------------|
+         ph2                                            |
+         |----------------------------------------------|
+         |     |              |     |             |     |
+         |     |              |     |             |     ph1
+         |-pw1-|    -pw2-     |-pw3-|             |     |
+                                 |
+                                -O
+
+         pw = 2*(pw1 + pw2) + pw3
+         ph = ph1 + ph2
+
+         */
+     float pallet_space_width_left;
+     float pallet_pocket_width;
+     float pallet_space_width_center;
+     float pallet_space_height;
+     float pallet_top_height;
+ 
+
+    explicit PalletFilter(const toml::value& value) {
+        output_mode= toml::get<decltype(output_mode)>(value.at("output_mode"));
+        search_direction= toml::get<decltype(search_direction)>(value.at("search_direction"));
+        cluster_filter_split_last_dist= toml::get<decltype(cluster_filter_split_last_dist)>(value.at("cluster_filter_split_last_dist"));
+        cluster_filter_split_start_dist= toml::get<decltype(cluster_filter_split_start_dist)>(value.at("cluster_filter_split_start_dist"));
+        cluster_filter_split_last_z= toml::get<decltype(cluster_filter_split_last_z)>(value.at("cluster_filter_split_last_z"));
+        cluster_filter_split_start_z= toml::get<decltype(cluster_filter_split_start_z)>(value.at("cluster_filter_split_start_z"));
+        cluster_filter_split_last_x= toml::get<decltype(cluster_filter_split_last_x)>(value.at("cluster_filter_split_last_x"));
+        cluster_filter_split_start_x= toml::get<decltype(cluster_filter_split_start_x)>(value.at("cluster_filter_split_start_x"));
+        cluster_filter_split_last_yaw= toml::get<decltype(cluster_filter_split_last_yaw)>(value.at("cluster_filter_split_last_yaw"));
+        cluster_filter_split_start_yaw= toml::get<decltype(cluster_filter_split_start_yaw)>(value.at("cluster_filter_split_start_yaw"));
+        cluster_filter_pose_weight= toml::get<decltype(cluster_filter_pose_weight)>(value.at("cluster_filter_pose_weight"));
+        cluster_filter_num_min= toml::get<decltype(cluster_filter_num_min)>(value.at("cluster_filter_num_min"));
+        filter_pallet_row_high= toml::get<decltype(filter_pallet_row_high)>(value.at("filter_pallet_row_high"));
+        filter_pallet_row_low= toml::get<decltype(filter_pallet_row_low)>(value.at("filter_pallet_row_low"));
+        filter_pallet_x_min= toml::get<decltype(filter_pallet_x_min)>(value.at("filter_pallet_x_min"));
+        filter_pallet_x_max= toml::get<decltype(filter_pallet_x_max)>(value.at("filter_pallet_x_max"));
+        filter_pallet_y_min= toml::get<decltype(filter_pallet_y_min)>(value.at("filter_pallet_y_min"));
+        filter_pallet_y_max= toml::get<decltype(filter_pallet_y_max)>(value.at("filter_pallet_y_max"));
+        filter_pallet_z_min= toml::get<decltype(filter_pallet_z_min)>(value.at("filter_pallet_z_min"));
+        filter_pallet_z_max= toml::get<decltype(filter_pallet_z_max)>(value.at("filter_pallet_z_max"));
+        filter_pallet_z_pocket= toml::get<decltype(filter_pallet_z_pocket)>(value.at("filter_pallet_z_pocket"));
+        filter_pallet_jx= toml::get<decltype(filter_pallet_jx)>(value.at("filter_pallet_jx"));
+        filter_pallet_jy= toml::get<decltype(filter_pallet_jy)>(value.at("filter_pallet_jy"));
+        filter_pallet_jz= toml::get<decltype(filter_pallet_jz)>(value.at("filter_pallet_jz"));
+        filter_space_continuous_dist= toml::get<decltype(filter_space_continuous_dist)>(value.at("filter_space_continuous_dist"));
+        filter_space_continuous_num= toml::get<decltype(filter_space_continuous_num)>(value.at("filter_space_continuous_num"));
+        filter_space_continuous_thresh= toml::get<decltype(filter_space_continuous_thresh)>(value.at("filter_space_continuous_thresh"));
+        pallet_space_direction_diff_max= toml::get<decltype(pallet_space_direction_diff_max)>(value.at("pallet_space_direction_diff_max"));
+        pallet_space_center_to_line_dist_max= toml::get<decltype(pallet_space_center_to_line_dist_max)>(value.at("pallet_space_center_to_line_dist_max"));
+        pallet_pocket_empty_x= toml::get<decltype(pallet_pocket_empty_x)>(value.at("pallet_pocket_empty_x"));
+        pallet_space_valid_num= toml::get<decltype(pallet_space_valid_num)>(value.at("pallet_space_valid_num"));
+        fork_shape_width= toml::get<decltype(fork_shape_width)>(value.at("fork_shape_width"));
+        fork_shape_height= toml::get<decltype(fork_shape_height)>(value.at("fork_shape_height"));
+        fork_pos_y= toml::get<decltype(fork_pos_y)>(value.at("fork_pos_y"));
+        pallet_space_width_left= toml::get<decltype(pallet_space_width_left)>(value.at("pallet_space_width_left"));
+        pallet_pocket_width= toml::get<decltype(pallet_pocket_width)>(value.at("pallet_pocket_width"));
+        pallet_space_width_center= toml::get<decltype(pallet_space_width_center)>(value.at("pallet_space_width_center"));
+        pallet_space_height= toml::get<decltype(pallet_space_height)>(value.at("pallet_space_height"));
+        pallet_top_height= toml::get<decltype(pallet_top_height)>(value.at("pallet_top_height"));
+
+    }
+
+    toml::value into_toml() const {
+        return toml::value{
+        {"output_mode", this->output_mode},
+        {"search_direction", this->search_direction},
+        {"cluster_filter_split_last_dist", this->cluster_filter_split_last_dist},
+        {"cluster_filter_split_start_dist", this->cluster_filter_split_start_dist},
+        {"cluster_filter_split_last_z", this->cluster_filter_split_last_z},
+        {"cluster_filter_split_start_z", this->cluster_filter_split_start_z},
+        {"cluster_filter_split_last_x", this->cluster_filter_split_last_x},
+        {"cluster_filter_split_start_x", this->cluster_filter_split_start_x},
+        {"cluster_filter_split_last_yaw", this->cluster_filter_split_last_yaw},
+        {"cluster_filter_split_start_yaw", this->cluster_filter_split_start_yaw},
+        {"cluster_filter_pose_weight", this->cluster_filter_pose_weight},
+        {"cluster_filter_num_min", this->cluster_filter_num_min},
+        {"filter_pallet_row_high", this->filter_pallet_row_high},
+        {"filter_pallet_row_low", this->filter_pallet_row_low},
+        {"filter_pallet_x_min", this->filter_pallet_x_min},
+        {"filter_pallet_x_max", this->filter_pallet_x_max},
+        {"filter_pallet_y_min", this->filter_pallet_y_min},
+        {"filter_pallet_y_max", this->filter_pallet_y_max},
+        {"filter_pallet_z_min", this->filter_pallet_z_min},
+        {"filter_pallet_z_max", this->filter_pallet_z_max},
+        {"filter_pallet_z_pocket", this->filter_pallet_z_pocket},
+        {"filter_pallet_jx", this->filter_pallet_jx},
+        {"filter_pallet_jy", this->filter_pallet_jy},
+        {"filter_pallet_jz", this->filter_pallet_jz},
+        {"filter_space_continuous_dist", this->filter_space_continuous_dist},
+        {"filter_space_continuous_num", this->filter_space_continuous_num},
+        {"filter_space_continuous_thresh", this->filter_space_continuous_thresh},
+        {"pallet_space_direction_diff_max", this->pallet_space_direction_diff_max},
+        {"pallet_space_center_to_line_dist_max", this->pallet_space_center_to_line_dist_max},
+        {"pallet_pocket_empty_x", this->pallet_pocket_empty_x},
+        {"pallet_space_valid_num", this->pallet_space_valid_num},
+        {"fork_shape_width", this->fork_shape_width},
+        {"fork_shape_height", this->fork_shape_height},
+        {"fork_pos_y", this->fork_pos_y},
+        {"pallet_space_width_left", this->pallet_space_width_left},
+        {"pallet_pocket_width", this->pallet_pocket_width},
+        {"pallet_space_width_center", this->pallet_space_width_center},
+        {"pallet_space_height", this->pallet_space_height},
+        {"pallet_top_height", this->pallet_top_height}};
+    }
+   PalletFilter() = default;
+
+};
+}
+namespace perception{
+/// GEN[TOML]
 struct VerticalFilter{
      int output_mode;
      // 0 height min to max
@@ -301,6 +480,13 @@ struct VerticalFilter{
      int init_center_line_filter_relative_row;
      int init_center_line_filter_early_stop_num_change;
      float init_center_line_filter_len_step;
+     // check valid line,
+     // 1. continuous, resolution, fill all point to count array buffer based on resolution
+     float init_center_line_filter_continuous_valid_resolution;
+     float init_center_line_filter_continuous_buffer_len;
+     float init_center_line_filter_continuous_len_min;
+     float init_center_line_filter_continuous_len_max;
+     // 2. length
      float init_center_line_filter_len_valid_min;
      float init_center_line_filter_len_search_min;
      float init_center_line_filter_len_search_max;
@@ -340,6 +526,10 @@ struct VerticalFilter{
         init_center_line_filter_relative_row= toml::get<decltype(init_center_line_filter_relative_row)>(value.at("init_center_line_filter_relative_row"));
         init_center_line_filter_early_stop_num_change= toml::get<decltype(init_center_line_filter_early_stop_num_change)>(value.at("init_center_line_filter_early_stop_num_change"));
         init_center_line_filter_len_step= toml::get<decltype(init_center_line_filter_len_step)>(value.at("init_center_line_filter_len_step"));
+        init_center_line_filter_continuous_valid_resolution= toml::get<decltype(init_center_line_filter_continuous_valid_resolution)>(value.at("init_center_line_filter_continuous_valid_resolution"));
+        init_center_line_filter_continuous_buffer_len= toml::get<decltype(init_center_line_filter_continuous_buffer_len)>(value.at("init_center_line_filter_continuous_buffer_len"));
+        init_center_line_filter_continuous_len_min= toml::get<decltype(init_center_line_filter_continuous_len_min)>(value.at("init_center_line_filter_continuous_len_min"));
+        init_center_line_filter_continuous_len_max= toml::get<decltype(init_center_line_filter_continuous_len_max)>(value.at("init_center_line_filter_continuous_len_max"));
         init_center_line_filter_len_valid_min= toml::get<decltype(init_center_line_filter_len_valid_min)>(value.at("init_center_line_filter_len_valid_min"));
         init_center_line_filter_len_search_min= toml::get<decltype(init_center_line_filter_len_search_min)>(value.at("init_center_line_filter_len_search_min"));
         init_center_line_filter_len_search_max= toml::get<decltype(init_center_line_filter_len_search_max)>(value.at("init_center_line_filter_len_search_max"));
@@ -379,6 +569,10 @@ struct VerticalFilter{
         {"init_center_line_filter_relative_row", this->init_center_line_filter_relative_row},
         {"init_center_line_filter_early_stop_num_change", this->init_center_line_filter_early_stop_num_change},
         {"init_center_line_filter_len_step", this->init_center_line_filter_len_step},
+        {"init_center_line_filter_continuous_valid_resolution", this->init_center_line_filter_continuous_valid_resolution},
+        {"init_center_line_filter_continuous_buffer_len", this->init_center_line_filter_continuous_buffer_len},
+        {"init_center_line_filter_continuous_len_min", this->init_center_line_filter_continuous_len_min},
+        {"init_center_line_filter_continuous_len_max", this->init_center_line_filter_continuous_len_max},
         {"init_center_line_filter_len_valid_min", this->init_center_line_filter_len_valid_min},
         {"init_center_line_filter_len_search_min", this->init_center_line_filter_len_search_min},
         {"init_center_line_filter_len_search_max", this->init_center_line_filter_len_search_max},
@@ -403,6 +597,7 @@ namespace perception{
 struct DetectorConfig{
      GroundFilter filter_ground;
      VerticalFilter filter_vertical;
+     PalletFilter filter_pallet;
      Extrinsic extrinsic;
      CloudConfig cloud;
  
@@ -410,6 +605,7 @@ struct DetectorConfig{
     explicit DetectorConfig(const toml::value& value) {
         filter_ground= toml::get<decltype(filter_ground)>(value.at("filter_ground"));
         filter_vertical= toml::get<decltype(filter_vertical)>(value.at("filter_vertical"));
+        filter_pallet= toml::get<decltype(filter_pallet)>(value.at("filter_pallet"));
         extrinsic= toml::get<decltype(extrinsic)>(value.at("extrinsic"));
         cloud= toml::get<decltype(cloud)>(value.at("cloud"));
 
@@ -419,6 +615,7 @@ struct DetectorConfig{
         return toml::value{
         {"filter_ground", this->filter_ground},
         {"filter_vertical", this->filter_vertical},
+        {"filter_pallet", this->filter_pallet},
         {"extrinsic", this->extrinsic},
         {"cloud", this->cloud}};
     }

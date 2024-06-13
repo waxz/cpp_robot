@@ -49,6 +49,9 @@ extern "C" {
         void(*set_ground_uncertain_thresh)(struct pointcloud_pallet_detector_t* h,  f32_t far_uncertain_z_max, f32_t far_uncertain_x_change_min, f32_t far_uncertain_adaptive_z_max, i32_t far_uncertain_row);
 
 
+        void(*set_pallet_row)(struct pointcloud_pallet_detector_t* h, i32_t row_high, i32_t row_low);
+        void(*set_pallet_thresh)(struct pointcloud_pallet_detector_t* h,  f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max,  f32_t jx_max, f32_t jy_max, f32_t jz_max);
+
 
         //find cargo
         PointCloudBuffer_ptr(*filter_vertical)(struct pointcloud_pallet_detector_t* h, u32_t output_mode);

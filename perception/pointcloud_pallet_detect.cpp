@@ -103,6 +103,18 @@ void detector_set_ground_init_thresh(struct pointcloud_pallet_detector_t* h,  f3
     }
 }
 
+void detector_set_pallet_row(struct pointcloud_pallet_detector_t* h, i32_t row_high, i32_t row_low){
+    if(h->handler){
+        perception::PalletDetector* handler = (perception::PalletDetector*)h->handler;
+        handler->set_pallet_row(row_high, row_low);
+    }
+}
+void detector_set_pallet_thresh(struct pointcloud_pallet_detector_t* h,  f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max, f32_t jx_max, f32_t jy_max, f32_t jz_max){
+    if(h->handler){
+        perception::PalletDetector* handler = (perception::PalletDetector*)h->handler;
+        handler->set_pallet_thresh(x_min, x_max, y_min, y_max,z_min,z_max,jx_max, jy_max, jz_max );
+    }
+}
 void detector_set_vertical_init_thresh(struct pointcloud_pallet_detector_t* h,  f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max, f32_t jx_max, f32_t jy_max, f32_t jz_max){
     if(h->handler){
         perception::PalletDetector* handler = (perception::PalletDetector*)h->handler;
@@ -131,6 +143,8 @@ pointcloud_pallet_detector_t pointcloud_pallet_detector_create(){
 
     target.set_vertical_init_dim = detector_set_vertical_init_dim;
     target.set_vertical_init_thresh = detector_set_vertical_init_thresh;
+    target.set_pallet_row = detector_set_pallet_row;
+    target.set_pallet_thresh = detector_set_pallet_thresh;
 
 
     target.filter_ground = detector_filter_ground;

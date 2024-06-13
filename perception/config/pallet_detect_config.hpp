@@ -115,6 +115,129 @@ namespace perception{
 
 
     };
+
+    /// GEN[TOML]
+    struct PalletFilter{
+        int output_mode;
+        // 0 height min to max
+        // 1 height max to min
+        // 2 width min to max
+        // 3 width max to min
+
+        int search_direction;
+
+        // split candidates to cluster
+        float cluster_filter_split_last_dist;
+        float cluster_filter_split_start_dist;
+
+        float cluster_filter_split_last_z;
+        float cluster_filter_split_start_z;
+        float cluster_filter_split_last_x;
+        float cluster_filter_split_start_x;
+
+        float cluster_filter_split_last_yaw;
+        float cluster_filter_split_start_yaw;
+
+        float cluster_filter_pose_weight;
+
+
+        int cluster_filter_num_min;
+
+        // filter pocket region
+        // check pocket hole existence
+        int filter_pallet_row_high;
+        int filter_pallet_row_low;
+
+        // filter
+        float filter_pallet_x_min;
+        float filter_pallet_x_max;
+        float filter_pallet_y_min;
+        float filter_pallet_y_max;
+        float filter_pallet_z_min;
+        float filter_pallet_z_max;
+        // check between [ z_pocket, z_pocket + filter_pallet_z_pocket]
+        float filter_pallet_z_pocket;
+
+        float filter_pallet_jx;
+        float filter_pallet_jy;
+        float filter_pallet_jz;
+
+        float filter_space_continuous_dist;
+        int filter_space_continuous_num;
+        float filter_space_continuous_thresh;
+        float pallet_space_direction_diff_max;
+        float pallet_space_center_to_line_dist_max;
+        float pallet_pocket_empty_x;
+        int pallet_space_valid_num;
+
+
+
+        // check if a line is pallet marker ot not
+        // 1. check if the line continuous, compute center position
+        // not real fork size, just for checking cloud shape
+        float fork_shape_width;
+        float fork_shape_height;
+        float fork_pos_y;
+
+
+
+
+
+        // 2. check pocket hole
+
+        // transform cloud to pallet frame
+        // filter with x,y,z limit
+//        float pocket_hole_x_min;
+//        float pocket_hole_x_max;
+//        float pocket_hole_y_min;
+//        float pocket_hole_y_max;
+//        float pocket_hole_z_min;
+//        float pocket_hole_z_max;
+
+
+
+        // filter for each pixel
+//        float pocket_pixel_x_min;
+//        float pocket_pixel_x_max;
+//        float pocket_pixel_y_min;
+//        float pocket_pixel_y_max;
+//        float pocket_pixel_z_min;
+//        float pocket_pixel_z_max;
+
+        //
+//        float pocket_continuous_dist;
+//        int pocket_pixel_valid_num;
+
+
+
+
+
+
+        /*
+
+         |----------------------------------------------|
+         ph2                                            |
+         |----------------------------------------------|
+         |     |              |     |             |     |
+         |     |              |     |             |     ph1
+         |-pw1-|    -pw2-     |-pw3-|             |     |
+                                 |
+                                -O
+
+         pw = 2*(pw1 + pw2) + pw3
+         ph = ph1 + ph2
+
+         */
+
+
+        float pallet_space_width_left;
+        float pallet_pocket_width;
+        float pallet_space_width_center;
+        float pallet_space_height;
+        float pallet_top_height;
+
+
+    };
     /// GEN[TOML]
     struct VerticalFilter{
         int output_mode;
@@ -153,6 +276,15 @@ namespace perception{
         int init_center_line_filter_early_stop_num_change;
 
         float init_center_line_filter_len_step;
+        // check valid line,
+        // 1. continuous, resolution, fill all point to count array buffer based on resolution
+        float init_center_line_filter_continuous_valid_resolution;
+        float init_center_line_filter_continuous_buffer_len;
+        float init_center_line_filter_continuous_len_min;
+        float init_center_line_filter_continuous_len_max;
+
+
+        // 2. length
         float init_center_line_filter_len_valid_min;
         float init_center_line_filter_len_search_min;
         float init_center_line_filter_len_search_max;
@@ -184,6 +316,7 @@ namespace perception{
     struct DetectorConfig{
         GroundFilter filter_ground;
         VerticalFilter filter_vertical;
+        PalletFilter filter_pallet;
 
         Extrinsic extrinsic;
         CloudConfig cloud;
