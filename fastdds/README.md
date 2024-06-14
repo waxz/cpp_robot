@@ -2,6 +2,10 @@
 generate source files from IDL.
 compile source files to library linked to fastrtps and fastcddr
 
+```shell
+fastddsgen -replace  ./Message.idl
+```
+
 # config
 
 

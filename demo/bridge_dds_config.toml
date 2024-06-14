@@ -9,7 +9,7 @@ name = "dds_ros_bridge_0"
 interface_allowlist = ["lo"]
 interface_blocklist = ["eno1", "enx00e04d71ffe7", "wlp4s0", "wlp3s0", "docker0", "wt0"]
 
-[dds.readers]
+#[dds.readers]
 
 
 [dds.writers.cloud_pub]
@@ -21,3 +21,36 @@ pub_profile = ""
 topic_profile = ""
 writer_profile = "shm_writer_profile"
 qos_queue_size = 1
+
+#
+[dds.writers.detector_cmd_pub]
+topic_name = "detector/cmd"
+topic_type = "Message::HeaderString1024"
+#topic_type = "Message::Pointcloud1920x1080x3"
+
+pub_profile = ""
+topic_profile = ""
+writer_profile = "shm_writer_profile"
+qos_queue_size = 100
+
+
+
+[dds.readers.detector_status_sub]
+topic_name = "detector/cmd"
+topic_type = "Message::HeaderString1024"
+#topic_type = "Message::Pointcloud1920x1080x3"
+
+sub_profile = ""
+topic_profile = ""
+reader_profile = "shm_reader_profile"
+qos_queue_size = 100
+
+[dds.readers.detector_result_sub]
+topic_name = "detector/result"
+topic_type = "Message::Path1024"
+#topic_type = "Message::Pointcloud1920x1080x3"
+
+sub_profile = ""
+topic_profile = ""
+reader_profile = "shm_reader_profile"
+qos_queue_size = 100

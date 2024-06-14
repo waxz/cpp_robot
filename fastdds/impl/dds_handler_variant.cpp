@@ -81,6 +81,7 @@ namespace dds_helper {
 
                     if (writer_builder_functions.end() == writer_builder_functions.find(r.second.topic_type)) {
                         MLOGW("topic type %s not found", r.second.topic_type.c_str());
+                        return -1;
                     } else {
 #if 0
                         writers_.emplace( std::piecewise_construct , std::forward_as_tuple(r.first) ,
@@ -224,6 +225,9 @@ namespace dds_helper {
         BIND_DDS(Message::Pointcloud1920x1080x3)
         BIND_DDS(Message::Pointcloud1200x800x4)
         BIND_DDS(Message::Pointcloud640x480x3)
+        BIND_DDS(Message::Path1024)
+        BIND_DDS(Message::HeaderString1024)
+
 
     }
 

@@ -1324,6 +1324,758 @@ private:
 
 };
 
+
+/*!
+ * @brief This class represents the structure HeaderString1024 defined by the user in the IDL file.
+ * @ingroup Message
+ */
+class HeaderString1024
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport HeaderString1024();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~HeaderString1024();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object Message::HeaderString1024 that will be copied.
+     */
+    eProsima_user_DllExport HeaderString1024(
+            const HeaderString1024& x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object Message::HeaderString1024 that will be copied.
+     */
+    eProsima_user_DllExport HeaderString1024(
+            HeaderString1024&& x) noexcept;
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object Message::HeaderString1024 that will be copied.
+     */
+    eProsima_user_DllExport HeaderString1024& operator =(
+            const HeaderString1024& x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object Message::HeaderString1024 that will be copied.
+     */
+    eProsima_user_DllExport HeaderString1024& operator =(
+            HeaderString1024&& x) noexcept;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::HeaderString1024 object to compare.
+     */
+    eProsima_user_DllExport bool operator ==(
+            const HeaderString1024& x) const;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::HeaderString1024 object to compare.
+     */
+    eProsima_user_DllExport bool operator !=(
+            const HeaderString1024& x) const;
+
+    /*!
+     * @brief This function copies the value in member frame_id
+     * @param _frame_id New value to be copied in member frame_id
+     */
+    eProsima_user_DllExport void frame_id(
+            const std::array<char, 50>& _frame_id);
+
+    /*!
+     * @brief This function moves the value in member frame_id
+     * @param _frame_id New value to be moved in member frame_id
+     */
+    eProsima_user_DllExport void frame_id(
+            std::array<char, 50>&& _frame_id);
+
+    /*!
+     * @brief This function returns a constant reference to member frame_id
+     * @return Constant reference to member frame_id
+     */
+    eProsima_user_DllExport const std::array<char, 50>& frame_id() const;
+
+    /*!
+     * @brief This function returns a reference to member frame_id
+     * @return Reference to member frame_id
+     */
+    eProsima_user_DllExport std::array<char, 50>& frame_id();
+
+
+    /*!
+     * @brief This function sets a value in member stamp
+     * @param _stamp New value for member stamp
+     */
+    eProsima_user_DllExport void stamp(
+            uint64_t _stamp);
+
+    /*!
+     * @brief This function returns the value of member stamp
+     * @return Value of member stamp
+     */
+    eProsima_user_DllExport uint64_t stamp() const;
+
+    /*!
+     * @brief This function returns a reference to member stamp
+     * @return Reference to member stamp
+     */
+    eProsima_user_DllExport uint64_t& stamp();
+
+
+    /*!
+     * @brief This function copies the value in member data
+     * @param _data New value to be copied in member data
+     */
+    eProsima_user_DllExport void data(
+            const std::array<char, 1024>& _data);
+
+    /*!
+     * @brief This function moves the value in member data
+     * @param _data New value to be moved in member data
+     */
+    eProsima_user_DllExport void data(
+            std::array<char, 1024>&& _data);
+
+    /*!
+     * @brief This function returns a constant reference to member data
+     * @return Constant reference to member data
+     */
+    eProsima_user_DllExport const std::array<char, 1024>& data() const;
+
+    /*!
+     * @brief This function returns a reference to member data
+     * @return Reference to member data
+     */
+    eProsima_user_DllExport std::array<char, 1024>& data();
+
+
+    /*!
+     * @brief This function sets a value in member data_size
+     * @param _data_size New value for member data_size
+     */
+    eProsima_user_DllExport void data_size(
+            uint32_t _data_size);
+
+    /*!
+     * @brief This function returns the value of member data_size
+     * @return Value of member data_size
+     */
+    eProsima_user_DllExport uint32_t data_size() const;
+
+    /*!
+     * @brief This function returns a reference to member data_size
+     * @return Reference to member data_size
+     */
+    eProsima_user_DllExport uint32_t& data_size();
+
+private:
+
+    std::array<char, 50> m_frame_id{0};
+    uint64_t m_stamp{0};
+    std::array<char, 1024> m_data{0};
+    uint32_t m_data_size{0};
+
+};
+
+
+/*!
+ * @brief This class represents the structure PointD defined by the user in the IDL file.
+ * @ingroup Message
+ */
+class PointD
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport PointD();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~PointD();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object Message::PointD that will be copied.
+     */
+    eProsima_user_DllExport PointD(
+            const PointD& x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object Message::PointD that will be copied.
+     */
+    eProsima_user_DllExport PointD(
+            PointD&& x) noexcept;
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object Message::PointD that will be copied.
+     */
+    eProsima_user_DllExport PointD& operator =(
+            const PointD& x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object Message::PointD that will be copied.
+     */
+    eProsima_user_DllExport PointD& operator =(
+            PointD&& x) noexcept;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::PointD object to compare.
+     */
+    eProsima_user_DllExport bool operator ==(
+            const PointD& x) const;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::PointD object to compare.
+     */
+    eProsima_user_DllExport bool operator !=(
+            const PointD& x) const;
+
+    /*!
+     * @brief This function sets a value in member x
+     * @param _x New value for member x
+     */
+    eProsima_user_DllExport void x(
+            double _x);
+
+    /*!
+     * @brief This function returns the value of member x
+     * @return Value of member x
+     */
+    eProsima_user_DllExport double x() const;
+
+    /*!
+     * @brief This function returns a reference to member x
+     * @return Reference to member x
+     */
+    eProsima_user_DllExport double& x();
+
+
+    /*!
+     * @brief This function sets a value in member y
+     * @param _y New value for member y
+     */
+    eProsima_user_DllExport void y(
+            double _y);
+
+    /*!
+     * @brief This function returns the value of member y
+     * @return Value of member y
+     */
+    eProsima_user_DllExport double y() const;
+
+    /*!
+     * @brief This function returns a reference to member y
+     * @return Reference to member y
+     */
+    eProsima_user_DllExport double& y();
+
+
+    /*!
+     * @brief This function sets a value in member z
+     * @param _z New value for member z
+     */
+    eProsima_user_DllExport void z(
+            double _z);
+
+    /*!
+     * @brief This function returns the value of member z
+     * @return Value of member z
+     */
+    eProsima_user_DllExport double z() const;
+
+    /*!
+     * @brief This function returns a reference to member z
+     * @return Reference to member z
+     */
+    eProsima_user_DllExport double& z();
+
+private:
+
+    double m_x{0.0};
+    double m_y{0.0};
+    double m_z{0.0};
+
+};
+
+
+/*!
+ * @brief This class represents the structure QuaternionD defined by the user in the IDL file.
+ * @ingroup Message
+ */
+class QuaternionD
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport QuaternionD();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~QuaternionD();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object Message::QuaternionD that will be copied.
+     */
+    eProsima_user_DllExport QuaternionD(
+            const QuaternionD& x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object Message::QuaternionD that will be copied.
+     */
+    eProsima_user_DllExport QuaternionD(
+            QuaternionD&& x) noexcept;
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object Message::QuaternionD that will be copied.
+     */
+    eProsima_user_DllExport QuaternionD& operator =(
+            const QuaternionD& x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object Message::QuaternionD that will be copied.
+     */
+    eProsima_user_DllExport QuaternionD& operator =(
+            QuaternionD&& x) noexcept;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::QuaternionD object to compare.
+     */
+    eProsima_user_DllExport bool operator ==(
+            const QuaternionD& x) const;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::QuaternionD object to compare.
+     */
+    eProsima_user_DllExport bool operator !=(
+            const QuaternionD& x) const;
+
+    /*!
+     * @brief This function sets a value in member w
+     * @param _w New value for member w
+     */
+    eProsima_user_DllExport void w(
+            double _w);
+
+    /*!
+     * @brief This function returns the value of member w
+     * @return Value of member w
+     */
+    eProsima_user_DllExport double w() const;
+
+    /*!
+     * @brief This function returns a reference to member w
+     * @return Reference to member w
+     */
+    eProsima_user_DllExport double& w();
+
+
+    /*!
+     * @brief This function sets a value in member x
+     * @param _x New value for member x
+     */
+    eProsima_user_DllExport void x(
+            double _x);
+
+    /*!
+     * @brief This function returns the value of member x
+     * @return Value of member x
+     */
+    eProsima_user_DllExport double x() const;
+
+    /*!
+     * @brief This function returns a reference to member x
+     * @return Reference to member x
+     */
+    eProsima_user_DllExport double& x();
+
+
+    /*!
+     * @brief This function sets a value in member y
+     * @param _y New value for member y
+     */
+    eProsima_user_DllExport void y(
+            double _y);
+
+    /*!
+     * @brief This function returns the value of member y
+     * @return Value of member y
+     */
+    eProsima_user_DllExport double y() const;
+
+    /*!
+     * @brief This function returns a reference to member y
+     * @return Reference to member y
+     */
+    eProsima_user_DllExport double& y();
+
+
+    /*!
+     * @brief This function sets a value in member z
+     * @param _z New value for member z
+     */
+    eProsima_user_DllExport void z(
+            double _z);
+
+    /*!
+     * @brief This function returns the value of member z
+     * @return Value of member z
+     */
+    eProsima_user_DllExport double z() const;
+
+    /*!
+     * @brief This function returns a reference to member z
+     * @return Reference to member z
+     */
+    eProsima_user_DllExport double& z();
+
+private:
+
+    double m_w{0.0};
+    double m_x{0.0};
+    double m_y{0.0};
+    double m_z{0.0};
+
+};
+
+
+/*!
+ * @brief This class represents the structure PoseStamped defined by the user in the IDL file.
+ * @ingroup Message
+ */
+class PoseStamped
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport PoseStamped();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~PoseStamped();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object Message::PoseStamped that will be copied.
+     */
+    eProsima_user_DllExport PoseStamped(
+            const PoseStamped& x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object Message::PoseStamped that will be copied.
+     */
+    eProsima_user_DllExport PoseStamped(
+            PoseStamped&& x) noexcept;
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object Message::PoseStamped that will be copied.
+     */
+    eProsima_user_DllExport PoseStamped& operator =(
+            const PoseStamped& x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object Message::PoseStamped that will be copied.
+     */
+    eProsima_user_DllExport PoseStamped& operator =(
+            PoseStamped&& x) noexcept;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::PoseStamped object to compare.
+     */
+    eProsima_user_DllExport bool operator ==(
+            const PoseStamped& x) const;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::PoseStamped object to compare.
+     */
+    eProsima_user_DllExport bool operator !=(
+            const PoseStamped& x) const;
+
+    /*!
+     * @brief This function copies the value in member frame_id
+     * @param _frame_id New value to be copied in member frame_id
+     */
+    eProsima_user_DllExport void frame_id(
+            const std::array<char, 50>& _frame_id);
+
+    /*!
+     * @brief This function moves the value in member frame_id
+     * @param _frame_id New value to be moved in member frame_id
+     */
+    eProsima_user_DllExport void frame_id(
+            std::array<char, 50>&& _frame_id);
+
+    /*!
+     * @brief This function returns a constant reference to member frame_id
+     * @return Constant reference to member frame_id
+     */
+    eProsima_user_DllExport const std::array<char, 50>& frame_id() const;
+
+    /*!
+     * @brief This function returns a reference to member frame_id
+     * @return Reference to member frame_id
+     */
+    eProsima_user_DllExport std::array<char, 50>& frame_id();
+
+
+    /*!
+     * @brief This function copies the value in member position
+     * @param _position New value to be copied in member position
+     */
+    eProsima_user_DllExport void position(
+            const Message::PointD& _position);
+
+    /*!
+     * @brief This function moves the value in member position
+     * @param _position New value to be moved in member position
+     */
+    eProsima_user_DllExport void position(
+            Message::PointD&& _position);
+
+    /*!
+     * @brief This function returns a constant reference to member position
+     * @return Constant reference to member position
+     */
+    eProsima_user_DllExport const Message::PointD& position() const;
+
+    /*!
+     * @brief This function returns a reference to member position
+     * @return Reference to member position
+     */
+    eProsima_user_DllExport Message::PointD& position();
+
+
+    /*!
+     * @brief This function copies the value in member quaternion
+     * @param _quaternion New value to be copied in member quaternion
+     */
+    eProsima_user_DllExport void quaternion(
+            const Message::QuaternionD& _quaternion);
+
+    /*!
+     * @brief This function moves the value in member quaternion
+     * @param _quaternion New value to be moved in member quaternion
+     */
+    eProsima_user_DllExport void quaternion(
+            Message::QuaternionD&& _quaternion);
+
+    /*!
+     * @brief This function returns a constant reference to member quaternion
+     * @return Constant reference to member quaternion
+     */
+    eProsima_user_DllExport const Message::QuaternionD& quaternion() const;
+
+    /*!
+     * @brief This function returns a reference to member quaternion
+     * @return Reference to member quaternion
+     */
+    eProsima_user_DllExport Message::QuaternionD& quaternion();
+
+private:
+
+    std::array<char, 50> m_frame_id{0};
+    Message::PointD m_position;
+    Message::QuaternionD m_quaternion;
+
+};
+
+
+/*!
+ * @brief This class represents the structure Path1024 defined by the user in the IDL file.
+ * @ingroup Message
+ */
+class Path1024
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport Path1024();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~Path1024();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object Message::Path1024 that will be copied.
+     */
+    eProsima_user_DllExport Path1024(
+            const Path1024& x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object Message::Path1024 that will be copied.
+     */
+    eProsima_user_DllExport Path1024(
+            Path1024&& x) noexcept;
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object Message::Path1024 that will be copied.
+     */
+    eProsima_user_DllExport Path1024& operator =(
+            const Path1024& x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object Message::Path1024 that will be copied.
+     */
+    eProsima_user_DllExport Path1024& operator =(
+            Path1024&& x) noexcept;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::Path1024 object to compare.
+     */
+    eProsima_user_DllExport bool operator ==(
+            const Path1024& x) const;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Message::Path1024 object to compare.
+     */
+    eProsima_user_DllExport bool operator !=(
+            const Path1024& x) const;
+
+    /*!
+     * @brief This function copies the value in member frame_id
+     * @param _frame_id New value to be copied in member frame_id
+     */
+    eProsima_user_DllExport void frame_id(
+            const std::array<char, 50>& _frame_id);
+
+    /*!
+     * @brief This function moves the value in member frame_id
+     * @param _frame_id New value to be moved in member frame_id
+     */
+    eProsima_user_DllExport void frame_id(
+            std::array<char, 50>&& _frame_id);
+
+    /*!
+     * @brief This function returns a constant reference to member frame_id
+     * @return Constant reference to member frame_id
+     */
+    eProsima_user_DllExport const std::array<char, 50>& frame_id() const;
+
+    /*!
+     * @brief This function returns a reference to member frame_id
+     * @return Reference to member frame_id
+     */
+    eProsima_user_DllExport std::array<char, 50>& frame_id();
+
+
+    /*!
+     * @brief This function sets a value in member stamp
+     * @param _stamp New value for member stamp
+     */
+    eProsima_user_DllExport void stamp(
+            uint64_t _stamp);
+
+    /*!
+     * @brief This function returns the value of member stamp
+     * @return Value of member stamp
+     */
+    eProsima_user_DllExport uint64_t stamp() const;
+
+    /*!
+     * @brief This function returns a reference to member stamp
+     * @return Reference to member stamp
+     */
+    eProsima_user_DllExport uint64_t& stamp();
+
+
+    /*!
+     * @brief This function copies the value in member poses
+     * @param _poses New value to be copied in member poses
+     */
+    eProsima_user_DllExport void poses(
+            const std::array<Message::PoseStamped, 1024>& _poses);
+
+    /*!
+     * @brief This function moves the value in member poses
+     * @param _poses New value to be moved in member poses
+     */
+    eProsima_user_DllExport void poses(
+            std::array<Message::PoseStamped, 1024>&& _poses);
+
+    /*!
+     * @brief This function returns a constant reference to member poses
+     * @return Constant reference to member poses
+     */
+    eProsima_user_DllExport const std::array<Message::PoseStamped, 1024>& poses() const;
+
+    /*!
+     * @brief This function returns a reference to member poses
+     * @return Reference to member poses
+     */
+    eProsima_user_DllExport std::array<Message::PoseStamped, 1024>& poses();
+
+
+    /*!
+     * @brief This function sets a value in member poses_size
+     * @param _poses_size New value for member poses_size
+     */
+    eProsima_user_DllExport void poses_size(
+            uint32_t _poses_size);
+
+    /*!
+     * @brief This function returns the value of member poses_size
+     * @return Value of member poses_size
+     */
+    eProsima_user_DllExport uint32_t poses_size() const;
+
+    /*!
+     * @brief This function returns a reference to member poses_size
+     * @return Reference to member poses_size
+     */
+    eProsima_user_DllExport uint32_t& poses_size();
+
+private:
+
+    std::array<char, 50> m_frame_id{0};
+    uint64_t m_stamp{0};
+    std::array<Message::PoseStamped, 1024> m_poses;
+    uint32_t m_poses_size{0};
+
+};
+
 } // namespace Message
 
 #endif // _FAST_DDS_GENERATED_MESSAGE_MESSAGE_H_

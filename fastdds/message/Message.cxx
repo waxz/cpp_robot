@@ -1632,6 +1632,913 @@ std::array<Message::Scalar, 20>& ScalarList20::data()
 
 
 
+HeaderString1024::HeaderString1024()
+{
+}
+
+HeaderString1024::~HeaderString1024()
+{
+}
+
+HeaderString1024::HeaderString1024(
+        const HeaderString1024& x)
+{
+    m_frame_id = x.m_frame_id;
+    m_stamp = x.m_stamp;
+    m_data = x.m_data;
+    m_data_size = x.m_data_size;
+}
+
+HeaderString1024::HeaderString1024(
+        HeaderString1024&& x) noexcept
+{
+    m_frame_id = std::move(x.m_frame_id);
+    m_stamp = x.m_stamp;
+    m_data = std::move(x.m_data);
+    m_data_size = x.m_data_size;
+}
+
+HeaderString1024& HeaderString1024::operator =(
+        const HeaderString1024& x)
+{
+
+    m_frame_id = x.m_frame_id;
+    m_stamp = x.m_stamp;
+    m_data = x.m_data;
+    m_data_size = x.m_data_size;
+    return *this;
+}
+
+HeaderString1024& HeaderString1024::operator =(
+        HeaderString1024&& x) noexcept
+{
+
+    m_frame_id = std::move(x.m_frame_id);
+    m_stamp = x.m_stamp;
+    m_data = std::move(x.m_data);
+    m_data_size = x.m_data_size;
+    return *this;
+}
+
+bool HeaderString1024::operator ==(
+        const HeaderString1024& x) const
+{
+    return (m_frame_id == x.m_frame_id &&
+           m_stamp == x.m_stamp &&
+           m_data == x.m_data &&
+           m_data_size == x.m_data_size);
+}
+
+bool HeaderString1024::operator !=(
+        const HeaderString1024& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function copies the value in member frame_id
+ * @param _frame_id New value to be copied in member frame_id
+ */
+void HeaderString1024::frame_id(
+        const std::array<char, 50>& _frame_id)
+{
+    m_frame_id = _frame_id;
+}
+
+/*!
+ * @brief This function moves the value in member frame_id
+ * @param _frame_id New value to be moved in member frame_id
+ */
+void HeaderString1024::frame_id(
+        std::array<char, 50>&& _frame_id)
+{
+    m_frame_id = std::move(_frame_id);
+}
+
+/*!
+ * @brief This function returns a constant reference to member frame_id
+ * @return Constant reference to member frame_id
+ */
+const std::array<char, 50>& HeaderString1024::frame_id() const
+{
+    return m_frame_id;
+}
+
+/*!
+ * @brief This function returns a reference to member frame_id
+ * @return Reference to member frame_id
+ */
+std::array<char, 50>& HeaderString1024::frame_id()
+{
+    return m_frame_id;
+}
+
+
+/*!
+ * @brief This function sets a value in member stamp
+ * @param _stamp New value for member stamp
+ */
+void HeaderString1024::stamp(
+        uint64_t _stamp)
+{
+    m_stamp = _stamp;
+}
+
+/*!
+ * @brief This function returns the value of member stamp
+ * @return Value of member stamp
+ */
+uint64_t HeaderString1024::stamp() const
+{
+    return m_stamp;
+}
+
+/*!
+ * @brief This function returns a reference to member stamp
+ * @return Reference to member stamp
+ */
+uint64_t& HeaderString1024::stamp()
+{
+    return m_stamp;
+}
+
+
+/*!
+ * @brief This function copies the value in member data
+ * @param _data New value to be copied in member data
+ */
+void HeaderString1024::data(
+        const std::array<char, 1024>& _data)
+{
+    m_data = _data;
+}
+
+/*!
+ * @brief This function moves the value in member data
+ * @param _data New value to be moved in member data
+ */
+void HeaderString1024::data(
+        std::array<char, 1024>&& _data)
+{
+    m_data = std::move(_data);
+}
+
+/*!
+ * @brief This function returns a constant reference to member data
+ * @return Constant reference to member data
+ */
+const std::array<char, 1024>& HeaderString1024::data() const
+{
+    return m_data;
+}
+
+/*!
+ * @brief This function returns a reference to member data
+ * @return Reference to member data
+ */
+std::array<char, 1024>& HeaderString1024::data()
+{
+    return m_data;
+}
+
+
+/*!
+ * @brief This function sets a value in member data_size
+ * @param _data_size New value for member data_size
+ */
+void HeaderString1024::data_size(
+        uint32_t _data_size)
+{
+    m_data_size = _data_size;
+}
+
+/*!
+ * @brief This function returns the value of member data_size
+ * @return Value of member data_size
+ */
+uint32_t HeaderString1024::data_size() const
+{
+    return m_data_size;
+}
+
+/*!
+ * @brief This function returns a reference to member data_size
+ * @return Reference to member data_size
+ */
+uint32_t& HeaderString1024::data_size()
+{
+    return m_data_size;
+}
+
+
+
+
+PointD::PointD()
+{
+}
+
+PointD::~PointD()
+{
+}
+
+PointD::PointD(
+        const PointD& x)
+{
+    m_x = x.m_x;
+    m_y = x.m_y;
+    m_z = x.m_z;
+}
+
+PointD::PointD(
+        PointD&& x) noexcept
+{
+    m_x = x.m_x;
+    m_y = x.m_y;
+    m_z = x.m_z;
+}
+
+PointD& PointD::operator =(
+        const PointD& x)
+{
+
+    m_x = x.m_x;
+    m_y = x.m_y;
+    m_z = x.m_z;
+    return *this;
+}
+
+PointD& PointD::operator =(
+        PointD&& x) noexcept
+{
+
+    m_x = x.m_x;
+    m_y = x.m_y;
+    m_z = x.m_z;
+    return *this;
+}
+
+bool PointD::operator ==(
+        const PointD& x) const
+{
+    return (m_x == x.m_x &&
+           m_y == x.m_y &&
+           m_z == x.m_z);
+}
+
+bool PointD::operator !=(
+        const PointD& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function sets a value in member x
+ * @param _x New value for member x
+ */
+void PointD::x(
+        double _x)
+{
+    m_x = _x;
+}
+
+/*!
+ * @brief This function returns the value of member x
+ * @return Value of member x
+ */
+double PointD::x() const
+{
+    return m_x;
+}
+
+/*!
+ * @brief This function returns a reference to member x
+ * @return Reference to member x
+ */
+double& PointD::x()
+{
+    return m_x;
+}
+
+
+/*!
+ * @brief This function sets a value in member y
+ * @param _y New value for member y
+ */
+void PointD::y(
+        double _y)
+{
+    m_y = _y;
+}
+
+/*!
+ * @brief This function returns the value of member y
+ * @return Value of member y
+ */
+double PointD::y() const
+{
+    return m_y;
+}
+
+/*!
+ * @brief This function returns a reference to member y
+ * @return Reference to member y
+ */
+double& PointD::y()
+{
+    return m_y;
+}
+
+
+/*!
+ * @brief This function sets a value in member z
+ * @param _z New value for member z
+ */
+void PointD::z(
+        double _z)
+{
+    m_z = _z;
+}
+
+/*!
+ * @brief This function returns the value of member z
+ * @return Value of member z
+ */
+double PointD::z() const
+{
+    return m_z;
+}
+
+/*!
+ * @brief This function returns a reference to member z
+ * @return Reference to member z
+ */
+double& PointD::z()
+{
+    return m_z;
+}
+
+
+
+
+QuaternionD::QuaternionD()
+{
+}
+
+QuaternionD::~QuaternionD()
+{
+}
+
+QuaternionD::QuaternionD(
+        const QuaternionD& x)
+{
+    m_w = x.m_w;
+    m_x = x.m_x;
+    m_y = x.m_y;
+    m_z = x.m_z;
+}
+
+QuaternionD::QuaternionD(
+        QuaternionD&& x) noexcept
+{
+    m_w = x.m_w;
+    m_x = x.m_x;
+    m_y = x.m_y;
+    m_z = x.m_z;
+}
+
+QuaternionD& QuaternionD::operator =(
+        const QuaternionD& x)
+{
+
+    m_w = x.m_w;
+    m_x = x.m_x;
+    m_y = x.m_y;
+    m_z = x.m_z;
+    return *this;
+}
+
+QuaternionD& QuaternionD::operator =(
+        QuaternionD&& x) noexcept
+{
+
+    m_w = x.m_w;
+    m_x = x.m_x;
+    m_y = x.m_y;
+    m_z = x.m_z;
+    return *this;
+}
+
+bool QuaternionD::operator ==(
+        const QuaternionD& x) const
+{
+    return (m_w == x.m_w &&
+           m_x == x.m_x &&
+           m_y == x.m_y &&
+           m_z == x.m_z);
+}
+
+bool QuaternionD::operator !=(
+        const QuaternionD& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function sets a value in member w
+ * @param _w New value for member w
+ */
+void QuaternionD::w(
+        double _w)
+{
+    m_w = _w;
+}
+
+/*!
+ * @brief This function returns the value of member w
+ * @return Value of member w
+ */
+double QuaternionD::w() const
+{
+    return m_w;
+}
+
+/*!
+ * @brief This function returns a reference to member w
+ * @return Reference to member w
+ */
+double& QuaternionD::w()
+{
+    return m_w;
+}
+
+
+/*!
+ * @brief This function sets a value in member x
+ * @param _x New value for member x
+ */
+void QuaternionD::x(
+        double _x)
+{
+    m_x = _x;
+}
+
+/*!
+ * @brief This function returns the value of member x
+ * @return Value of member x
+ */
+double QuaternionD::x() const
+{
+    return m_x;
+}
+
+/*!
+ * @brief This function returns a reference to member x
+ * @return Reference to member x
+ */
+double& QuaternionD::x()
+{
+    return m_x;
+}
+
+
+/*!
+ * @brief This function sets a value in member y
+ * @param _y New value for member y
+ */
+void QuaternionD::y(
+        double _y)
+{
+    m_y = _y;
+}
+
+/*!
+ * @brief This function returns the value of member y
+ * @return Value of member y
+ */
+double QuaternionD::y() const
+{
+    return m_y;
+}
+
+/*!
+ * @brief This function returns a reference to member y
+ * @return Reference to member y
+ */
+double& QuaternionD::y()
+{
+    return m_y;
+}
+
+
+/*!
+ * @brief This function sets a value in member z
+ * @param _z New value for member z
+ */
+void QuaternionD::z(
+        double _z)
+{
+    m_z = _z;
+}
+
+/*!
+ * @brief This function returns the value of member z
+ * @return Value of member z
+ */
+double QuaternionD::z() const
+{
+    return m_z;
+}
+
+/*!
+ * @brief This function returns a reference to member z
+ * @return Reference to member z
+ */
+double& QuaternionD::z()
+{
+    return m_z;
+}
+
+
+
+
+PoseStamped::PoseStamped()
+{
+}
+
+PoseStamped::~PoseStamped()
+{
+}
+
+PoseStamped::PoseStamped(
+        const PoseStamped& x)
+{
+    m_frame_id = x.m_frame_id;
+    m_position = x.m_position;
+    m_quaternion = x.m_quaternion;
+}
+
+PoseStamped::PoseStamped(
+        PoseStamped&& x) noexcept
+{
+    m_frame_id = std::move(x.m_frame_id);
+    m_position = std::move(x.m_position);
+    m_quaternion = std::move(x.m_quaternion);
+}
+
+PoseStamped& PoseStamped::operator =(
+        const PoseStamped& x)
+{
+
+    m_frame_id = x.m_frame_id;
+    m_position = x.m_position;
+    m_quaternion = x.m_quaternion;
+    return *this;
+}
+
+PoseStamped& PoseStamped::operator =(
+        PoseStamped&& x) noexcept
+{
+
+    m_frame_id = std::move(x.m_frame_id);
+    m_position = std::move(x.m_position);
+    m_quaternion = std::move(x.m_quaternion);
+    return *this;
+}
+
+bool PoseStamped::operator ==(
+        const PoseStamped& x) const
+{
+    return (m_frame_id == x.m_frame_id &&
+           m_position == x.m_position &&
+           m_quaternion == x.m_quaternion);
+}
+
+bool PoseStamped::operator !=(
+        const PoseStamped& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function copies the value in member frame_id
+ * @param _frame_id New value to be copied in member frame_id
+ */
+void PoseStamped::frame_id(
+        const std::array<char, 50>& _frame_id)
+{
+    m_frame_id = _frame_id;
+}
+
+/*!
+ * @brief This function moves the value in member frame_id
+ * @param _frame_id New value to be moved in member frame_id
+ */
+void PoseStamped::frame_id(
+        std::array<char, 50>&& _frame_id)
+{
+    m_frame_id = std::move(_frame_id);
+}
+
+/*!
+ * @brief This function returns a constant reference to member frame_id
+ * @return Constant reference to member frame_id
+ */
+const std::array<char, 50>& PoseStamped::frame_id() const
+{
+    return m_frame_id;
+}
+
+/*!
+ * @brief This function returns a reference to member frame_id
+ * @return Reference to member frame_id
+ */
+std::array<char, 50>& PoseStamped::frame_id()
+{
+    return m_frame_id;
+}
+
+
+/*!
+ * @brief This function copies the value in member position
+ * @param _position New value to be copied in member position
+ */
+void PoseStamped::position(
+        const Message::PointD& _position)
+{
+    m_position = _position;
+}
+
+/*!
+ * @brief This function moves the value in member position
+ * @param _position New value to be moved in member position
+ */
+void PoseStamped::position(
+        Message::PointD&& _position)
+{
+    m_position = std::move(_position);
+}
+
+/*!
+ * @brief This function returns a constant reference to member position
+ * @return Constant reference to member position
+ */
+const Message::PointD& PoseStamped::position() const
+{
+    return m_position;
+}
+
+/*!
+ * @brief This function returns a reference to member position
+ * @return Reference to member position
+ */
+Message::PointD& PoseStamped::position()
+{
+    return m_position;
+}
+
+
+/*!
+ * @brief This function copies the value in member quaternion
+ * @param _quaternion New value to be copied in member quaternion
+ */
+void PoseStamped::quaternion(
+        const Message::QuaternionD& _quaternion)
+{
+    m_quaternion = _quaternion;
+}
+
+/*!
+ * @brief This function moves the value in member quaternion
+ * @param _quaternion New value to be moved in member quaternion
+ */
+void PoseStamped::quaternion(
+        Message::QuaternionD&& _quaternion)
+{
+    m_quaternion = std::move(_quaternion);
+}
+
+/*!
+ * @brief This function returns a constant reference to member quaternion
+ * @return Constant reference to member quaternion
+ */
+const Message::QuaternionD& PoseStamped::quaternion() const
+{
+    return m_quaternion;
+}
+
+/*!
+ * @brief This function returns a reference to member quaternion
+ * @return Reference to member quaternion
+ */
+Message::QuaternionD& PoseStamped::quaternion()
+{
+    return m_quaternion;
+}
+
+
+
+
+Path1024::Path1024()
+{
+}
+
+Path1024::~Path1024()
+{
+}
+
+Path1024::Path1024(
+        const Path1024& x)
+{
+    m_frame_id = x.m_frame_id;
+    m_stamp = x.m_stamp;
+    m_poses = x.m_poses;
+    m_poses_size = x.m_poses_size;
+}
+
+Path1024::Path1024(
+        Path1024&& x) noexcept
+{
+    m_frame_id = std::move(x.m_frame_id);
+    m_stamp = x.m_stamp;
+    m_poses = std::move(x.m_poses);
+    m_poses_size = x.m_poses_size;
+}
+
+Path1024& Path1024::operator =(
+        const Path1024& x)
+{
+
+    m_frame_id = x.m_frame_id;
+    m_stamp = x.m_stamp;
+    m_poses = x.m_poses;
+    m_poses_size = x.m_poses_size;
+    return *this;
+}
+
+Path1024& Path1024::operator =(
+        Path1024&& x) noexcept
+{
+
+    m_frame_id = std::move(x.m_frame_id);
+    m_stamp = x.m_stamp;
+    m_poses = std::move(x.m_poses);
+    m_poses_size = x.m_poses_size;
+    return *this;
+}
+
+bool Path1024::operator ==(
+        const Path1024& x) const
+{
+    return (m_frame_id == x.m_frame_id &&
+           m_stamp == x.m_stamp &&
+           m_poses == x.m_poses &&
+           m_poses_size == x.m_poses_size);
+}
+
+bool Path1024::operator !=(
+        const Path1024& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function copies the value in member frame_id
+ * @param _frame_id New value to be copied in member frame_id
+ */
+void Path1024::frame_id(
+        const std::array<char, 50>& _frame_id)
+{
+    m_frame_id = _frame_id;
+}
+
+/*!
+ * @brief This function moves the value in member frame_id
+ * @param _frame_id New value to be moved in member frame_id
+ */
+void Path1024::frame_id(
+        std::array<char, 50>&& _frame_id)
+{
+    m_frame_id = std::move(_frame_id);
+}
+
+/*!
+ * @brief This function returns a constant reference to member frame_id
+ * @return Constant reference to member frame_id
+ */
+const std::array<char, 50>& Path1024::frame_id() const
+{
+    return m_frame_id;
+}
+
+/*!
+ * @brief This function returns a reference to member frame_id
+ * @return Reference to member frame_id
+ */
+std::array<char, 50>& Path1024::frame_id()
+{
+    return m_frame_id;
+}
+
+
+/*!
+ * @brief This function sets a value in member stamp
+ * @param _stamp New value for member stamp
+ */
+void Path1024::stamp(
+        uint64_t _stamp)
+{
+    m_stamp = _stamp;
+}
+
+/*!
+ * @brief This function returns the value of member stamp
+ * @return Value of member stamp
+ */
+uint64_t Path1024::stamp() const
+{
+    return m_stamp;
+}
+
+/*!
+ * @brief This function returns a reference to member stamp
+ * @return Reference to member stamp
+ */
+uint64_t& Path1024::stamp()
+{
+    return m_stamp;
+}
+
+
+/*!
+ * @brief This function copies the value in member poses
+ * @param _poses New value to be copied in member poses
+ */
+void Path1024::poses(
+        const std::array<Message::PoseStamped, 1024>& _poses)
+{
+    m_poses = _poses;
+}
+
+/*!
+ * @brief This function moves the value in member poses
+ * @param _poses New value to be moved in member poses
+ */
+void Path1024::poses(
+        std::array<Message::PoseStamped, 1024>&& _poses)
+{
+    m_poses = std::move(_poses);
+}
+
+/*!
+ * @brief This function returns a constant reference to member poses
+ * @return Constant reference to member poses
+ */
+const std::array<Message::PoseStamped, 1024>& Path1024::poses() const
+{
+    return m_poses;
+}
+
+/*!
+ * @brief This function returns a reference to member poses
+ * @return Reference to member poses
+ */
+std::array<Message::PoseStamped, 1024>& Path1024::poses()
+{
+    return m_poses;
+}
+
+
+/*!
+ * @brief This function sets a value in member poses_size
+ * @param _poses_size New value for member poses_size
+ */
+void Path1024::poses_size(
+        uint32_t _poses_size)
+{
+    m_poses_size = _poses_size;
+}
+
+/*!
+ * @brief This function returns the value of member poses_size
+ * @return Value of member poses_size
+ */
+uint32_t Path1024::poses_size() const
+{
+    return m_poses_size;
+}
+
+/*!
+ * @brief This function returns a reference to member poses_size
+ * @return Reference to member poses_size
+ */
+uint32_t& Path1024::poses_size()
+{
+    return m_poses_size;
+}
+
+
+
+
 } // namespace Message
 // Include auxiliary functions like for serializing/deserializing.
 #include "MessageCdrAux.ipp"

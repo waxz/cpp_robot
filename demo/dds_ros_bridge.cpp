@@ -20,6 +20,7 @@
 #include "config/bridge_config_gen.hpp"
 #include "config/ros_helper_config_gen.hpp"
 #include "config/dds_builder_config_gen.hpp"
+#include "common/string_logger.h"
 
 #include "message_center_types.h"
 
@@ -134,7 +135,6 @@ int main(int argc, char **argv) {
         ros_handler.close(&ros_handler);
         return 0;
     }
-#if 1
     message_handler_t dds_handler = dds_handler_create();
     bool dds_rt = dds_handler.create(&dds_handler, dds_toml.c_str(), &memory_pool_cfg);
     if (!dds_rt) {
@@ -144,25 +144,15 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-#endif
 
 
     common::TaskManager taskManager{20};
     taskManager.set_loop(100.0, 0);
 
 
-    auto cloud = PointCloud2_alloc(480,640,3,&memory_pool_cfg);
 
-    void* cloud_buffer[] = {cloud};
+    bool find_invalid_channel = false;
 
-#if 0
-    taskManager.add_task("send", [&dds_handler,&cloud_buffer]{
-        dds_handler.write_data(&dds_handler, "cloud_pub",cloud_buffer,1);
-        return true;
-    },10.0);
-#endif
-
-#if 1
     for (auto &c: bridgeConfig.bridge) {
         const auto &name = c.first;
 
@@ -188,11 +178,17 @@ int main(int argc, char **argv) {
                 // check channel
                 auto it1 = rosConfig.readers.find(from_channel);
                 if(it1 == rosConfig.readers.end()){
-                    continue;
+                    find_invalid_channel = true;
+                    MLOGW("invalid ros channel %s : %s", name.c_str(), from_channel.c_str());
+
+                    break;
                 }
                 auto it2 = ddsConfig.writers.find(to_channel);
                 if(it2 == ddsConfig.writers.end()){
-                    continue;
+                    find_invalid_channel = true;
+                    MLOGW("invalid dds channel %s : %s", name.c_str(), to_channel.c_str());
+
+                    break;
                 }
 
                 auto type_it = std::find(bridgeConfig.ros_dds_type.begin(), bridgeConfig.ros_dds_type.end(), std::array<std::string,2>{it1->second.topic_type,it2->second.topic_type});
@@ -205,37 +201,27 @@ int main(int argc, char **argv) {
                     const char* ros_channel = from_channel.c_str();
                     const char* dds_channel = to_channel.c_str();
 
-                    taskManager.add_task(name.c_str(),[&cloud_buffer, program, &ros_handler,&dds_handler,ros_channel,dds_channel]{
+                    taskManager.add_task(name.c_str(),[ program, &ros_handler,&dds_handler,ros_channel,dds_channel]{
 
-#if 0
-                        dds_handler.write_data(&dds_handler, "cloud_pub",cloud_buffer,1);
 
-#endif
 
-#if 1
                         auto recv = ros_handler.read_data(&ros_handler, ros_channel);
 
                         if(recv && recv->buffer_size>0){
-                            PointCloud2_ptr ptr =(PointCloud2_ptr ) recv->buffer[0];
-
-#if 1
-                            common::Time  t1 = common::FromUnixNow();
-                            std::cout << "recv data send to dds, size "<< recv->buffer_size << "\n";
-                            std::cout << "recv data send to dds, frame_id "<< ptr->frame_id << ", " <<ptr->height << ", "  <<ptr->width << ", "  <<ptr->channel << ", "  << "\n";
-
+                            std::cout << "recv data send to dds \n";
                             dds_handler.write_data(&dds_handler,dds_channel, recv->buffer,recv->buffer_size );
-                            std::cout << "recv data send to dds use time: " << common::ToMillSeconds(common::FromUnixNow() - t1) << " ms\n";
-#endif
-
-
 
                         }
-#endif
 
 
                         return true;
                     }, interval);
 
+                }else{
+                    find_invalid_channel = true;
+                    MLOGW("invalid message %s : %s", it1->second.topic_type.c_str(),it2->second.topic_type.c_str());
+
+                    break;
                 }
 
 
@@ -243,13 +229,19 @@ int main(int argc, char **argv) {
 
 
             } else {
-                auto it1 = rosConfig.writers.find(from_channel);
+                auto it1 = rosConfig.writers.find( to_channel);
                 if(it1 == rosConfig.writers.end()){
-                    continue;
+                    find_invalid_channel = true;
+                    MLOGW("invalid ros channel %s : %s", name.c_str(), to_channel.c_str());
+
+                    break;
                 }
-                auto it2 = ddsConfig.readers.find(to_channel);
+                auto it2 = ddsConfig.readers.find(from_channel);
                 if(it2 == ddsConfig.readers.end()){
-                    continue;
+                    find_invalid_channel = true;
+                    MLOGW("invalid dds channel %s : %s", name.c_str(), from_channel.c_str());
+
+                    break;
                 }
 
                 auto type_it = std::find(bridgeConfig.ros_dds_type.begin(), bridgeConfig.ros_dds_type.end(), std::array<std::string,2>{it1->second.topic_type,it2->second.topic_type});
@@ -276,6 +268,11 @@ int main(int argc, char **argv) {
                         return true;
                     }, interval);
 
+                }else{
+                    find_invalid_channel = true;
+                    MLOGW("invalid message %s : %s", it1->second.topic_type.c_str(),it2->second.topic_type.c_str());
+
+                    break;
                 }
             }
         }
@@ -285,8 +282,13 @@ int main(int argc, char **argv) {
 
     }
 
-#endif
 
+    if(find_invalid_channel){
+
+        ros_handler.close(&ros_handler);
+        dds_handler.close(&dds_handler);
+        return 0;
+    }
 
 
     std::atomic_bool program_run(true);
@@ -314,7 +316,5 @@ int main(int argc, char **argv) {
 
 
     ros_handler.close(&ros_handler);
-#if 1
     dds_handler.close(&dds_handler);
-#endif
 }

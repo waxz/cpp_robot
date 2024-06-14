@@ -35,12 +35,16 @@ namespace dds_helper {
     void from_dds(const Message::Pointcloud1200x800x4 &dds_value, MemPoolHandler *mem_pool) ;
     void from_dds(const Message::Pointcloud1920x1080x3 &dds_value, MemPoolHandler *mem_pool);
     void from_dds(const Message::Pointcloud640x480x3 &dds_value, MemPoolHandler *mem_pool);
+    void from_dds(const Message::HeaderString1024 &dds_value, MemPoolHandler *mem_pool);
+    void from_dds(const Message::Path1024 &dds_value, MemPoolHandler *mem_pool);
 
 
     int to_dds(Message::Laserscan1500 *dds_value, void *common_ptr) ;
     int to_dds(Message::Pointcloud1200x800x4 *dds_value, void *common_ptr);
     int to_dds(Message::Pointcloud1920x1080x3 *dds_value, void *common_ptr);
     int to_dds(Message::Pointcloud640x480x3 *dds_value, void *common_ptr);
+    int to_dds(Message::HeaderString1024 *dds_value, void *common_ptr);
+    int to_dds(Message::Path1024 *dds_value, void *common_ptr);
 
 // from_dds
 

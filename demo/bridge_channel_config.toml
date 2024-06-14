@@ -1,4 +1,4 @@
-[bridge.bridge.rr]
+[bridge.bridge.cloud]
 from = "ros"
 from_channel = "cloud_sub"
 to = "dds"
@@ -6,8 +6,34 @@ to_channel = "cloud_pub"
 interval = 100.0
 
 
+[bridge.bridge.detector_cmd]
+from = "ros"
+from_channel = "detector_cmd_sub"
+to = "dds"
+to_channel = "detector_cmd_pub"
+interval = 100.0
+
+
+[bridge.bridge.detector_status]
+from = "dds"
+from_channel = "detector_status_sub"
+to = "ros"
+to_channel = "detector_status_pub"
+interval = 100.0
+
+
+[bridge.bridge.detector_result]
+from = "dds"
+from_channel = "detector_result_sub"
+to = "ros"
+to_channel = "detector_result_pub"
+interval = 100.0
+
 [bridge]
 ros_dds_type = [
     ["PointCloud2", "Message::Pointcloud1920x1080x3"],
-    ["PointCloud2","Message::Pointcloud640x480x3"]
+    ["PointCloud2","Message::Pointcloud640x480x3"],
+    ["Path","Message::Path1024"],
+    ["HeaderString","Message::HeaderString1024"],
+
 ]

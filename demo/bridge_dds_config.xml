@@ -329,7 +329,7 @@
                 </historyQos>
             </topic>
         </data_writer>
-        <data_reader profile_name="shm_subscriber_profile" is_default_profile="true">
+        <data_reader profile_name="shm_reader_profile" is_default_profile="true">
             <qos>
                 <reliability>
                     <kind>BEST_EFFORT</kind>

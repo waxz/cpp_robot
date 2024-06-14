@@ -1054,6 +1054,731 @@ namespace Message
         }
 
     };
+
+
+
+    #ifndef SWIG
+    namespace detail {
+
+    template<typename Tag, typename Tag::type M>
+    struct HeaderString1024_rob
+    {
+        friend constexpr typename Tag::type get(
+                Tag)
+        {
+            return M;
+        }
+
+    };
+
+    struct HeaderString1024_f
+    {
+        typedef uint32_t HeaderString1024::* type;
+        friend constexpr type get(
+                HeaderString1024_f);
+    };
+
+    template struct HeaderString1024_rob<HeaderString1024_f, &HeaderString1024::m_data_size>;
+
+    template <typename T, typename Tag>
+    inline size_t constexpr HeaderString1024_offset_of()
+    {
+        return ((::size_t) &reinterpret_cast<char const volatile&>((((T*)0)->*get(Tag()))));
+    }
+
+    } // namespace detail
+    #endif // ifndef SWIG
+
+
+    /*!
+     * @brief This class represents the TopicDataType of the type HeaderString1024 defined by the user in the IDL file.
+     * @ingroup Message
+     */
+    class HeaderString1024PubSubType : public eprosima::fastdds::dds::TopicDataType
+    {
+    public:
+
+        typedef HeaderString1024 type;
+
+        eProsima_user_DllExport HeaderString1024PubSubType();
+
+        eProsima_user_DllExport ~HeaderString1024PubSubType() override;
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload) override
+        {
+            return serialize(data, payload, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool deserialize(
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                void* data) override;
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data) override
+        {
+            return getSerializedSizeProvider(data, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool getKey(
+                void* data,
+                eprosima::fastrtps::rtps::InstanceHandle_t* ihandle,
+                bool force_md5 = false) override;
+
+        eProsima_user_DllExport void* createData() override;
+
+        eProsima_user_DllExport void deleteData(
+                void* data) override;
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+        eProsima_user_DllExport inline bool is_bounded() const override
+        {
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+        eProsima_user_DllExport inline bool is_plain() const override
+        {
+            return is_plain_xcdrv1_impl();
+        }
+
+        eProsima_user_DllExport inline bool is_plain(
+            eprosima::fastdds::dds::DataRepresentationId_t data_representation) const override
+        {
+            if(data_representation == eprosima::fastdds::dds::DataRepresentationId_t::XCDR2_DATA_REPRESENTATION)
+            {
+                return is_plain_xcdrv2_impl();
+            }
+            else
+            {
+                return is_plain_xcdrv1_impl();
+            }
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+        eProsima_user_DllExport inline bool construct_sample(
+                void* memory) const override
+        {
+            new (memory) HeaderString1024();
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+
+        MD5 m_md5;
+        unsigned char* m_keyBuffer;
+
+    private:
+
+        static constexpr bool is_plain_xcdrv1_impl()
+        {
+            return 1092ULL ==
+                   (detail::HeaderString1024_offset_of<HeaderString1024, detail::HeaderString1024_f>() +
+                   sizeof(uint32_t));
+        }
+
+        static constexpr bool is_plain_xcdrv2_impl()
+        {
+            return 1088ULL ==
+                   (detail::HeaderString1024_offset_of<HeaderString1024, detail::HeaderString1024_f>() +
+                   sizeof(uint32_t));
+        }
+
+    };
+
+
+
+    #ifndef SWIG
+    namespace detail {
+
+    template<typename Tag, typename Tag::type M>
+    struct PointD_rob
+    {
+        friend constexpr typename Tag::type get(
+                Tag)
+        {
+            return M;
+        }
+
+    };
+
+    struct PointD_f
+    {
+        typedef double PointD::* type;
+        friend constexpr type get(
+                PointD_f);
+    };
+
+    template struct PointD_rob<PointD_f, &PointD::m_z>;
+
+    template <typename T, typename Tag>
+    inline size_t constexpr PointD_offset_of()
+    {
+        return ((::size_t) &reinterpret_cast<char const volatile&>((((T*)0)->*get(Tag()))));
+    }
+
+    } // namespace detail
+    #endif // ifndef SWIG
+
+
+    /*!
+     * @brief This class represents the TopicDataType of the type PointD defined by the user in the IDL file.
+     * @ingroup Message
+     */
+    class PointDPubSubType : public eprosima::fastdds::dds::TopicDataType
+    {
+    public:
+
+        typedef PointD type;
+
+        eProsima_user_DllExport PointDPubSubType();
+
+        eProsima_user_DllExport ~PointDPubSubType() override;
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload) override
+        {
+            return serialize(data, payload, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool deserialize(
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                void* data) override;
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data) override
+        {
+            return getSerializedSizeProvider(data, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool getKey(
+                void* data,
+                eprosima::fastrtps::rtps::InstanceHandle_t* ihandle,
+                bool force_md5 = false) override;
+
+        eProsima_user_DllExport void* createData() override;
+
+        eProsima_user_DllExport void deleteData(
+                void* data) override;
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+        eProsima_user_DllExport inline bool is_bounded() const override
+        {
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+        eProsima_user_DllExport inline bool is_plain() const override
+        {
+            return is_plain_xcdrv1_impl();
+        }
+
+        eProsima_user_DllExport inline bool is_plain(
+            eprosima::fastdds::dds::DataRepresentationId_t data_representation) const override
+        {
+            if(data_representation == eprosima::fastdds::dds::DataRepresentationId_t::XCDR2_DATA_REPRESENTATION)
+            {
+                return is_plain_xcdrv2_impl();
+            }
+            else
+            {
+                return is_plain_xcdrv1_impl();
+            }
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+        eProsima_user_DllExport inline bool construct_sample(
+                void* memory) const override
+        {
+            new (memory) PointD();
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+
+        MD5 m_md5;
+        unsigned char* m_keyBuffer;
+
+    private:
+
+        static constexpr bool is_plain_xcdrv1_impl()
+        {
+            return 24ULL ==
+                   (detail::PointD_offset_of<PointD, detail::PointD_f>() +
+                   sizeof(double));
+        }
+
+        static constexpr bool is_plain_xcdrv2_impl()
+        {
+            return 24ULL ==
+                   (detail::PointD_offset_of<PointD, detail::PointD_f>() +
+                   sizeof(double));
+        }
+
+    };
+
+
+
+    #ifndef SWIG
+    namespace detail {
+
+    template<typename Tag, typename Tag::type M>
+    struct QuaternionD_rob
+    {
+        friend constexpr typename Tag::type get(
+                Tag)
+        {
+            return M;
+        }
+
+    };
+
+    struct QuaternionD_f
+    {
+        typedef double QuaternionD::* type;
+        friend constexpr type get(
+                QuaternionD_f);
+    };
+
+    template struct QuaternionD_rob<QuaternionD_f, &QuaternionD::m_z>;
+
+    template <typename T, typename Tag>
+    inline size_t constexpr QuaternionD_offset_of()
+    {
+        return ((::size_t) &reinterpret_cast<char const volatile&>((((T*)0)->*get(Tag()))));
+    }
+
+    } // namespace detail
+    #endif // ifndef SWIG
+
+
+    /*!
+     * @brief This class represents the TopicDataType of the type QuaternionD defined by the user in the IDL file.
+     * @ingroup Message
+     */
+    class QuaternionDPubSubType : public eprosima::fastdds::dds::TopicDataType
+    {
+    public:
+
+        typedef QuaternionD type;
+
+        eProsima_user_DllExport QuaternionDPubSubType();
+
+        eProsima_user_DllExport ~QuaternionDPubSubType() override;
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload) override
+        {
+            return serialize(data, payload, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool deserialize(
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                void* data) override;
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data) override
+        {
+            return getSerializedSizeProvider(data, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool getKey(
+                void* data,
+                eprosima::fastrtps::rtps::InstanceHandle_t* ihandle,
+                bool force_md5 = false) override;
+
+        eProsima_user_DllExport void* createData() override;
+
+        eProsima_user_DllExport void deleteData(
+                void* data) override;
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+        eProsima_user_DllExport inline bool is_bounded() const override
+        {
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+        eProsima_user_DllExport inline bool is_plain() const override
+        {
+            return is_plain_xcdrv1_impl();
+        }
+
+        eProsima_user_DllExport inline bool is_plain(
+            eprosima::fastdds::dds::DataRepresentationId_t data_representation) const override
+        {
+            if(data_representation == eprosima::fastdds::dds::DataRepresentationId_t::XCDR2_DATA_REPRESENTATION)
+            {
+                return is_plain_xcdrv2_impl();
+            }
+            else
+            {
+                return is_plain_xcdrv1_impl();
+            }
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+        eProsima_user_DllExport inline bool construct_sample(
+                void* memory) const override
+        {
+            new (memory) QuaternionD();
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+
+        MD5 m_md5;
+        unsigned char* m_keyBuffer;
+
+    private:
+
+        static constexpr bool is_plain_xcdrv1_impl()
+        {
+            return 32ULL ==
+                   (detail::QuaternionD_offset_of<QuaternionD, detail::QuaternionD_f>() +
+                   sizeof(double));
+        }
+
+        static constexpr bool is_plain_xcdrv2_impl()
+        {
+            return 32ULL ==
+                   (detail::QuaternionD_offset_of<QuaternionD, detail::QuaternionD_f>() +
+                   sizeof(double));
+        }
+
+    };
+
+
+
+    #ifndef SWIG
+    namespace detail {
+
+    template<typename Tag, typename Tag::type M>
+    struct PoseStamped_rob
+    {
+        friend constexpr typename Tag::type get(
+                Tag)
+        {
+            return M;
+        }
+
+    };
+
+    struct PoseStamped_f
+    {
+        typedef Message::QuaternionD PoseStamped::* type;
+        friend constexpr type get(
+                PoseStamped_f);
+    };
+
+    template struct PoseStamped_rob<PoseStamped_f, &PoseStamped::m_quaternion>;
+
+    template <typename T, typename Tag>
+    inline size_t constexpr PoseStamped_offset_of()
+    {
+        return ((::size_t) &reinterpret_cast<char const volatile&>((((T*)0)->*get(Tag()))));
+    }
+
+    } // namespace detail
+    #endif // ifndef SWIG
+
+
+    /*!
+     * @brief This class represents the TopicDataType of the type PoseStamped defined by the user in the IDL file.
+     * @ingroup Message
+     */
+    class PoseStampedPubSubType : public eprosima::fastdds::dds::TopicDataType
+    {
+    public:
+
+        typedef PoseStamped type;
+
+        eProsima_user_DllExport PoseStampedPubSubType();
+
+        eProsima_user_DllExport ~PoseStampedPubSubType() override;
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload) override
+        {
+            return serialize(data, payload, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool deserialize(
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                void* data) override;
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data) override
+        {
+            return getSerializedSizeProvider(data, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool getKey(
+                void* data,
+                eprosima::fastrtps::rtps::InstanceHandle_t* ihandle,
+                bool force_md5 = false) override;
+
+        eProsima_user_DllExport void* createData() override;
+
+        eProsima_user_DllExport void deleteData(
+                void* data) override;
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+        eProsima_user_DllExport inline bool is_bounded() const override
+        {
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+        eProsima_user_DllExport inline bool is_plain() const override
+        {
+            return is_plain_xcdrv1_impl();
+        }
+
+        eProsima_user_DllExport inline bool is_plain(
+            eprosima::fastdds::dds::DataRepresentationId_t data_representation) const override
+        {
+            if(data_representation == eprosima::fastdds::dds::DataRepresentationId_t::XCDR2_DATA_REPRESENTATION)
+            {
+                return is_plain_xcdrv2_impl();
+            }
+            else
+            {
+                return is_plain_xcdrv1_impl();
+            }
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+        eProsima_user_DllExport inline bool construct_sample(
+                void* memory) const override
+        {
+            new (memory) PoseStamped();
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+
+        MD5 m_md5;
+        unsigned char* m_keyBuffer;
+
+    private:
+
+        static constexpr bool is_plain_xcdrv1_impl()
+        {
+            return 112ULL ==
+                   (detail::PoseStamped_offset_of<PoseStamped, detail::PoseStamped_f>() +
+                   sizeof(Message::QuaternionD));
+        }
+
+        static constexpr bool is_plain_xcdrv2_impl()
+        {
+            return 108ULL ==
+                   (detail::PoseStamped_offset_of<PoseStamped, detail::PoseStamped_f>() +
+                   sizeof(Message::QuaternionD));
+        }
+
+    };
+
+
+
+    #ifndef SWIG
+    namespace detail {
+
+    template<typename Tag, typename Tag::type M>
+    struct Path1024_rob
+    {
+        friend constexpr typename Tag::type get(
+                Tag)
+        {
+            return M;
+        }
+
+    };
+
+    struct Path1024_f
+    {
+        typedef uint32_t Path1024::* type;
+        friend constexpr type get(
+                Path1024_f);
+    };
+
+    template struct Path1024_rob<Path1024_f, &Path1024::m_poses_size>;
+
+    template <typename T, typename Tag>
+    inline size_t constexpr Path1024_offset_of()
+    {
+        return ((::size_t) &reinterpret_cast<char const volatile&>((((T*)0)->*get(Tag()))));
+    }
+
+    } // namespace detail
+    #endif // ifndef SWIG
+
+
+    /*!
+     * @brief This class represents the TopicDataType of the type Path1024 defined by the user in the IDL file.
+     * @ingroup Message
+     */
+    class Path1024PubSubType : public eprosima::fastdds::dds::TopicDataType
+    {
+    public:
+
+        typedef Path1024 type;
+
+        eProsima_user_DllExport Path1024PubSubType();
+
+        eProsima_user_DllExport ~Path1024PubSubType() override;
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload) override
+        {
+            return serialize(data, payload, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool deserialize(
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                void* data) override;
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data) override
+        {
+            return getSerializedSizeProvider(data, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool getKey(
+                void* data,
+                eprosima::fastrtps::rtps::InstanceHandle_t* ihandle,
+                bool force_md5 = false) override;
+
+        eProsima_user_DllExport void* createData() override;
+
+        eProsima_user_DllExport void deleteData(
+                void* data) override;
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+        eProsima_user_DllExport inline bool is_bounded() const override
+        {
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+        eProsima_user_DllExport inline bool is_plain() const override
+        {
+            return is_plain_xcdrv1_impl();
+        }
+
+        eProsima_user_DllExport inline bool is_plain(
+            eprosima::fastdds::dds::DataRepresentationId_t data_representation) const override
+        {
+            if(data_representation == eprosima::fastdds::dds::DataRepresentationId_t::XCDR2_DATA_REPRESENTATION)
+            {
+                return is_plain_xcdrv2_impl();
+            }
+            else
+            {
+                return is_plain_xcdrv1_impl();
+            }
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+        eProsima_user_DllExport inline bool construct_sample(
+                void* memory) const override
+        {
+            new (memory) Path1024();
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+
+        MD5 m_md5;
+        unsigned char* m_keyBuffer;
+
+    private:
+
+        static constexpr bool is_plain_xcdrv1_impl()
+        {
+            return 114756ULL ==
+                   (detail::Path1024_offset_of<Path1024, detail::Path1024_f>() +
+                   sizeof(uint32_t));
+        }
+
+        static constexpr bool is_plain_xcdrv2_impl()
+        {
+            return 110656ULL ==
+                   (detail::Path1024_offset_of<Path1024, detail::Path1024_f>() +
+                   sizeof(uint32_t));
+        }
+
+    };
 }
 
 #endif // _FAST_DDS_GENERATED_MESSAGE_MESSAGE_PUBSUBTYPES_H_

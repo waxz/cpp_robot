@@ -12,39 +12,39 @@ namespace dds_helper {
         u32_t size = dds_value.ranges_size();
 
 
-        LaserScan_ptr ptr_target = nullptr;
+        LaserScan_ptr target_ptr = nullptr;
         if (mem_pool->count >= mem_pool->buffer.size()) {
-            ptr_target = LaserScan_alloc(size, &mem_pool->cfg);
-            if (ptr_target)
-                mem_pool->buffer.push_back(ptr_target);
+            target_ptr = LaserScan_alloc(size, &mem_pool->cfg);
+            if (target_ptr)
+                mem_pool->buffer.push_back(target_ptr);
         } else {
-            ptr_target = (LaserScan_ptr) mem_pool->buffer[mem_pool->count];
-            ptr_target = LaserScan_realloc(size, ptr_target, &mem_pool->cfg);
+            target_ptr = (LaserScan_ptr) mem_pool->buffer[mem_pool->count];
+            target_ptr = LaserScan_realloc(size, target_ptr, &mem_pool->cfg);
 
         }
-        if (!ptr_target) {
+        if (!target_ptr) {
             return;
         }
 
         mem_pool->count += 1;
 
-        ptr_target->stamp = dds_value.stamp();
+        target_ptr->stamp = dds_value.stamp();
 
-        ptr_target->angle_increment = dds_value.angle_increment();
-        ptr_target->angle_min = dds_value.angle_min();
-        ptr_target->angle_max = dds_value.angle_max();
+        target_ptr->angle_increment = dds_value.angle_increment();
+        target_ptr->angle_min = dds_value.angle_min();
+        target_ptr->angle_max = dds_value.angle_max();
 
-        ptr_target->range_min = dds_value.range_min();
-        ptr_target->range_max = dds_value.range_max();
+        target_ptr->range_min = dds_value.range_min();
+        target_ptr->range_max = dds_value.range_max();
 
 
         auto &framed_id = dds_value.frame_id();
         auto &ranges = dds_value.ranges();
         auto &intensities = dds_value.intensities();
 
-        std::strcpy(ptr_target->frame_id, framed_id.data());
-        std::copy(ranges.data(), ranges.data() + size, ptr_target->buffer);
-        std::copy(intensities.data(), intensities.data() + size, ptr_target->buffer + size);
+        std::strcpy(target_ptr->frame_id, framed_id.data());
+        std::copy(ranges.data(), ranges.data() + size, target_ptr->buffer);
+        std::copy(intensities.data(), intensities.data() + size, target_ptr->buffer + size);
 
     }
 
@@ -80,8 +80,136 @@ namespace dds_helper {
         return 0;
 
     }
+    int to_dds(Message::HeaderString1024 *dds_value, void *common_ptr){
+        HeaderString_ptr target_ptr = (HeaderString_ptr) common_ptr;
+        u32_t size = target_ptr->element_size;
+
+        auto &data = dds_value->data();
+        if (size > data.size()) {
+            return -1;
+        }
+
+        auto &framed_id = dds_value->frame_id();
+        std::strcpy(framed_id.data(), target_ptr->frame_id);
+        dds_value->stamp(target_ptr->stamp);
+        std::copy(target_ptr->data, target_ptr->data + size, data.data());
+
+        return 0;
+
+
+    }
+    int to_dds(Message::Path1024 *dds_value, void *common_ptr){
+        Path_ptr target_ptr = (Path_ptr) common_ptr;
+        u32_t size = target_ptr->element_size;
+
+        auto &data = dds_value->poses();
+        if (size > data.size()) {
+            return -1;
+        }
+
+        auto &framed_id = dds_value->frame_id();
+        std::strcpy(framed_id.data(), target_ptr->frame_id);
+        dds_value->stamp(target_ptr->stamp);
+
+        for(u32_t i = 0 ; i < size; i++){
+            auto& to_data = data[i];
+            auto& from_data = target_ptr->data[i];
+            std::strcpy(to_data.frame_id().data(), from_data.frame_id);
+
+            to_data.position().x(from_data.position.x) ;
+            to_data.position().y(from_data.position.y) ;
+            to_data.position().z(from_data.position.z) ;
+
+            to_data.quaternion().w(from_data.quaternion.w) ;
+            to_data.quaternion().x(from_data.quaternion.x) ;
+            to_data.quaternion().y(from_data.quaternion.y) ;
+            to_data.quaternion().z(from_data.quaternion.z) ;
+        }
+        return 0;
+
+    }
+
 
 // from_dds
+    void from_dds(const Message::HeaderString1024 &dds_value, MemPoolHandler *mem_pool){
+
+        static_cast<void>(dds_value);
+        static_cast<void>(mem_pool);
+
+        u32_t size = dds_value.data_size();
+
+
+        HeaderString_ptr target_ptr = nullptr;
+        if (mem_pool->count >= mem_pool->buffer.size()) {
+            target_ptr = HeaderString_alloc(size, &mem_pool->cfg);
+            if (target_ptr)
+                mem_pool->buffer.push_back(target_ptr);
+        } else {
+            target_ptr = (HeaderString_ptr) mem_pool->buffer[mem_pool->count];
+            target_ptr = HeaderString_realloc(size, target_ptr, &mem_pool->cfg);
+
+        }
+        if (!target_ptr) {
+            return;
+        }
+
+
+        mem_pool->count += 1;
+
+        target_ptr->stamp = dds_value.stamp();
+        auto &framed_id = dds_value.frame_id();
+        auto &data = dds_value.data();
+
+        std::strcpy(target_ptr->frame_id, framed_id.data());
+        std::strcpy(target_ptr->data, data.data());
+    }
+    void from_dds(const Message::Path1024 &dds_value, MemPoolHandler *mem_pool){
+        static_cast<void>(dds_value);
+        static_cast<void>(mem_pool);
+
+        u32_t size = dds_value.poses_size();
+
+
+        Path_ptr target_ptr = nullptr;
+        if (mem_pool->count >= mem_pool->buffer.size()) {
+            target_ptr = Path_alloc(size, &mem_pool->cfg);
+            if (target_ptr)
+                mem_pool->buffer.push_back(target_ptr);
+        } else {
+            target_ptr = (Path_ptr) mem_pool->buffer[mem_pool->count];
+            target_ptr = Path_realloc(size, target_ptr, &mem_pool->cfg);
+
+        }
+        if (!target_ptr) {
+            return;
+        }
+
+
+        mem_pool->count += 1;
+        target_ptr->stamp = dds_value.stamp();
+        auto &framed_id = dds_value.frame_id();
+        auto &data = dds_value.poses();
+        std::strcpy(target_ptr->frame_id, framed_id.data());
+
+        for(u32_t i = 0 ; i < size;i++){
+            auto& from_data = data[i];
+            auto& to_data = target_ptr->data[i];
+
+            std::strcpy(to_data.frame_id, from_data.frame_id().data());
+
+            to_data.position.x = from_data.position().x();
+            to_data.position.y = from_data.position().y();
+            to_data.position.z = from_data.position().z();
+
+            to_data.quaternion.w = from_data.quaternion().w();
+            to_data.quaternion.x = from_data.quaternion().x();
+            to_data.quaternion.y = from_data.quaternion().y();
+            to_data.quaternion.z = from_data.quaternion().z();
+
+        }
+
+
+    }
 
 
     void from_dds(const Message::Pointcloud1200x800x4 &dds_value, MemPoolHandler *mem_pool) {
@@ -96,25 +224,25 @@ namespace dds_helper {
 
         size_t float_num = height * width * channel;
 
-        PointCloud2_ptr ptr_target = nullptr;
+        PointCloud2_ptr target_ptr = nullptr;
         if (mem_pool->count >= mem_pool->buffer.size()) {
-            ptr_target = PointCloud2_alloc(height, width, channel, &mem_pool->cfg);
-            if (ptr_target)
-                mem_pool->buffer.push_back(ptr_target);
+            target_ptr = PointCloud2_alloc(height, width, channel, &mem_pool->cfg);
+            if (target_ptr)
+                mem_pool->buffer.push_back(target_ptr);
         } else {
-            ptr_target = (PointCloud2_ptr) mem_pool->buffer[mem_pool->count];
-            ptr_target = PointCloud2_realloc(height, width, channel, ptr_target, &mem_pool->cfg);
+            target_ptr = (PointCloud2_ptr) mem_pool->buffer[mem_pool->count];
+            target_ptr = PointCloud2_realloc(height, width, channel, target_ptr, &mem_pool->cfg);
         }
-        if (!ptr_target) {
+        if (!target_ptr) {
             return;
         }
         mem_pool->count += 1;
 
-        ptr_target->stamp = stamp;
+        target_ptr->stamp = stamp;
         auto& frame_id = dds_value.frame_id();
         auto &data = dds_value.data();
-        std::strcpy(ptr_target->frame_id, frame_id.data());
-        std::copy(data.begin(), data.begin() + float_num, ptr_target->buffer);
+        std::strcpy(target_ptr->frame_id, frame_id.data());
+        std::copy(data.begin(), data.begin() + float_num, target_ptr->buffer);
     }
     void from_dds(const Message::Pointcloud640x480x3 &dds_value, MemPoolHandler *mem_pool){
 
@@ -128,29 +256,29 @@ namespace dds_helper {
 
         size_t float_num = height * width * channel;
 
-        PointCloud2_ptr ptr_target = nullptr;
+        PointCloud2_ptr target_ptr = nullptr;
         if (mem_pool->count >= mem_pool->buffer.size()) {
-            ptr_target = PointCloud2_alloc(height, width, channel, &mem_pool->cfg);
-            if (ptr_target)
-                mem_pool->buffer.push_back(ptr_target);
+            target_ptr = PointCloud2_alloc(height, width, channel, &mem_pool->cfg);
+            if (target_ptr)
+                mem_pool->buffer.push_back(target_ptr);
         } else {
-            ptr_target = (PointCloud2_ptr) mem_pool->buffer[mem_pool->count];
-            ptr_target = PointCloud2_realloc(height, width, channel, ptr_target, &mem_pool->cfg);
+            target_ptr = (PointCloud2_ptr) mem_pool->buffer[mem_pool->count];
+            target_ptr = PointCloud2_realloc(height, width, channel, target_ptr, &mem_pool->cfg);
         }
-        if (!ptr_target) {
+        if (!target_ptr) {
             MLOGW("allocate memory fail, [%u, %u, %u], mem: [%p, %p, %zu, %zu, %zu]", height, width,channel,  mem_pool->cfg.base, mem_pool->cfg.limit, mem_pool->cfg.alignment,  ta_num_free(&mem_pool->cfg), ta_num_used(&mem_pool->cfg));
 
             return;
         }
         mem_pool->count += 1;
 
-        ptr_target->stamp = stamp;
+        target_ptr->stamp = stamp;
         auto& frame_id = dds_value.frame_id();
 
 
         auto &data = dds_value.data();
-        std::strcpy(ptr_target->frame_id, frame_id.data());
-        std::copy(data.begin(), data.begin() + float_num, ptr_target->buffer);
+        std::strcpy(target_ptr->frame_id, frame_id.data());
+        std::copy(data.begin(), data.begin() + float_num, target_ptr->buffer);
     }
 
     void from_dds(const Message::Pointcloud1920x1080x3 &dds_value, MemPoolHandler *mem_pool) {
@@ -165,29 +293,29 @@ namespace dds_helper {
 
         size_t float_num = height * width * channel;
 
-        PointCloud2_ptr ptr_target = nullptr;
+        PointCloud2_ptr target_ptr = nullptr;
         if (mem_pool->count >= mem_pool->buffer.size()) {
-            ptr_target = PointCloud2_alloc(height, width, channel, &mem_pool->cfg);
-            if (ptr_target)
-                mem_pool->buffer.push_back(ptr_target);
+            target_ptr = PointCloud2_alloc(height, width, channel, &mem_pool->cfg);
+            if (target_ptr)
+                mem_pool->buffer.push_back(target_ptr);
         } else {
-            ptr_target = (PointCloud2_ptr) mem_pool->buffer[mem_pool->count];
-            ptr_target = PointCloud2_realloc(height, width, channel, ptr_target, &mem_pool->cfg);
+            target_ptr = (PointCloud2_ptr) mem_pool->buffer[mem_pool->count];
+            target_ptr = PointCloud2_realloc(height, width, channel, target_ptr, &mem_pool->cfg);
         }
-        if (!ptr_target) {
+        if (!target_ptr) {
             MLOGW("allocate memory fail, [%u, %u, %u], mem: [%p, %p, %zu, %zu, %zu]", height, width,channel,  mem_pool->cfg.base, mem_pool->cfg.limit, mem_pool->cfg.alignment,  ta_num_free(&mem_pool->cfg), ta_num_used(&mem_pool->cfg));
 
             return;
         }
         mem_pool->count += 1;
 
-        ptr_target->stamp = stamp;
+        target_ptr->stamp = stamp;
         auto& frame_id = dds_value.frame_id();
 
 
         auto &data = dds_value.data();
-        std::strcpy(ptr_target->frame_id, frame_id.data());
-        std::copy(data.begin(), data.begin() + float_num, ptr_target->buffer);
+        std::strcpy(target_ptr->frame_id, frame_id.data());
+        std::copy(data.begin(), data.begin() + float_num, target_ptr->buffer);
     }
 
     int to_dds(Message::Pointcloud1200x800x4 *dds_value, void *common_ptr) {

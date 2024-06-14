@@ -21,7 +21,10 @@ namespace dds_helper {
             std::shared_ptr<DdsSimpleReader<Message::Laserscan1500, Message::Laserscan1500PubSubType>>,
             std::shared_ptr<DdsSimpleReader<Message::Pointcloud1200x800x4, Message::Pointcloud1200x800x4PubSubType>>,
             std::shared_ptr<DdsSimpleReader<Message::Pointcloud1920x1080x3, Message::Pointcloud1920x1080x3PubSubType>>,
-            std::shared_ptr<DdsSimpleReader<Message::Pointcloud640x480x3, Message::Pointcloud640x480x3PubSubType>>
+            std::shared_ptr<DdsSimpleReader<Message::Pointcloud640x480x3, Message::Pointcloud640x480x3PubSubType>>,
+            std::shared_ptr<DdsSimpleReader<Message::HeaderString1024, Message::HeaderString1024PubSubType>>,
+            std::shared_ptr<DdsSimpleReader<Message::Path1024, Message::Path1024PubSubType>>
+
 
     >;
 
@@ -29,7 +32,9 @@ namespace dds_helper {
             std::shared_ptr<DdsSimpleWriter<Message::Laserscan1500, Message::Laserscan1500PubSubType>>,
             std::shared_ptr<DdsSimpleWriter<Message::Pointcloud1200x800x4, Message::Pointcloud1200x800x4PubSubType>>,
             std::shared_ptr<DdsSimpleWriter<Message::Pointcloud1920x1080x3, Message::Pointcloud1920x1080x3PubSubType>>,
-            std::shared_ptr<DdsSimpleWriter<Message::Pointcloud640x480x3, Message::Pointcloud640x480x3PubSubType>>
+            std::shared_ptr<DdsSimpleWriter<Message::Pointcloud640x480x3, Message::Pointcloud640x480x3PubSubType>>,
+            std::shared_ptr<DdsSimpleWriter<Message::HeaderString1024, Message::HeaderString1024PubSubType>>,
+            std::shared_ptr<DdsSimpleWriter<Message::Path1024, Message::Path1024PubSubType>>
 
     >;
 

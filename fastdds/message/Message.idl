@@ -72,5 +72,42 @@ module Message{
     };
 
 
+    @final
+    struct HeaderString1024{
+        char frame_id[50];
+        unsigned long long stamp;
+        char data[1024];
+        unsigned long data_size;
 
+    };
+
+    @final
+    struct PointD{
+        double x;
+        double y;
+        double z;
+    };
+    @final
+    struct QuaternionD{
+        double w;
+        double x;
+        double y;
+        double z;
+    };
+
+    @final
+    struct PoseStamped{
+        char frame_id[50];
+        PointD position;
+        QuaternionD quaternion;
+    };
+
+    @final
+    struct Path1024{
+        char frame_id[50];
+        unsigned long long stamp;
+        PoseStamped poses[1024];
+        unsigned long poses_size;
+
+    };
 };
