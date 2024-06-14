@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
                         auto recv = ros_handler.read_data(&ros_handler, ros_channel);
 
                         if(recv && recv->buffer_size>0){
-                            std::cout << "recv data send to dds \n";
+                            MLOGI("recv from ros[%s] to dds[%s]",ros_channel,dds_channel );
                             dds_handler.write_data(&dds_handler,dds_channel, recv->buffer,recv->buffer_size );
 
                         }
@@ -260,7 +260,7 @@ int main(int argc, char **argv) {
                         auto recv =  dds_handler.read_data(&dds_handler, dds_channel);
 
                         if(recv && recv->buffer_size>0){
-                            std::cout << "recv data send to ros \n";
+                            MLOGI("recv from dds[%s] to ros[%s]",dds_channel, ros_channel );
 
                             ros_handler.write_data(&ros_handler,ros_channel, recv->buffer,recv->buffer_size );
                         }

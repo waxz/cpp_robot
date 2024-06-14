@@ -280,7 +280,7 @@
                 <userTransports>
                     <transport_id>FILTER_UDPv4_TRANSPORT_DESCRIPTOR</transport_id>
                     <transport_id>FILTER_TCPv4_TRANSPORT_DESCRIPTOR</transport_id>
-                    <transport_id>shm_transport</transport_id>
+<!--                    <transport_id>shm_transport</transport_id>-->
                 </userTransports>
                 <useBuiltinTransports>false</useBuiltinTransports>
 <!--                <ignore_non_matching_locators>true</ignore_non_matching_locators>-->
@@ -316,7 +316,7 @@
                 </reliability>
                 <data_sharing>
                     <kind>ON</kind>
-                    <shared_dir>/tmp/</shared_dir>
+                    <shared_dir>/tmp</shared_dir>
                 </data_sharing>
                 <durability>
                     <kind>TRANSIENT_LOCAL</kind>
@@ -328,6 +328,8 @@
                     <depth>10</depth>
                 </historyQos>
             </topic>
+            <historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>
+
         </data_writer>
         <data_reader profile_name="shm_reader_profile" is_default_profile="true">
             <qos>
@@ -348,6 +350,8 @@
                     <depth>10</depth>
                 </historyQos>
             </topic>
+            <historyMemoryPolicy>PREALLOCATED_WITH_REALLOC</historyMemoryPolicy>
+
         </data_reader>
 
 

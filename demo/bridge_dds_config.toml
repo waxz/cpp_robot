@@ -1,7 +1,7 @@
 
 
 [dds.participant]
-xml = "bridge_dds_config.xml"
+xml = "dds_config.xml"
 profile = "participant_discovery_protocol_SIMPLE"
 name = "dds_ros_bridge_0"
 #interface_allowlist = []
@@ -19,7 +19,7 @@ topic_type = "Message::Pointcloud640x480x3"
 
 pub_profile = ""
 topic_profile = ""
-writer_profile = "shm_writer_profile"
+writer_profile = ""
 qos_queue_size = 1
 
 #
@@ -30,19 +30,19 @@ topic_type = "Message::HeaderString1024"
 
 pub_profile = ""
 topic_profile = ""
-writer_profile = "shm_writer_profile"
-qos_queue_size = 100
+writer_profile = ""
+qos_queue_size = 10
 
 
 
 [dds.readers.detector_status_sub]
-topic_name = "detector/cmd"
+topic_name = "detector/status"
 topic_type = "Message::HeaderString1024"
 #topic_type = "Message::Pointcloud1920x1080x3"
 
 sub_profile = ""
 topic_profile = ""
-reader_profile = "shm_reader_profile"
+reader_profile = ""
 qos_queue_size = 100
 
 [dds.readers.detector_result_sub]
@@ -52,5 +52,5 @@ topic_type = "Message::Path1024"
 
 sub_profile = ""
 topic_profile = ""
-reader_profile = "shm_reader_profile"
+reader_profile = ""
 qos_queue_size = 100

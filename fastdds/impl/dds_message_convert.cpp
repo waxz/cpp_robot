@@ -355,7 +355,7 @@ namespace dds_helper {
         std::copy(target_ptr->buffer, target_ptr->buffer + float_num, data.begin());
         dds_value->stamp(target_ptr->stamp);
 
-        MLOGI("to_dds Pointcloud640x480x3 use time %ld ms", common::ToMillSeconds( common::FromUnixNow() -t1 ));
+//        MLOGI("to_dds Pointcloud640x480x3 use time %ld ms", common::ToMillSeconds( common::FromUnixNow() -t1 ));
         return 0;
     }
 
