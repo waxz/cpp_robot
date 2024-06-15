@@ -26,14 +26,14 @@ Twist_ptr Twist_alloc(const ta_cfg_t* cfg){
     Twist target = Twist_create();
     Twist_ptr ptr = ta_alloc(cfg, target.base_size + target.buffer_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 Twist_ptr Twist_realloc(Twist_ptr ptr, const ta_cfg_t* cfg){
     Twist target = Twist_create();
     Twist_ptr new_ptr = ta_realloc(cfg, ptr,target.base_size + target.buffer_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 
@@ -44,7 +44,7 @@ PoseStamped_ptr PoseStamped_alloc(const ta_cfg_t* cfg){
     target.quaternion.w = 1.0;
     PoseStamped_ptr ptr = ta_alloc(cfg, target.base_size + target.buffer_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 PoseStamped_ptr PoseStamped_realloc(PoseStamped_ptr ptr, const ta_cfg_t* cfg){
@@ -52,7 +52,7 @@ PoseStamped_ptr PoseStamped_realloc(PoseStamped_ptr ptr, const ta_cfg_t* cfg){
     target.quaternion.w = 1.0;
     PoseStamped_ptr new_ptr = ta_realloc(cfg,ptr, target.base_size + target.buffer_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 
@@ -70,7 +70,7 @@ UInt8MultiArray_ptr UInt8MultiArray_alloc(u32_t size, const ta_cfg_t* cfg){
     UInt8MultiArrayT_set_buffer(&target,size);
     UInt8MultiArray_ptr ptr = ta_alloc(cfg, target.base_size + target.buffer_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 UInt8MultiArray_ptr UInt8MultiArray_realloc(u32_t size, UInt8MultiArray_ptr ptr, const ta_cfg_t* cfg){
@@ -78,7 +78,7 @@ UInt8MultiArray_ptr UInt8MultiArray_realloc(u32_t size, UInt8MultiArray_ptr ptr,
     UInt8MultiArrayT_set_buffer(&target,size);
     UInt8MultiArray_ptr new_ptr = ta_realloc(cfg, ptr, target.base_size + target.buffer_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 
@@ -95,7 +95,7 @@ UInt16MultiArray_ptr UInt16MultiArray_alloc(u32_t size, const ta_cfg_t* cfg){
     UInt16MultiArray_set_buffer(&target,size);
     UInt16MultiArray_ptr ptr = ta_alloc(cfg, target.base_size + target.buffer_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 UInt16MultiArray_ptr UInt16MultiArray_realloc(u32_t size,UInt16MultiArray_ptr ptr, const ta_cfg_t* cfg){
@@ -103,7 +103,7 @@ UInt16MultiArray_ptr UInt16MultiArray_realloc(u32_t size,UInt16MultiArray_ptr pt
     UInt16MultiArray_set_buffer(&target,size);
     UInt16MultiArray_ptr new_ptr = ta_realloc(cfg,ptr, target.base_size + target.buffer_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 
@@ -118,14 +118,14 @@ Odometry_ptr Odometry_alloc(const ta_cfg_t* cfg){
     Odometry target = Odometry_create();
     Odometry_ptr ptr = ta_alloc(cfg, target.base_size + target.buffer_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 Odometry_ptr Odometry_realloc(Odometry_ptr ptr, const ta_cfg_t* cfg){
     Odometry target = Odometry_create();
     Odometry_ptr new_ptr = ta_realloc(cfg,ptr, target.base_size + target.buffer_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 
@@ -136,7 +136,7 @@ Path_ptr Path_alloc(u32_t size, const ta_cfg_t* cfg){
     Path_set_buffer(&target, size);
     Path_ptr ptr = ta_alloc(cfg, target.base_size + target.buffer_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 Path_ptr Path_realloc(u32_t size, Path_ptr ptr, const ta_cfg_t* cfg){
@@ -144,7 +144,7 @@ Path_ptr Path_realloc(u32_t size, Path_ptr ptr, const ta_cfg_t* cfg){
     Path_set_buffer(&target, size);
     Path_ptr new_ptr = ta_realloc(cfg,ptr, target.base_size + target.buffer_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 
@@ -162,7 +162,7 @@ HeaderString_ptr HeaderString_alloc(u32_t size, const ta_cfg_t* cfg){
     HeaderString_set_buffer(&target,size);
     HeaderString_ptr ptr = ta_alloc(cfg, target.base_size + target.buffer_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 HeaderString_ptr HeaderString_realloc(u32_t size, HeaderString_ptr ptr, const ta_cfg_t* cfg){
@@ -170,7 +170,7 @@ HeaderString_ptr HeaderString_realloc(u32_t size, HeaderString_ptr ptr, const ta
     HeaderString_set_buffer(&target,size);
     HeaderString_ptr new_ptr = ta_realloc(cfg, ptr, target.base_size + target.buffer_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 // string need etra byte
@@ -191,7 +191,7 @@ OccupancyGrid_ptr OccupancyGrid_alloc(u32_t width, u32_t height, const ta_cfg_t*
     OccupancyGrid_set_buffer(&target,width , height);
     OccupancyGrid_ptr ptr = ta_alloc(cfg, target.base_size + target.buffer_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 OccupancyGrid_ptr OccupancyGrid_realloc(u32_t width, u32_t height, OccupancyGrid_ptr ptr, const ta_cfg_t* cfg){
@@ -199,7 +199,7 @@ OccupancyGrid_ptr OccupancyGrid_realloc(u32_t width, u32_t height, OccupancyGrid
     OccupancyGrid_set_buffer(&target,width , height);
     OccupancyGrid_ptr new_ptr = ta_realloc(cfg,ptr, target.base_size + target.buffer_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 
@@ -216,7 +216,7 @@ LaserScan_ptr LaserScan_alloc(u32_t size, const ta_cfg_t* cfg){
     LaserScan_set_buffer(&target,size);
     LaserScan_ptr ptr = ta_alloc(cfg, target.full_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 LaserScan_ptr LaserScan_realloc(u32_t size, LaserScan_ptr ptr, const ta_cfg_t* cfg){
@@ -224,7 +224,7 @@ LaserScan_ptr LaserScan_realloc(u32_t size, LaserScan_ptr ptr, const ta_cfg_t* c
     LaserScan_set_buffer(&target,size);
     LaserScan_ptr new_ptr = ta_realloc(cfg, ptr, target.full_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 f32_t* LaserScan_get_ranges(LaserScan* t){
@@ -249,7 +249,7 @@ PointCloud2_ptr PointCloud2_alloc(u32_t height, u32_t width, u32_t channel, cons
     PointCloud2_set_buffer(&target,height, width,channel);
     PointCloud2_ptr ptr = ta_alloc(cfg, target.full_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 
@@ -258,7 +258,7 @@ PointCloud2_ptr PointCloud2_realloc(u32_t height, u32_t width, u32_t channel, Po
     PointCloud2_set_buffer(&target,height, width,channel);
     PointCloud2_ptr new_ptr = ta_realloc(cfg, ptr, target.full_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 
@@ -275,7 +275,7 @@ ScalarList_ptr ScalarList_alloc(u32_t size, const ta_cfg_t* cfg){
     ScalarList_set_buffer(&target, size);
     ScalarList_ptr ptr = ta_alloc(cfg, target.full_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 ScalarList_ptr ScalarList_realloc(u32_t size, ScalarList_ptr ptr, const ta_cfg_t* cfg){
@@ -283,7 +283,7 @@ ScalarList_ptr ScalarList_realloc(u32_t size, ScalarList_ptr ptr, const ta_cfg_t
     ScalarList_set_buffer(&target, size);
     ScalarList_ptr new_ptr = ta_realloc(cfg, ptr, target.full_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 
@@ -298,7 +298,7 @@ SignalList_ptr SignalList_alloc(u32_t size, const ta_cfg_t* cfg){
     SignalList_set_buffer(&target, size);
     SignalList_ptr ptr = ta_alloc(cfg, target.full_size);
     if(ptr)
-    *ptr = target;
+        *ptr = target;
     return ptr;
 }
 SignalList_ptr SignalList_realloc(u32_t size, SignalList_ptr ptr, const ta_cfg_t* cfg){
@@ -306,7 +306,7 @@ SignalList_ptr SignalList_realloc(u32_t size, SignalList_ptr ptr, const ta_cfg_t
     SignalList_set_buffer(&target, size);
     SignalList_ptr new_ptr = ta_realloc(cfg, ptr, target.full_size);
     if(new_ptr)
-    *new_ptr = target;
+        *new_ptr = target;
     return new_ptr;
 }
 

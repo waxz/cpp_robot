@@ -191,15 +191,15 @@ namespace dds_helper {
             it = rt.first;
         }
         MLOGI("create topic [%s], input: [%s], return: [%s]", topic_name.c_str(), type_name.c_str(),
-              it->second->get_type_name().c_str());
+              it->second->get_type_name().c_str())
         if (type_name == it->second->get_type_name()) {
             return it->second;
         } else {
             MLOGW("error topic [%s], input: [%s] is not equal to  return: [%s]", topic_name.c_str(), type_name.c_str(),
-                  it->second->get_type_name().c_str());
-            return 0;
+                  it->second->get_type_name().c_str())
+            return nullptr;
         }
-        return 0;
+        return nullptr;
     }
 
     void DdsSimpleParticipant::delete_subscriber(eprosima::fastdds::dds::Subscriber *subscriber) {
@@ -224,7 +224,7 @@ namespace dds_helper {
         auto &name = config.name;
 
 
-        MLOGI("create participant: %s\n", name.c_str());
+        MLOGI("create participant: %s\n", name.c_str())
         participant_qos = eprosima::fastdds::dds::PARTICIPANT_QOS_DEFAULT;
 
 
@@ -237,14 +237,14 @@ namespace dds_helper {
                     profile,
                     participant_qos);
             if (ReturnCode_t::RETCODE_OK != load_rt) {
-                MLOGW("load qos profile %s failed", profile.c_str());
+                MLOGW("load qos profile %s failed", profile.c_str())
             } else {
-                MLOGI("load qos profile %s ok", profile.c_str());
+                MLOGI("load qos profile %s ok", profile.c_str())
             }
 
         } else {
 
-            MLOGW("Open file %s failed, use default qos", xml.c_str());
+            MLOGW("Open file %s failed, use default qos", xml.c_str())
         }
 
         {

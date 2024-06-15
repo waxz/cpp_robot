@@ -40,7 +40,7 @@ extern "C" {
 #endif
 
 bool ros_create(message_handler_ptr_t h, const char* filename, const ta_cfg_t* cfg);
-int ros_write_data (message_handler_ptr_t h, const char* channel_name, void** buffer, u32_t buffer_size);
+int ros_write_data (message_handler_ptr_t h, const char* channel_name,const void** buffer, u32_t buffer_size);
 ChannelBuffer_ptr ros_read_data (message_handler_ptr_t h, const char* channel_name);
 void ros_close(message_handler_ptr_t h);
 bool ros_is_ok(struct message_handler_t* h);
@@ -122,7 +122,7 @@ message_handler_t ros_handler_create(){
     return target;
 }
 
-int ros_write_data (message_handler_ptr_t h, const char* channel_name, void** buffer, u32_t buffer_size){
+int ros_write_data (message_handler_ptr_t h, const char* channel_name, const void** buffer, u32_t buffer_size){
     if(h->handler){
         RosHandler* handler = (RosHandler*)h->handler;
         return handler->write_data(channel_name,buffer,buffer_size);

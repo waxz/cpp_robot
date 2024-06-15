@@ -71,11 +71,9 @@ namespace dds_helper {
             : public eprosima::fastdds::dds::DomainParticipantListener {
     public:
 
-        ParticipantListener() {
-        }
+        ParticipantListener() = default;
 
-        ~ParticipantListener() override {
-        }
+        ~ParticipantListener() override = default;
 
         void on_data_available(
                 eprosima::fastdds::dds::DataReader *reader) override;
@@ -203,9 +201,9 @@ namespace dds_helper {
 
         ~DdsSimpleWriter();
 
-        int write_data(void **buffer, size_t buffer_size);
+        int write_data(const void **buffer, size_t buffer_size);
 
-        int write_data_dynamic(void **buffer, size_t buffer_size);
+        int write_data_dynamic(const void **buffer, size_t buffer_size);
 
 //        T& get_data(){
 //            return DdsSimpleWriter::data_;
@@ -229,7 +227,7 @@ namespace dds_helper {
     }
 
     template<typename T, typename S>
-    int DdsSimpleWriter<T, S>::write_data_dynamic(void **buffer, size_t buffer_size) {
+    int DdsSimpleWriter<T, S>::write_data_dynamic(const void **buffer, size_t buffer_size) {
         if (!data_) {
             data_ = std::make_shared<T>();
         }
@@ -244,7 +242,7 @@ namespace dds_helper {
     }
 
     template<typename T, typename S>
-    int DdsSimpleWriter<T, S>::write_data(void **buffer, size_t buffer_size) {
+    int DdsSimpleWriter<T, S>::write_data(const void **buffer, size_t buffer_size) {
 
         int rt = 0;
         if (type_.is_plain()) {
@@ -328,12 +326,13 @@ namespace dds_helper {
         // CREATE THE WRITER
         eprosima::fastdds::dds::DataWriterQos writer_qos = eprosima::fastdds::dds::DATAWRITER_QOS_DEFAULT;
         if (!config_.writer_profile.empty()) {
-            MLOGI("load writer profile %s\n", config_.writer_profile.c_str() );
+            MLOGI("load writer profile %s\n", config_.writer_profile.c_str() )
 
             type_rt = publisher_->get_datawriter_qos_from_profile(config_.writer_profile, writer_qos);
 
             if (ReturnCode_t::RETCODE_OK != type_rt) {
-                MLOGW("fail to load writer profile %s\n", config_.writer_profile.c_str() );
+                MLOGW("fail to load writer profile %s\n", config_.writer_profile.c_str() )
+                writer_qos = publisher_->get_default_datawriter_qos();
             }
         }else{
             writer_qos = publisher_->get_default_datawriter_qos();
@@ -432,7 +431,7 @@ namespace dds_helper {
     template<typename T, typename S>
     DdsSimpleReader<T, S>::DdsSimpleReader(ta_cfg_t *cfg, const std::shared_ptr<DdsSimpleParticipant> &participant,
                                            const ReaderConfig &config)
-            : participant_(participant), type_(new S()), config_(config) {
+            : participant_(participant), type_(new S()),channel_buffer{nullptr,0}, config_(config) {
 
         int history_depth = config_.qos_queue_size;
 
@@ -476,11 +475,11 @@ namespace dds_helper {
         //CREATE READER
         eprosima::fastdds::dds::DataReaderQos reader_qos = eprosima::fastdds::dds::DATAREADER_QOS_DEFAULT;
         if (!config_.reader_profile.empty()) {
-            MLOGI("load reader profile %s\n", config_.reader_profile.c_str() );
+            MLOGI("load reader profile %s\n", config_.reader_profile.c_str() )
             type_rt = subscriber_->get_datareader_qos_from_profile(config_.reader_profile, reader_qos);
             if (ReturnCode_t::RETCODE_OK != type_rt) {
-                MLOGW("fail to load reader profile %s\n", config_.reader_profile.c_str() );
-
+                MLOGW("fail to load reader profile %s\n", config_.reader_profile.c_str() )
+                reader_qos = subscriber_->get_default_datareader_qos();
             }
         }else{
             reader_qos = subscriber_->get_default_datareader_qos();
@@ -510,13 +509,16 @@ namespace dds_helper {
 //        MLOGI("read data %i\n",0);
         if (reader_->wait_for_unread_message(timeout)) {
             if (ReturnCode_t::RETCODE_OK ==
-                reader_->take(dataseq_, infoseq_, 2, eprosima::fastdds::dds::NOT_READ_SAMPLE_STATE)) {
+                reader_->take(dataseq_, infoseq_)) {
 //                MLOGI("read infoseq_.length() %u \n",infoseq_.length());
 
                 for (eprosima::fastdds::dds::LoanableCollection::size_type i = 0; i < infoseq_.length(); ++i) {
 //                    MLOGI("read infoseq_[i].valid_data %i \n",infoseq_[i].valid_data);
 
-                    if (infoseq_[i].valid_data) {
+                    if (infoseq_[i].valid_data
+                    && infoseq_[i].instance_state == eprosima::fastdds::dds::ALIVE_INSTANCE_STATE
+                    && infoseq_[i].sample_state == eprosima::fastdds::dds::SampleStateKind::NOT_READ_SAMPLE_STATE
+                    ) {
 
                         // Print your structure data here.
                         const T &sample = dataseq_[i];
@@ -539,8 +541,6 @@ namespace dds_helper {
             channel_buffer.buffer_size = mem_pool_.count;
             return &channel_buffer;
         }
-
-
         return nullptr;
     }
 

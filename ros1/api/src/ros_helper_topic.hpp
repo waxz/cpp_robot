@@ -27,7 +27,7 @@ struct ROSTopicWriter{
     ros::Publisher writer;
     bool valid = false;
 //    int(*func)(ros::Publisher& pub, MemPool_ptr pool);
-    int(*write_data)(ros::Publisher& pub, void** buffer, uint32_t buffer_size);
+    int(*write_data)(ros::Publisher& pub,const void** buffer, uint32_t buffer_size);
 
 };
 
@@ -36,7 +36,7 @@ ROSTopicReader create_reader(ros::NodeHandle& nh, reader_option* option);
 ROSTopicWriter create_writer(ros::NodeHandle& nh, writer_option* option);
 
 //int ros_write_tf(std::shared_ptr<tf::TransformBroadcaster> tfb, tf::StampedTransform& target, MemPoolHandler_ptr mem_pool );
-int ros_write_tf_data(std::shared_ptr<tf::TransformBroadcaster> tfb, tf::StampedTransform& target, void** buffer, uint32_t buffer_size );
+int ros_write_tf_data(std::shared_ptr<tf::TransformBroadcaster> tfb, tf::StampedTransform& target,const void** buffer, uint32_t buffer_size );
 
 PoseStamped* ros_read_tf(std::shared_ptr<tf::TransformListener> tfl, tf::StampedTransform& target);
 

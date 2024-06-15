@@ -24,19 +24,20 @@
 
 #include "message_center_types.h"
 
-#define STATIC_MEMORY_SIZE 100000000
+#define STATIC_MEMORY_SIZE 200000000
 static unsigned char memory_pool[STATIC_MEMORY_SIZE];
 static const ta_cfg_t memory_pool_cfg = {
         memory_pool,
         &memory_pool[sizeof(memory_pool)],
-        512,
-        16,
+        1024,
+        128,
         8,
 };
 
 int main(int argc, char **argv) {
 
 
+    ta_init(&memory_pool_cfg);
     bool get_help = false;
     std::string exe_name;
     std::string dds_toml;
@@ -125,7 +126,7 @@ int main(int argc, char **argv) {
     }
 
 
-    ta_init(&memory_pool_cfg);
+
 
     // ros
     message_handler_t ros_handler = ros_handler_create();
@@ -198,19 +199,22 @@ int main(int argc, char **argv) {
                 ){
                     std::cout << "create task: " << name << std::endl;
 
-                    const char* ros_channel = from_channel.c_str();
-                    const char* dds_channel = to_channel.c_str();
 
-                    taskManager.add_task(name.c_str(),[ program, &ros_handler,&dds_handler,ros_channel,dds_channel]{
+                    taskManager.add_task(name.c_str(),[ program, &ros_handler,&dds_handler,from_channel,to_channel]{
 
 
+                        const char* ros_channel = from_channel.c_str();
+                        const char* dds_channel = to_channel.c_str();
 
                         auto recv = ros_handler.read_data(&ros_handler, ros_channel);
 
                         if(recv && recv->buffer_size>0){
-                            MLOGI("recv from ros[%s] to dds[%s]",ros_channel,dds_channel );
-                            dds_handler.write_data(&dds_handler,dds_channel, recv->buffer,recv->buffer_size );
-
+                            MLOGI("recv from ros[%s] to dds[%s], recv->buffer_size: %i",ros_channel,dds_channel,recv->buffer_size );
+                            dds_handler.write_data(&dds_handler,dds_channel, (const void **)recv->buffer,recv->buffer_size );
+#if 0
+                            MLOGW("ta_num_used: %zu, ta_num_free: %zu, ta_num_fresh: %zu, ta_check: %i", ta_num_used(&memory_pool_cfg),ta_num_free(&memory_pool_cfg),
+                                  ta_num_fresh(&memory_pool_cfg), ta_check(&memory_pool_cfg));
+#endif
                         }
 
 
@@ -252,17 +256,21 @@ int main(int argc, char **argv) {
                     std::cout << "create task: " << name << std::endl;
 
 
-                    const char* ros_channel =  to_channel.c_str();
-                    const char* dds_channel = from_channel.c_str();
 
-                    taskManager.add_task(name.c_str(),[&ros_handler,&dds_handler,ros_channel,dds_channel]{
+                    taskManager.add_task(name.c_str(),[&ros_handler,&dds_handler,to_channel,from_channel]{
 
+                        const char* ros_channel =  to_channel.c_str();
+                        const char* dds_channel = from_channel.c_str();
                         auto recv =  dds_handler.read_data(&dds_handler, dds_channel);
 
                         if(recv && recv->buffer_size>0){
-                            MLOGI("recv from dds[%s] to ros[%s]",dds_channel, ros_channel );
+                            MLOGI("recv from dds[%s] to ros[%s], recv->buffer_size: %i",dds_channel, ros_channel,recv->buffer_size );
 
-                            ros_handler.write_data(&ros_handler,ros_channel, recv->buffer,recv->buffer_size );
+                            ros_handler.write_data(&ros_handler,ros_channel, (const void**)recv->buffer,recv->buffer_size );
+#if 0
+                            MLOGW("ta_num_used: %zu, ta_num_free: %zu, ta_num_fresh: %zu, ta_check: %i", ta_num_used(&memory_pool_cfg),ta_num_free(&memory_pool_cfg),
+                                  ta_num_fresh(&memory_pool_cfg), ta_check(&memory_pool_cfg));
+#endif
                         }
 
                         return true;
@@ -301,10 +309,9 @@ int main(int argc, char **argv) {
     common::Time  loop_stamp = common::FromUnixNow();
 
     while (program_run) {
-#if 1
 
         taskManager.run();
-#endif
+
 #if 0
         auto recv = ros_handler.read_data(&ros_handler, "cloud_sub");
         suspend.sleep(100.0);
@@ -317,4 +324,9 @@ int main(int argc, char **argv) {
 
     ros_handler.close(&ros_handler);
     dds_handler.close(&dds_handler);
+
+    MLOGW("ta_num_used: %zu, ta_num_free: %zu, ta_num_fresh: %zu, ta_check: %i", ta_num_used(&memory_pool_cfg),ta_num_free(&memory_pool_cfg),
+          ta_num_fresh(&memory_pool_cfg), ta_check(&memory_pool_cfg));
+
+
 }

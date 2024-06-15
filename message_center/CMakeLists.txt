@@ -9,6 +9,7 @@
 
 
 add_library(tinyalloc SHARED  ${CMAKE_SOURCE_DIR}/include/tinyalloc/tinyalloc.c)
+#set_pic(tinyalloc)
 INSTALL(TARGETS tinyalloc DESTINATION lib)
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/tinyalloc DESTINATION  include FILES_MATCHING PATTERN "*.h*")
 

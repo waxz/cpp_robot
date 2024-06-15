@@ -8,7 +8,7 @@
 
 bool dds_create(message_handler_ptr_t h, const char *filename, const ta_cfg_t *cfg);
 
-int dds_write_data(message_handler_ptr_t h, const char *channel_name, void **buffer, u32_t buffer_size);
+int dds_write_data(message_handler_ptr_t h, const char *channel_name,const void **buffer, u32_t buffer_size);
 
 ChannelBuffer_ptr dds_read_data(message_handler_ptr_t h, const char *channel_name);
 
@@ -66,7 +66,7 @@ bool dds_is_ok(struct message_handler_t *h) {
     return false;
 }
 
-int dds_write_data(message_handler_ptr_t h, const char *channel_name, void **buffer, u32_t buffer_size) {
+int dds_write_data(message_handler_ptr_t h, const char *channel_name,const void **buffer, u32_t buffer_size) {
     if (h->handler) {
 #if 1
 

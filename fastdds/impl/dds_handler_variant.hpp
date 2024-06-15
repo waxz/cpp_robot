@@ -76,7 +76,7 @@ namespace dds_helper {
 
         ChannelBuffer_ptr read_data(const char *name);
 
-        int write_data(const char *name, void **buffer, size_t buffer_size);
+        int write_data(const char *name, const void **buffer, size_t buffer_size);
 
     };
 }

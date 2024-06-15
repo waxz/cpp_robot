@@ -69,7 +69,7 @@ struct ROSTFReader{
 //    MemPool pool;
     ChannelBuffer channel_buffer;
     void* buffer[1] = {0};
-    PoseStamped pose;
+    PoseStamped pose{};
     tf::StampedTransform target;
     std::string parent_frame;
     std::string child_frame;
@@ -82,7 +82,7 @@ struct ROSTFReader{
     const char* m_config_key_qos_queue_size = "qos_queue_size";
 
 
-    ROSTFReader(std::shared_ptr<tf::TransformListener> tfl);
+    explicit ROSTFReader(std::shared_ptr<tf::TransformListener> tfl);
     //
 //    int create_from_toml(const toml::basic_value<toml::discard_comments>& config);
     int create(const ros_helper::Channel& channel);
@@ -110,13 +110,13 @@ struct ROSTFWriter{
     const char* m_config_key_topic_name = "topic_name";
     const char* m_config_key_qos_queue_size = "qos_queue_size";
 
-    ROSTFWriter(std::shared_ptr<tf::TransformBroadcaster> tfb);
+    explicit ROSTFWriter(std::shared_ptr<tf::TransformBroadcaster> tfb);
     //
 //    int create_from_toml(const toml::basic_value<toml::discard_comments>& config);
     int create(const ros_helper::Channel& channel);
     // process data in pool
 //    int process();
-    int write_data(void** buffer, u32_t buffer_len);
+    int write_data(const void** buffer, u32_t buffer_len);
 
 };
 
@@ -137,7 +137,7 @@ struct ROSReader{
     const char* m_config_key_qos_queue_size = "qos_queue_size";
 
 
-    ROSReader(ta_cfg_t * cfg);
+    explicit ROSReader(ta_cfg_t * cfg);
     //
 //    int create_from_toml(const toml::basic_value<toml::discard_comments>& config);
     int create(const ros_helper::Channel& channel);
@@ -174,7 +174,7 @@ struct ROSWriter{
 //    int process();
 //    int process(MemPool_ptr another_pool);
 
-    int write_data(void** buffer, u32_t buffer_len);
+    int write_data(const void** buffer, u32_t buffer_len);
 
 };
 
@@ -224,7 +224,7 @@ struct RosHandler{
 //    int write(const char* channel_name);
 //    int write(const char* channel_name, MemPool_ptr another_pool);
 
-    int write_data(const char* channel_name, void** buffer, u32_t buffer_size);
+    int write_data(const char* channel_name, const void** buffer, u32_t buffer_size);
     ChannelBuffer_ptr read_data(const char* channel_name);
 
 };

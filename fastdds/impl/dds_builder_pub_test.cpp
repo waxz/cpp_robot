@@ -95,7 +95,7 @@ int main(int argc, char** argv){
     taskManager.set_loop(100.0,0);
 
     taskManager.add_task("send", [&dds_handler,&cloud_buffer]{
-        dds_handler.write_data("cloud_pub",cloud_buffer,1);
+        dds_handler.write_data("cloud_pub", (const void **)(cloud_buffer), 1);
         return true;
         },10.0);
 

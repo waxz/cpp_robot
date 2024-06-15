@@ -23,7 +23,7 @@
 #include "common/clock_time.h"
 #include "common/string_logger.h"
 //LaserScan
-int from_common_LaserScan(ros::Publisher& publisher,void** buffer, uint32_t buffer_size);
+int from_common_LaserScan(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size);
 
 void to_common_LaserScan(sensor_msgs::LaserScanConstPtr msg, reader_option* option);
 
@@ -32,7 +32,7 @@ ROSTopicWriter create_writer_LaserScan(ros::NodeHandle& nh, writer_option* optio
 ROSTopicReader create_reader_LaserScan(ros::NodeHandle& nh, reader_option* option);
 
 //Twist
-int from_common_Twist(ros::Publisher& publisher, void** buffer, uint32_t buffer_size);
+int from_common_Twist(ros::Publisher& publisher, const void** buffer, uint32_t buffer_size);
 
 ROSTopicWriter create_writer_Twist(ros::NodeHandle& nh, writer_option* option);
 
@@ -41,7 +41,7 @@ void to_common_Twist(geometry_msgs::TwistConstPtr msg, reader_option* option);
 ROSTopicReader create_reader_Twist(ros::NodeHandle& nh, reader_option* option);
 
 //UInt8MultiArray
-int from_common_UInt8MultiArray(ros::Publisher& publisher, void** buffer, uint32_t buffer_size);
+int from_common_UInt8MultiArray(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size);
 
 ROSTopicWriter create_writer_UInt8MultiArray(ros::NodeHandle& nh, writer_option* option);
 
@@ -50,7 +50,7 @@ void to_common_UInt8MultiArray(std_msgs::UInt8MultiArrayConstPtr msg, reader_opt
 ROSTopicReader create_reader_UInt8MultiArray(ros::NodeHandle& nh, reader_option* option);
 
 //UInt16MultiArray
-int from_common_UInt16MultiArray(ros::Publisher& publisher, void** buffer, uint32_t buffer_size);
+int from_common_UInt16MultiArray(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size);
 
 ROSTopicWriter create_writer_UInt16MultiArray(ros::NodeHandle& nh, writer_option* option);
 
@@ -59,7 +59,7 @@ void to_common_UInt16MultiArray(std_msgs::UInt16MultiArrayConstPtr msg, reader_o
 ROSTopicReader create_reader_UInt16MultiArray(ros::NodeHandle& nh, reader_option* option);
 
 //OccupancyGrid
-int from_common_OccupancyGrid(ros::Publisher& publisher, void** buffer, uint32_t buffer_size);
+int from_common_OccupancyGrid(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size);
 
 ROSTopicWriter create_writer_OccupancyGrid(ros::NodeHandle& nh, writer_option* option);
 
@@ -68,7 +68,7 @@ void to_common_OccupancyGrid(nav_msgs::OccupancyGridConstPtr msg, reader_option*
 ROSTopicReader create_reader_OccupancyGrid(ros::NodeHandle& nh, reader_option* option);
 
 // Odometry
-int from_common_Odometry(ros::Publisher& publisher, void** buffer, uint32_t buffer_size);
+int from_common_Odometry(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size);
 
 ROSTopicWriter create_writer_Odometry(ros::NodeHandle& nh, writer_option* option);
 
@@ -77,7 +77,7 @@ void to_common_Odometry(nav_msgs::OdometryConstPtr msg, reader_option* option);
 ROSTopicReader create_reader_Odometry(ros::NodeHandle& nh, reader_option* option);
 
 // Path
-int from_common_Path(ros::Publisher& publisher, void** buffer, uint32_t buffer_size);
+int from_common_Path(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size);
 
 ROSTopicWriter create_writer_Path(ros::NodeHandle& nh, writer_option* option);
 
@@ -86,7 +86,7 @@ void to_common_Path(nav_msgs::PathConstPtr msg, reader_option* option);
 ROSTopicReader create_reader_Path(ros::NodeHandle& nh, reader_option* option);
 
 // Pose
-int from_common_PoseStamped(ros::Publisher& publisher, void** buffer, uint32_t buffer_size);
+int from_common_PoseStamped(ros::Publisher& publisher, const void** buffer, uint32_t buffer_size);
 
 ROSTopicWriter create_writer_PoseStamped(ros::NodeHandle& nh, writer_option* option);
 
@@ -94,7 +94,7 @@ void to_common_PoseStamped(geometry_msgs::PoseStampedConstPtr msg,reader_option*
 
 ROSTopicReader create_reader_PoseStamped(ros::NodeHandle& nh, reader_option* option);
 // HeaderString
-int from_common_HeaderString(ros::Publisher& publisher, void** buffer, uint32_t buffer_size);
+int from_common_HeaderString(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size);
 
 ROSTopicWriter create_writer_HeaderString(ros::NodeHandle& nh, writer_option* option);
 
@@ -103,7 +103,7 @@ void to_common_HeaderString(rospy_tutorials::HeaderStringConstPtr msg, reader_op
 ROSTopicReader create_reader_HeaderString(ros::NodeHandle& nh, reader_option* option);
 
 // PointCloud2
-int from_common_PointCloud2(ros::Publisher& publisher, void** buffer, uint32_t buffer_size);
+int from_common_PointCloud2(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size);
 
 ROSTopicWriter create_writer_PointCloud2(ros::NodeHandle& nh, writer_option* option);
 
@@ -114,7 +114,7 @@ ROSTopicReader create_reader_PointCloud2(ros::NodeHandle& nh, reader_option* opt
 
 // LaserScan
 
-int from_common_LaserScan(ros::Publisher& publisher, void** buffer, uint32_t buffer_size){
+int from_common_LaserScan(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size){
 
     static thread_local  sensor_msgs::LaserScan msg;
 
@@ -155,7 +155,7 @@ void to_common_LaserScan(sensor_msgs::LaserScanConstPtr msg, reader_option* opti
     }else{
         ptr_target = (LaserScan*)option->mem_pool->buffer[option->mem_pool->count];
         ptr_target = LaserScan_realloc( ranges_size,ptr_target,& option->mem_pool->cfg );
-
+        option->mem_pool->buffer[option->mem_pool->count] = ptr_target;
     }
     if (!ptr_target){
         std::cout << __FUNCTION__  << "fail allocate" << std::endl;
@@ -212,7 +212,7 @@ ROSTopicReader create_reader_LaserScan(ros::NodeHandle& nh, reader_option* optio
 }
 
 // Twist
-int from_common_Twist(ros::Publisher& publisher, void** buffer, uint32_t buffer_size){
+int from_common_Twist(ros::Publisher& publisher, const void** buffer, uint32_t buffer_size){
 
     static thread_local  geometry_msgs::Twist msg;
 
@@ -254,7 +254,7 @@ void to_common_Twist(geometry_msgs::TwistConstPtr msg, reader_option* option){
     }else{
         ptr_target = (Twist*)option->mem_pool->buffer[option->mem_pool->count];
         ptr_target = Twist_realloc( ptr_target,& option->mem_pool->cfg );
-
+        option->mem_pool->buffer[option->mem_pool->count] = ptr_target;
     }
     if (!ptr_target){
         std::cout << __FUNCTION__  << "fail allocate" << std::endl;
@@ -289,7 +289,7 @@ ROSTopicReader create_reader_Twist(ros::NodeHandle& nh, reader_option* option){
 // Odometry
 
 
-int from_common_Odometry(ros::Publisher& publisher, void** buffer, uint32_t buffer_size){
+int from_common_Odometry(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size){
     static thread_local  nav_msgs::Odometry msg;
     msg.header.stamp = ros::Time::now();
 
@@ -348,7 +348,7 @@ void to_common_Odometry(nav_msgs::OdometryConstPtr msg, reader_option* option){
     }else{
         ptr_target = (Odometry*)option->mem_pool->buffer[option->mem_pool->count];
         ptr_target = Odometry_realloc( ptr_target,& option->mem_pool->cfg );
-
+        option->mem_pool->buffer[option->mem_pool->count] = ptr_target;
     }
     if (!ptr_target){
         std::cout << __FUNCTION__  << "fail allocate" << std::endl;
@@ -404,7 +404,7 @@ ROSTopicReader create_reader_Odometry(ros::NodeHandle& nh, reader_option* option
 
 // UInt8MultiArray
 
-int from_common_UInt8MultiArray(ros::Publisher& publisher, void** buffer, uint32_t buffer_size){
+int from_common_UInt8MultiArray(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size){
 
     static thread_local  std_msgs::UInt8MultiArray msg;
 
@@ -438,7 +438,7 @@ void to_common_UInt8MultiArray(std_msgs::UInt8MultiArrayConstPtr msg, reader_opt
     }else{
         ptr_target = (UInt8MultiArray*)option->mem_pool->buffer[option->mem_pool->count];
         ptr_target = UInt8MultiArray_realloc( size,ptr_target,& option->mem_pool->cfg );
-
+        option->mem_pool->buffer[option->mem_pool->count] = ptr_target;
     }
     if (!ptr_target){
         std::cout << __FUNCTION__  << "fail allocate" << std::endl;
@@ -465,7 +465,7 @@ ROSTopicReader create_reader_UInt8MultiArray(ros::NodeHandle& nh, reader_option*
 }
 
 // UInt16MultiArray
-int from_common_UInt16MultiArray(ros::Publisher& publisher, void** buffer, uint32_t buffer_size){
+int from_common_UInt16MultiArray(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size){
 
     static thread_local  std_msgs::UInt16MultiArray msg;
 
@@ -499,7 +499,7 @@ void to_common_UInt16MultiArray(std_msgs::UInt16MultiArrayConstPtr msg, reader_o
     }else{
         ptr_target = (UInt16MultiArray*)option->mem_pool->buffer[option->mem_pool->count];
         ptr_target = UInt16MultiArray_realloc( size,ptr_target,& option->mem_pool->cfg );
-
+        option->mem_pool->buffer[option->mem_pool->count] = ptr_target;
     }
     if (!ptr_target){
         std::cout << __FUNCTION__  << "fail allocate" << std::endl;
@@ -524,7 +524,7 @@ ROSTopicReader create_reader_UInt16MultiArray(ros::NodeHandle& nh, reader_option
 }
 
 //===============
-int from_common_OccupancyGrid(ros::Publisher& publisher, void** buffer, uint32_t buffer_size){
+int from_common_OccupancyGrid(ros::Publisher& publisher, const void** buffer, uint32_t buffer_size){
     static thread_local  nav_msgs::OccupancyGrid msg;
     msg.header.stamp = ros::Time::now();
 
@@ -577,7 +577,7 @@ void to_common_OccupancyGrid(nav_msgs::OccupancyGridConstPtr msg, reader_option*
     }else{
         ptr_target = (OccupancyGrid*)option->mem_pool->buffer[option->mem_pool->count];
         ptr_target = OccupancyGrid_realloc( width,height,ptr_target,& option->mem_pool->cfg );
-
+        option->mem_pool->buffer[option->mem_pool->count] = ptr_target;
     }
     if (!ptr_target){
         std::cout << __FUNCTION__  << "fail allocate" << std::endl;
@@ -617,7 +617,7 @@ ROSTopicReader create_reader_OccupancyGrid(ros::NodeHandle& nh, reader_option* o
     return target;
 }
 ////
-int from_common_PoseStamped(ros::Publisher& publisher, void** buffer, uint32_t buffer_size){
+int from_common_PoseStamped(ros::Publisher& publisher, const void** buffer, uint32_t buffer_size){
     static thread_local  geometry_msgs::PoseStamped msg;
     msg.header.stamp = ros::Time::now();
 
@@ -660,7 +660,7 @@ void to_common_PoseStamped(geometry_msgs::PoseStampedConstPtr msg,reader_option*
     }else{
         ptr_target = (PoseStamped*)option->mem_pool->buffer[option->mem_pool->count];
         ptr_target = PoseStamped_realloc( ptr_target ,& option->mem_pool->cfg);
-
+        option->mem_pool->buffer[option->mem_pool->count] = ptr_target;
     }
     if (!ptr_target){
         std::cout << __FUNCTION__  << "fail allocate" << std::endl;
@@ -698,7 +698,7 @@ ROSTopicReader create_reader_PoseStamped(ros::NodeHandle& nh, reader_option* opt
 
 ////
 
-int from_common_Path(ros::Publisher& publisher, void** buffer, uint32_t buffer_size){
+int from_common_Path(ros::Publisher& publisher,const void** buffer, uint32_t buffer_size){
     static thread_local  nav_msgs::Path msg;
     msg.header.stamp = ros::Time::now();
 
@@ -747,7 +747,7 @@ void to_common_Path(nav_msgs::PathConstPtr msg, reader_option* option){
     }else{
         ptr_target = (Path*)option->mem_pool->buffer[option->mem_pool->count];
         ptr_target = Path_realloc( pose_num,ptr_target,& option->mem_pool->cfg );
-
+        option->mem_pool->buffer[option->mem_pool->count] = ptr_target;
     }
     if (!ptr_target){
         std::cout << __FUNCTION__  << "fail allocate" << std::endl;
@@ -790,7 +790,7 @@ ROSTopicReader create_reader_Path(ros::NodeHandle& nh, reader_option* option){
 }
 //
 
-int from_common_HeaderString(ros::Publisher& publisher, void** buffer, uint32_t buffer_size){
+int from_common_HeaderString(ros::Publisher& publisher, const void** buffer, uint32_t buffer_size){
     static thread_local  rospy_tutorials::HeaderString msg;
 
     msg.header.stamp = ros::Time::now();
@@ -830,21 +830,28 @@ void to_common_HeaderString(rospy_tutorials::HeaderStringConstPtr msg, reader_op
     }else{
         ptr_target = (HeaderString*)option->mem_pool->buffer[option->mem_pool->count];
         ptr_target = HeaderString_realloc( size,ptr_target,& option->mem_pool->cfg );
-
+        option->mem_pool->buffer[option->mem_pool->count] = ptr_target;
     }
     if (!ptr_target){
         std::cout << __FUNCTION__  << "fail allocate" << std::endl;
         return;
     }
 
+    if(msg->header.frame_id.size() >= MSG_STRUCT_MAX_FRAME_ID_LEN){
+        std::cout << __FUNCTION__  << " size error" << std::endl;
+        return;
+    }
     option->mem_pool->count+=1;
 
 
     ptr_target->stamp = msg->header.stamp.toNSec();
 
 
-    strncpy(ptr_target->frame_id, msg->header.frame_id.c_str(),MSG_STRUCT_MAX_FRAME_ID_LEN);
-    strcpy(ptr_target->data, msg->data.c_str());
+    std::strcpy(ptr_target->frame_id, msg->header.frame_id.data() );
+    std::strcpy(ptr_target->data, msg->data.data() );
+
+//    strncpy(ptr_target->frame_id, msg->header.frame_id.c_str(),MSG_STRUCT_MAX_FRAME_ID_LEN);
+//    strcpy(ptr_target->data, msg->data.c_str());
 }
 
 ROSTopicReader create_reader_HeaderString(ros::NodeHandle& nh, reader_option* option){
@@ -931,7 +938,7 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
     }else{
         ptr_target = (PointCloud2*)option->mem_pool->buffer[option->mem_pool->count];
         ptr_target = PointCloud2_realloc( height,width,channel,ptr_target,& option->mem_pool->cfg );
-
+        option->mem_pool->buffer[option->mem_pool->count] = ptr_target;
     }
 //    std::cout << "2 to_common_PointCloud2 allocate buffer, option->mem_pool->buffer.size(): " << option->mem_pool->buffer.size() << std::endl;
 
@@ -970,7 +977,7 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
 
 
         common::Time t1 = common::FromUnixNow();
-        int is_invalid_num = 0;
+//        int is_invalid_num = 0;
 //        float x = 0.0, y = 0.0, z = 0.0;
 #if 1
         if(point_num < point_num_use_omp){
@@ -985,7 +992,7 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
                 bool valid = (std::isfinite(x) && std::isfinite(y) && std::isfinite(z)
                  && !std::isnan(x) && !std::isnan(y) && !std::isnan(z)
                         );
-                is_invalid_num += !valid;
+//                is_invalid_num += !valid;
                 target_data[i*3 + 0 ] = valid ? x:0.0f;
                 target_data[i*3 + 1 ] = valid ? y:0.0f;
                 target_data[i*3 + 2 ] = valid ? z:0.0f;
@@ -1059,7 +1066,7 @@ void to_common_PointCloud2(sensor_msgs::PointCloud2ConstPtr msg, reader_option* 
 
 
 
-        std::cout << __FUNCTION__  << " for loop use time: " << common::ToMillSeconds(common::FromUnixNow() - t1) << " ms, is_invalid_num: " << is_invalid_num << "\n";
+//        std::cout << __FUNCTION__  << " for loop use time: " << common::ToMillSeconds(common::FromUnixNow() - t1) << " ms, is_invalid_num: " << is_invalid_num << "\n";
 //        std::cout << "\n";
 
         option->mem_pool->count+=1;
@@ -1181,7 +1188,7 @@ ROSTopicWriter create_writer(ros::NodeHandle& nh, writer_option* option){
 //
 //}
 
-int ros_write_tf_data(std::shared_ptr<tf::TransformBroadcaster> tfb, tf::StampedTransform& target, void** buffer, uint32_t buffer_size ){
+int ros_write_tf_data(std::shared_ptr<tf::TransformBroadcaster> tfb, tf::StampedTransform& target,const void** buffer, uint32_t buffer_size ){
 
     for(int i = 0; i < buffer_size;i++){
 //        if(pool->nodes[i].ptr == nullptr || pool->nodes[i].count ==0){ break;}

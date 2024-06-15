@@ -24,7 +24,7 @@
 
 
 //ROSTFReader
-ROSTFReader::ROSTFReader(std::shared_ptr<tf::TransformListener> tfl) :m_tfl(tfl){}
+ROSTFReader::ROSTFReader(std::shared_ptr<tf::TransformListener> tfl) :m_tfl(tfl),channel_buffer{nullptr,0}{}
 int ROSTFReader::create(const ros_helper::Channel& channel){
     std::vector<std::string> parts = absl::StrSplit(channel.topic_type, ':');
 
@@ -148,7 +148,7 @@ int ROSTFWriter::create(const ros_helper::Channel& channel){
 }
 
 
-int ROSTFWriter::write_data(void **buffer, u32_t buffer_len) {
+int ROSTFWriter::write_data(const void **buffer, u32_t buffer_len) {
     target.stamp_ = ros::Time::now();
     ros_write_tf_data(m_tfb, target, buffer,buffer_len);
     return 0;
@@ -174,14 +174,16 @@ int ROSWriter::create(const ros_helper::Channel& channel){
 }
 
 
-int ROSWriter::write_data(void **buffer, u32_t buffer_len) {
+int ROSWriter::write_data(const void **buffer, u32_t buffer_len) {
 
     int ret = writer.write_data(writer.writer,buffer, buffer_len);
     return ret;
 }
 
 //ROSReader
-ROSReader::ROSReader(ta_cfg_t * cfg): m_nh(), m_nh_private("~") {
+ROSReader::ROSReader(ta_cfg_t * cfg): m_nh(), m_nh_private("~"),  channel_buffer{nullptr,0},option{} {
+    mem_pool_handler.count = 0;
+    mem_pool_handler.buffer.clear();
     mem_pool_handler.cfg = *cfg;
 }
 int  ROSReader::create(const ros_helper::Channel& channel){
@@ -349,7 +351,9 @@ int RosHandler::create(const char *filename,const ta_cfg_t* cfg) {
 
 
             int ret = absl::get<ROSTFReader>(it.first->second).create(channel_config);
-
+            if(ret < 0){
+                return -1;
+            }
         }else{
 
 //                auto it = channel_holder_map.emplace(channel_name, ROSReader(mem_pool_manager));
@@ -387,7 +391,9 @@ int RosHandler::create(const char *filename,const ta_cfg_t* cfg) {
 
 
             int ret =  absl::get<ROSTFWriter>(it.first->second).create(channel_config);
-
+            if(ret < 0){
+                return -1;
+            }
         }else{
 
 //                auto it = channel_holder_map.emplace(channel_name, ROSWriter(mem_pool_manager));
@@ -427,7 +433,7 @@ int RosHandler::stop() {
     return 0;
 }
 
-int RosHandler::write_data(const char *channel_name, void **buffer, u32_t buffer_size) {
+int RosHandler::write_data(const char *channel_name, const void **buffer, u32_t buffer_size) {
 
     if(buffer == nullptr || buffer_size == 0){
         return 0;

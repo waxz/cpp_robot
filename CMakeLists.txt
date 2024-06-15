@@ -41,7 +41,15 @@ set(Eigen3_ROOT ${Eigen3_ROOT}/share/eigen3/cmake)
 find_package(Eigen3 3.4.0 REQUIRED HINTS ${Eigen3_ROOT})
 message(new eigen: EIGEN3_INCLUDE_DIRS : ${EIGEN3_INCLUDE_DIRS} )
 
+# bit7z-4.0.7.tar.gz
+#build_external_project(bit7z lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/bit7z-4.0.7.tar.gz  -DCMAKE_BUILD_TYPE=Release )
+#message(STATUS "bit7z_BUILD_DIR " ${bit7z_BUILD_DIR})
+##find_package(bit7z REQUIRED)
+#set(bit7z_INCLUDE_DIR ${bit7z_BUILD_DIR}/bit7z/include/ )
+#set(bit7z_LIBRARY ${bit7z_BUILD_DIR}/bit7z/lib/x64/libbit7z64.a )
 
+build_external_project(unarr lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/unarr-1.1.1.tar.xz  -DCMAKE_BUILD_TYPE=Release  -DBUILD_SHARED_LIBS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON )
+find_package(unarr REQUIRED)
 
 add_subdirectory(message_center)
 
@@ -66,7 +74,6 @@ endif ()
 
 add_subdirectory(demo)
 add_subdirectory(perception)
-
 
 
 ##### install

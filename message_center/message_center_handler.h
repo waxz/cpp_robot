@@ -53,7 +53,7 @@ typedef struct message_handler_t{
     int(*write)(struct message_handler_t* h, const char* channel_name);
 //    int(*write_another_pool)(struct ros_handler_t* h, const char* channel_name, MemPool_ptr pool);
 
-    int(*write_data)(struct message_handler_t* h, const char* channel_name, void** buffer, u32_t buffer_size);
+    int(*write_data)(struct message_handler_t* h, const char* channel_name,const void** buffer, u32_t buffer_size);
 
     ChannelBuffer_ptr (*read_data)(struct message_handler_t* h, const char* channel_name);
 

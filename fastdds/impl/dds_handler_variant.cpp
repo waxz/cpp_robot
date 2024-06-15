@@ -172,7 +172,7 @@ namespace dds_helper {
         return create_handler_rt;
     }
 
-    int DdsHandlerVariant::write_data(const char *name, void **buffer, size_t buffer_size) {
+    int DdsHandlerVariant::write_data(const char *name,const void **buffer, size_t buffer_size) {
         if(buffer == nullptr || buffer_size == 0){
             MLOGW("channel buffer_size [%zu] wrong", buffer_size);
 
