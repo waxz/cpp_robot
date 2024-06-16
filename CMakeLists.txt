@@ -51,6 +51,11 @@ message(new eigen: EIGEN3_INCLUDE_DIRS : ${EIGEN3_INCLUDE_DIRS} )
 build_external_project(unarr lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/unarr-1.1.1.tar.xz  -DCMAKE_BUILD_TYPE=Release  -DBUILD_SHARED_LIBS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON )
 find_package(unarr REQUIRED)
 
+
+add_library(uuid4 SHARED ${CMAKE_SOURCE_DIR}/include/uuid4/uuid4.c)
+target_include_directories(uuid4 PUBLIC ${CMAKE_SOURCE_DIR}/include/uuid4 )
+
+
 add_subdirectory(message_center)
 
 
@@ -70,6 +75,10 @@ if (BUILD_ROS1)
 endif ()
 
 
+set(BUILD_MQTT ON)
+if(BUILD_MQTT)
+    add_subdirectory(mqtt)
+endif ()
 
 
 add_subdirectory(demo)

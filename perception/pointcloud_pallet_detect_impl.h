@@ -49,26 +49,28 @@ namespace perception{
         geometry::float3 pallet_center;
         f32_t pallet_direction;
         //
-        transform::Transform<double> pallet_pose;
-        transform::Transform<double> pallet_pose_inv;
-        transform::Transform<double> pallet_pose_in_start;
+         Eigen::Transform<double,3,Eigen::Isometry> pallet_pose;
+         Eigen::Transform<double,3,Eigen::Isometry> pallet_pose_inv;
+         Eigen::Transform<double,3,Eigen::Isometry> pallet_pose_in_start;
 
         int valid_status;
 
         int cluster_id;
+
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     struct PalletCluster{
-        std::vector<PalletCandidate> candidates;
+        std::vector<PalletCandidate,Eigen::aligned_allocator<PalletCandidate>> candidates;
 
-        transform::Transform<double> est_pose;
-        transform::Transform<double> est_pose_inv;
+         Eigen::Transform<double,3,Eigen::Isometry> est_pose;
+         Eigen::Transform<double,3,Eigen::Isometry> est_pose_inv;
 
         i32_t valid_status;
 
         u32_t top_row_high;
         u32_t top_row_low;
-
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     struct LineMarkMatcherPair{
@@ -138,8 +140,8 @@ namespace perception{
         std::vector<u64_t> vertical_filter_index_vec;
 
         std::vector<LineMark> center_line_markers;
-        std::vector<PalletCandidate> pallet_candidates;
-        std::vector<PalletCluster> pallet_cluster;
+        std::vector<PalletCandidate,Eigen::aligned_allocator<PalletCandidate>> pallet_candidates;
+        std::vector<PalletCluster,Eigen::aligned_allocator<PalletCluster> > pallet_cluster;
 
         std::vector<geometry::float3> pallet_space_left;
         std::vector<geometry::float3> pallet_pocket_left;
@@ -184,6 +186,7 @@ namespace perception{
         i8_t filter_pallet_status = 0;
 
         PointCloudBuffer_ptr filter_pallet(u32_t output_mode);
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     };
 }

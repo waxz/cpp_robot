@@ -21,6 +21,10 @@ namespace perception{
     };
     /// GEN[TOML]
     struct CloudFilterConfig{
+        bool enable_mean_window;
+        int mean_window_len;
+        float mean_window_jump_max;
+
         bool enable_dim; 
         int filter_height_min;
         int filter_height_max;

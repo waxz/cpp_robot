@@ -145,7 +145,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wformat=2 -Wco
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer  -fstack-protector -fstack-protector-strong  -fstack-protector-all -fstack-protector-explicit  -fsplit-stack")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer  -fstack-protector -fstack-protector-strong  -fstack-protector-all -fstack-protector-explicit")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mshstk -Walloca ")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mshstk -Walloca ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wstack-usage=1000000 -fstack-usage")
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
@@ -158,10 +158,11 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -O3 -march=native -ftree-vectorize -fopt-info-vec-optimized -ffp-contract=fast -flto")
 
 # release
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -march=native -ftree-vectorize -fopt-info-vec-optimized")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -ftree-vectorize -fopt-info-vec-optimized ")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -march=native")
 
     # debug
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g  -ffast-math -march=native")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g  -ffast-math -march=native")
 
 
 endif ()
@@ -214,7 +215,20 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
     #set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fsanitize=address  -fsanitize=leak")
 endif ()
 
-# ASAN_OPTIONS=abort_on_error=1:debug=1:strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:symbolize=1:detect_leaks=0
+function(set_debug target)
+    target_compile_options(${target} PRIVATE -g -O0)
+endfunction()
+
+function(set_arch_native target)
+    target_compile_options(${target}  PRIVATE -march=native )
+endfunction()
+
+function(set_stackalign target)
+    target_compile_options(${target} PRIVATE -mstackrealign)
+endfunction()
+
+# LD_PRELOAD=/lib/x86_64-linux-gnu/libasan.so.5
+#ASAN_OPTIONS=abort_on_error=1:debug=1:strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:symbolize=1:detect_leaks=0
 function(set_asan target)
 #    set(ENV{ASAN_OPTIONS} "strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:symbolize=1")
 

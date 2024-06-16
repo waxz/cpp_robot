@@ -30,8 +30,11 @@ extern "C" {
 
     int pointcloud_clip(f32_t* src_buffer, u64_t height, u64_t width,f32_t* dst_buffer ,u64_t filter_height_min, u64_t filter_height_max, u64_t filter_width_min, u64_t filter_width_max  );
 
+    int pointcloud_filter_count(f32_t* src_buffer, u64_t point_num, u64_t* count, f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max);
+
     int pointcloud_transform(f32_t* src_buffer, u64_t point_num, f32_t* dst_buffer , f32_t tx, f32_t ty, f32_t tz,  f32_t roll, f32_t pitch, f32_t yaw);
 
+    int pointcloud_mean_filter(f32_t* src_buffer, u64_t point_num, f32_t* dst_buffer , u32_t* count, f32_t jump_max);
 
 
 #ifdef __cplusplus

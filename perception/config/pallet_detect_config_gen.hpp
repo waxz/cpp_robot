@@ -28,6 +28,9 @@ struct CloudDimConfig{
 namespace perception{
 /// GEN[TOML]
 struct CloudFilterConfig{
+     bool enable_mean_window;
+     int mean_window_len;
+     float mean_window_jump_max;
      bool enable_dim;
      int filter_height_min;
      int filter_height_max;
@@ -43,6 +46,9 @@ struct CloudFilterConfig{
  
 
     explicit CloudFilterConfig(const toml::value& value) {
+        enable_mean_window= toml::get<decltype(enable_mean_window)>(value.at("enable_mean_window"));
+        mean_window_len= toml::get<decltype(mean_window_len)>(value.at("mean_window_len"));
+        mean_window_jump_max= toml::get<decltype(mean_window_jump_max)>(value.at("mean_window_jump_max"));
         enable_dim= toml::get<decltype(enable_dim)>(value.at("enable_dim"));
         filter_height_min= toml::get<decltype(filter_height_min)>(value.at("filter_height_min"));
         filter_height_max= toml::get<decltype(filter_height_max)>(value.at("filter_height_max"));
@@ -60,6 +66,9 @@ struct CloudFilterConfig{
 
     toml::value into_toml() const {
         return toml::value{
+        {"enable_mean_window", this->enable_mean_window},
+        {"mean_window_len", this->mean_window_len},
+        {"mean_window_jump_max", this->mean_window_jump_max},
         {"enable_dim", this->enable_dim},
         {"filter_height_min", this->filter_height_min},
         {"filter_height_max", this->filter_height_max},

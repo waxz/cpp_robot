@@ -198,6 +198,25 @@ int pointcloud_clip(f32_t* src_buffer, u64_t height, u64_t width,f32_t* dst_buff
 
     return 0;
 }
+int pointcloud_filter_count(f32_t* src_buffer, u64_t point_num, u64_t* count, f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max){
+
+
+    u64_t valid_count = 0;
+    for( u64_t i = 0 ; i < point_num; i++ ){
+
+                bool valid = src_buffer[i*3] > x_min
+                         && src_buffer[i*3] < x_max
+                         && src_buffer[i*3 + 1] > y_min
+                            && src_buffer[i*3 + 1] < y_max
+                          &&src_buffer[i*3 + 2] > z_min
+                               && src_buffer[i*3 + 2] < z_max;
+
+        valid_count += valid;
+    }
+    *count = valid_count;
+
+    return 0;
+}
 
 
 int pointcloud_transform(f32_t* src_buffer, u64_t point_num, f32_t* dst_buffer , f32_t tx, f32_t ty, f32_t tz,  f32_t roll, f32_t pitch, f32_t yaw){
@@ -220,3 +239,32 @@ int pointcloud_transform(f32_t* src_buffer, u64_t point_num, f32_t* dst_buffer ,
 
     return 0;
 }
+
+int pointcloud_mean_filter(f32_t* src_buffer, u64_t point_num, f32_t* dst_buffer , u32_t* count, f32_t jump_max){
+
+
+    f32_t w0 = static_cast<f32_t>(*count);
+
+    f32_t w1 = (w0)/(w0 + 1.0);
+    f32_t w2 = 1.0 -w1;
+
+
+    u64_t float_num = point_num * 3;
+
+
+    if(*count == 0){
+        std::copy(src_buffer , src_buffer + float_num, dst_buffer );
+
+
+    }else{
+        for(int i = 0 ; i < float_num;i++){
+            dst_buffer[i] = (std::abs( dst_buffer[i] - src_buffer[i]) > jump_max ) ? 0.0f: w1*dst_buffer[i] +  w2*src_buffer[i];
+        }
+
+    }
+    *count = *count + 1;
+
+    return 0;
+
+}
+

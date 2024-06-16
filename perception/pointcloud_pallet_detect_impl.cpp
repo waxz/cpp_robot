@@ -1318,6 +1318,18 @@ namespace perception{
              std::cout << "pose:\n" << candidate.pallet_pose.matrix()<< "\n";
         }
 
+
+        if(pallet_candidates.size() ==0 ){
+            MLOGI("filter_pallet use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
+            filter_pallet_status = -3;
+            return 0;
+        }
+
+        if(output_mode == 0){
+            MLOGI("filter_pallet use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
+            return 0;
+        }
+
         {
             /*
              split to cluster
@@ -1339,7 +1351,7 @@ namespace perception{
                 std::cout << "last_relative_pose:\n" << last_relative_pose.matrix()<< "\n";
                 transform::extractSe3(last_relative_pose,tx, ty, tz, roll, pitch,yaw );
                 MLOGI("last_relative_pose[%i]: tx: %f, ty: %f, tz: %f, roll: %f, pitch: %f,yaw: %f",i, tx, ty, tz, roll, pitch,yaw )
-                auto start_relative_pose = pallet_candidates[start_id].pallet_pose_inv *candidate.pallet_pose;
+                auto  __attribute__ ((aligned (32)))  start_relative_pose = pallet_candidates[start_id].pallet_pose_inv *candidate.pallet_pose;
                 candidate.pallet_pose_in_start = start_relative_pose;
                 std::cout << "start_relative_pose:\n" << start_relative_pose.matrix()<< "\n";
                 transform::extractSe3(start_relative_pose,tx, ty, tz, roll, pitch,yaw );
@@ -1398,7 +1410,7 @@ namespace perception{
 
         }
 
-        if(output_mode == 0){
+        if(output_mode == 1){
             MLOGI("filter_pallet use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
             return 0;
         }
@@ -1425,7 +1437,7 @@ namespace perception{
                 auto& cluster = pallet_cluster[i];
                 auto& candidates = cluster.candidates;
                 f64_t yaw_start = candidates[0].pallet_direction;
-                f64_t num_inv = cluster_filter_pose_weight/(candidates.size());
+                f64_t num_inv = cluster_filter_pose_weight/(static_cast<float>(candidates.size()));
                 for(int j = 0 ; j <candidates.size();j++ ){
                     f64_t tx, ty, tz, roll, pitch,yaw;
                     transform::extractSe3(candidates[j].pallet_pose_in_start,tx, ty, tz, roll, pitch,yaw );
@@ -1442,7 +1454,7 @@ namespace perception{
                 f64_t mean_yaw = sum_yaw *num_inv;
 
                 MLOGI("mean pose: [%f, %f, %f, %f]", mean_x, mean_y, mean_z, mean_yaw);
-                auto relative_pose = transform::createSe3(mean_x, mean_y, 0.0 ,0.0,0.0,mean_yaw );
+                __attribute__ ((aligned (32))) auto relative_pose = transform::createSe3(mean_x, mean_y, 0.0 ,0.0,0.0,mean_yaw );
 
                 cluster.est_pose = candidates[0].pallet_pose * relative_pose;
                 cluster.est_pose_inv = cluster.est_pose.inverse();
@@ -1458,6 +1470,7 @@ namespace perception{
 
         }
 
+
         {
             int pallet_cluster_len = pallet_cluster.size();
 
@@ -1467,7 +1480,8 @@ namespace perception{
                 return 0;
             }
         }
-        if(output_mode == 1){
+
+        if(output_mode == 2){
             MLOGI("filter_pallet use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
             return 0;
         }
@@ -1529,6 +1543,9 @@ namespace perception{
                                 const f32_t *p = pallet_pocket_buffer + j*3;
                                 const f32_t *p_pre = p - row_offset;
                                 const f32_t *p_nxt = p + row_offset;
+                                const f32_t *p_left = p - 3;
+                                const f32_t *p_right = p + 3;
+
 
                                 bool valid = p[0] > filter_pallet_x_min && p[0] < filter_pallet_x_max
                                              && p[1] > filter_pallet_y_min && p[1] < filter_pallet_y_max
@@ -1538,9 +1555,20 @@ namespace perception{
                                                           &&  abs(p[1] - p_pre[1]) < filter_pallet_jy
                                                           &&  abs(p[2] - p_pre[2]) < filter_pallet_jz
 
-                                                  ) || (abs(p[0] - p_nxt[0]) < filter_pallet_jx
+                                                  ) && (abs(p[0] - p_nxt[0]) < filter_pallet_jx
                                                         &&  abs(p[1] - p_nxt[1]) < filter_pallet_jy
-                                                        &&  abs(p[2] - p_nxt[2]) < filter_pallet_jz) )
+                                                        &&  abs(p[2] - p_nxt[2]) < filter_pallet_jz)
+                                                       && (abs(p[0] - p_left[0]) < filter_pallet_jx
+                                                           &&  abs(p[1] - p_left[1]) < filter_pallet_jy
+                                                           &&  abs(p[2] - p_left[2]) < filter_pallet_jz)
+                                                          && (abs(p[0] - p_right[0]) < filter_pallet_jx
+                                                              &&  abs(p[1] - p_right[1]) < filter_pallet_jy
+                                                              &&  abs(p[2] - p_right[2]) < filter_pallet_jz)
+
+
+
+
+                                                                                                                                                                                                                                                                                       )
 
                                 ;
 
@@ -1586,23 +1614,23 @@ namespace perception{
                                 MLOGI("get pocket space cluster: %zu, %zu, %zu, %zu, %zu", pallet_space_left.size(), pallet_space_center.size(), pallet_space_right.size(),pallet_pocket_left.size(),pallet_pocket_right.size());
 
                                 std::sort(pallet_space_left.begin(), pallet_space_left.end(), [](auto& v1, auto& v2){
-                                    return v1.x < v2.x;
+                                    return (v1.x + abs(v1.y)) < (v2.x + abs(v2.y));
                                 });
 
                                 std::sort(pallet_space_center.begin(), pallet_space_center.end(), [](auto& v1, auto& v2){
-                                    return v1.x < v2.x;
+                                    return (v1.x + abs(v1.y)) < (v2.x + abs(v2.y));
                                 });
 
                                 std::sort(pallet_space_right.begin(), pallet_space_right.end(), [](auto& v1, auto& v2){
-                                    return v1.x < v2.x;
+                                    return (v1.x + abs(v1.y)) < (v2.x + abs(v2.y));
                                 });
 
                                 std::sort(pallet_pocket_left.begin(), pallet_pocket_left.end(), [](auto& v1, auto& v2){
-                                    return v1.x < v2.x;
+                                    return (v1.x + abs(v1.y)) < (v2.x + abs(v2.y));
                                 });
 
                                 std::sort(pallet_pocket_right.begin(), pallet_pocket_right.end(), [](auto& v1, auto& v2){
-                                    return v1.x < v2.x;
+                                    return (v1.x + abs(v1.y)) < (v2.x + abs(v2.y));
                                 });
 
                                 float pallet_space_left_x = 0.0, pallet_space_left_y = 0.0, pallet_space_left_z = 0.0;
