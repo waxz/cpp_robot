@@ -83,7 +83,8 @@ int pointcloud_filter_along_line(f32_t* src_buffer, u64_t point_num, u64_t* inde
 
 int pointcloud_norm2d(f32_t* src_buffer, u64_t point_num, u64_t* index_buffer, u64_t index_num, f32_t vx, f32_t vy, f32_t vz, f32_t* cx, f32_t* cy, f32_t* cz, f32_t* nx, f32_t* ny, f32_t* nz, f32_t* nd){
 
-    if (index_num < 3 || point_num < 3){
+    if (point_num < 3){
+        MLOGW("point_num:%llu",point_num);
         return -1;
     }
     perception::NormalEst2d normalEst;
@@ -95,22 +96,51 @@ int pointcloud_norm2d(f32_t* src_buffer, u64_t point_num, u64_t* index_buffer, u
     f32_t sum_x = 0.0;
     f32_t sum_y = 0.0;
     f32_t sum_z = 0.0;
-    for( u64_t i = 0 ; i < index_num; i++ ){
-        u64_t j = index_buffer[i]*3;
-        sum_x += src_buffer[j] ;
-        sum_y += src_buffer[j + 1] ;
-        sum_z += src_buffer[j + 2] ;
-    }
     f32_t ccx = 0.0, ccy = 0.0, ccz = 0.0;
-    *cx = ccx = sum_x/static_cast<f32_t>(index_num);
-    *cy = ccy = sum_y/static_cast<f32_t>(index_num);
-    *cz = ccz = sum_z/static_cast<f32_t>(index_num);
+
+    if(index_buffer == nullptr){
+        for( u64_t i = 0 ; i < point_num; i++ ){
+            u64_t j = i*3;
+            sum_x += src_buffer[j] ;
+            sum_y += src_buffer[j + 1] ;
+            sum_z += src_buffer[j + 2] ;
+
+        }
+        *cx = ccx = sum_x/static_cast<f32_t>(point_num);
+        *cy = ccy = sum_y/static_cast<f32_t>(point_num);
+        *cz = ccz = sum_z/static_cast<f32_t>(point_num);
+    }else{
+        if (index_num < 3){
+            MLOGW("index_num:%llu",index_num);
+            return -1;
+        }
+        for( u64_t i = 0 ; i < index_num; i++ ){
+            u64_t j = index_buffer[i]*3;
+            sum_x += src_buffer[j] ;
+            sum_y += src_buffer[j + 1] ;
+            sum_z += src_buffer[j + 2] ;
+        }
+        *cx = ccx = sum_x/static_cast<f32_t>(index_num);
+        *cy = ccy = sum_y/static_cast<f32_t>(index_num);
+        *cz = ccz = sum_z/static_cast<f32_t>(index_num);
+    }
+
 
     normalEst.addCenter(ccx, ccy );
-    for( u64_t i = 0 ; i < index_num; i++ ){
-        u64_t j = index_buffer[i]*3;
-        normalEst.addPoint(src_buffer[j], src_buffer[j+1]);
+
+
+    if(index_buffer == nullptr){
+        for( u64_t i = 0 ; i < point_num; i++ ){
+            u64_t j = i*3;
+            normalEst.addPoint(src_buffer[j], src_buffer[j+1]);
+        }
+    }else{
+        for( u64_t i = 0 ; i < index_num; i++ ){
+            u64_t j = index_buffer[i]*3;
+            normalEst.addPoint(src_buffer[j], src_buffer[j+1]);
+        }
     }
+
     f32_t cnx, cny, cnz, cnd;
     normalEst.compute(cnx, cny, cnz, cnd);
     *nx = cnx;

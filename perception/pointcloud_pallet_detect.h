@@ -19,7 +19,24 @@ extern "C" {
         u64_t float_num;
     }PointCloudBuffer, *PointCloudBuffer_ptr;
 
-    typedef struct pointcloud_pallet_detector_t{
+typedef struct PalletInfo{
+    f32_t confidence;
+    i32_t info;
+    f64_t tx;
+    f64_t ty;
+    f64_t tz;
+    f64_t roll;
+    f64_t pitch;
+    f64_t yaw;
+
+}PalletInfo, *PalletInfo_ptr;
+
+typedef struct PalletInfoBuffer{
+    PalletInfo_ptr  buffer;
+    u64_t pallet_num;
+}PalletInfoBuffer, *PalletInfoBuffer_ptr;
+
+typedef struct pointcloud_pallet_detector_t{
 
         void* handler;
 
@@ -59,6 +76,9 @@ extern "C" {
         PointCloudBuffer_ptr(*filter_pallet)(struct pointcloud_pallet_detector_t* h, u32_t output_mode);
 
         PointCloudBuffer_ptr(*find_pallet)(struct pointcloud_pallet_detector_t* h);
+
+        PalletInfoBuffer_ptr(*get_pallet)(struct pointcloud_pallet_detector_t* h, u32_t output_mode);
+
 
         // get pose
         void(*compute_pallet)(struct pointcloud_pallet_detector_t* h);

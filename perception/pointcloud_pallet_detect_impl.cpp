@@ -3,6 +3,8 @@
 //
 #include "pointcloud_pallet_detect_impl.h"
 #include "math/geometry/normal_estimation_3d.h"
+#include "math/geometry/normal_estimation_2d.h"
+
 #include "pointcloud_process.h"
 
 #include <iostream>
@@ -13,6 +15,47 @@
 #include "math/transform/eigen_transform.h"
 
 namespace perception{
+
+    int compute_points_vec_norm2d(std::vector<geometry::float3> data[], size_t data_len, float vx, float vy, float & cx, float &cy, float &cz, float &nx, float& ny, float& nz, float& nd){
+
+        float sum_x = 0.0, sum_y = 0.0, sum_z = 0.0;
+        size_t sum_num = 0;
+        for(size_t i = 0 ; i < data_len;i++){
+            auto& v = data[i];
+            for( auto&p : v){
+                sum_x += p.x;
+                sum_y += p.y;
+                sum_z += p.z;
+            }
+            sum_num += v.size();
+        }
+
+        float mean_x  = sum_x/static_cast<float>(sum_num);
+        float mean_y  = sum_y/static_cast<float>(sum_num);
+        float mean_z  = sum_z/static_cast<float>(sum_num);
+        NormalEst2d normalEst2D;
+        normalEst2D.setViewerPoint(vx,vy);
+        normalEst2D.addCenter(mean_x,mean_y);
+        for(size_t i = 0 ; i < data_len;i++){
+            auto& v = data[i];
+            for( auto&p : v){
+                normalEst2D.addPoint(p.x,p.y);
+            }
+        }
+        f32_t cnx,cny,cnz,cnd ;
+        normalEst2D.compute(cnx,cny,cnz,cnd );
+        cx = mean_x;
+        cy = mean_y;
+        cz = mean_z;
+        nx = cnx;
+        ny = cny;
+        nz = cnz;
+        nd = cnd;
+
+
+        return 0;
+    }
+
 
     void LineMarkMatcher::clear() {
 
@@ -143,12 +186,23 @@ namespace perception{
         vertical_filter_index_buffer = (u64_t *)ta_realloc(&mem_cfg,vertical_filter_index_buffer,1000);
         vertical_output_index_buffer = (u32_t *)ta_realloc(&mem_cfg,vertical_output_index_buffer,1000);
 
-        vertical_line_continuous_buffer =  (u32_t *)ta_realloc(&mem_cfg, vertical_line_continuous_buffer, 1000);
+        vertical_line_continuous_count_buffer =  (u32_t *)ta_realloc(&mem_cfg, vertical_line_continuous_count_buffer, 1000);
 
+        vertical_line_continuous_mean_buffer=  (f32_t *)ta_realloc(&mem_cfg, vertical_line_continuous_mean_buffer, 1000);
+        pallet_space_continuous_count_buffer =  (u32_t *)ta_realloc(&mem_cfg, pallet_space_continuous_count_buffer, 1000);
+
+        pallet_space_continuous_mean_buffer=  (f32_t *)ta_realloc(&mem_cfg, pallet_space_continuous_mean_buffer, 1000);
 
 
         pallet_pocket_buffer = (f32_t*)ta_realloc(&mem_cfg,pallet_pocket_buffer,1000*3*4);
         pallet_output_buffer = (f32_t*)ta_realloc(&mem_cfg,pallet_output_buffer,1000*3*4);
+
+        pallet_project_index_buffer = (u32_t *)ta_realloc(&mem_cfg,pallet_project_index_buffer,1000);
+
+        pallet_project_buffer = (f32_t*)ta_realloc(&mem_cfg,pallet_project_buffer,1000*3*4);
+
+
+        pallet_center_line_buffer = (f32_t*)ta_realloc(&mem_cfg,pallet_pocket_buffer,1000*3*4);
 
 
         if( !ground_init_buffer || !ground_output_buffer){
@@ -162,6 +216,13 @@ namespace perception{
 
     }
 
+    void PalletDetector::reset() {
+
+        filter_ground_status = 0;
+        filter_vertical_status = 0;
+        filter_pallet_status = 0 ;
+
+    }
     void
     PalletDetector::set_input(f32_t *buffer, u64_t height,
                                        u64_t width, f32_t vx, f32_t vy, f32_t vz) {
@@ -321,8 +382,9 @@ namespace perception{
         MLOGI("init_center_dim : [%i, %i}]",init_center_height, init_center_width );
         MLOGI("cloud_dim : [%i, %i]",cloud_dim_height, cloud_dim_width );
 
-        if( filter_ground_status <= 0 ){
+        if( filter_ground_status < 0 ){
             MLOGW("filter_ground_status error : [%i}]",filter_ground_status );
+            filter_vertical_status = -1;
             return 0;
         }
 
@@ -349,7 +411,8 @@ namespace perception{
         vertical_filter_index_buffer = (u64_t *)ta_realloc(&mem_cfg,vertical_filter_index_buffer,cloud_dim_height*cloud_dim_width*8);
         vertical_output_index_buffer = (u32_t *)ta_realloc(&mem_cfg,vertical_output_index_buffer,cloud_dim_height*cloud_dim_width*4);
 
-        vertical_line_continuous_buffer =  (u32_t *)ta_realloc(&mem_cfg, vertical_line_continuous_buffer, 2*(init_center_line_filter_continuous_buffer_size + 1) * 4  );
+        vertical_line_continuous_count_buffer =  (u32_t *)ta_realloc(&mem_cfg, vertical_line_continuous_count_buffer, 2 * (init_center_line_filter_continuous_buffer_size + 1) * 4  );
+        vertical_line_continuous_mean_buffer=  (f32_t *)ta_realloc(&mem_cfg, vertical_line_continuous_mean_buffer,  2 * (init_center_line_filter_continuous_buffer_size + 1) * 4  );
 
 
         if(
@@ -364,12 +427,13 @@ namespace perception{
                       ||!vertical_center_vertical_index_buffer
                         ||!vertical_filter_index_buffer
                           ||!vertical_output_index_buffer
-                          ||!vertical_line_continuous_buffer
+                          ||!vertical_line_continuous_count_buffer
+                          || !vertical_line_continuous_mean_buffer
 
 
                 ){
-            MLOGW("PalletDetector: create buffer fail: %p, %p, %p, %p, %p, %p, %p, %p, %p, %p, %p, %p",
-                  ground_init_buffer, ground_output_buffer, cloud_label_table, ground_pixel_count_buffer, vertical_center_buffer, vertical_output_buffer, vertical_center_index_buffer, vertical_center_index_row_valid_num_buffer, vertical_center_vertical_index_buffer, vertical_filter_index_buffer, vertical_output_index_buffer, vertical_line_continuous_buffer );
+            MLOGW("PalletDetector: create buffer fail: %p, %p, %p, %p, %p, %p, %p, %p, %p, %p, %p, %p,%p",
+                  ground_init_buffer, ground_output_buffer, cloud_label_table, ground_pixel_count_buffer, vertical_center_buffer, vertical_output_buffer, vertical_center_index_buffer, vertical_center_index_row_valid_num_buffer, vertical_center_vertical_index_buffer, vertical_filter_index_buffer, vertical_output_index_buffer, vertical_line_continuous_count_buffer,vertical_line_continuous_mean_buffer );
             filter_ground_status = -2;
             return nullptr;
         }
@@ -885,7 +949,7 @@ namespace perception{
                 // 1. continuous
                 // 2. length
 
-                memset(vertical_line_continuous_buffer, 0, 2*(init_center_line_filter_continuous_buffer_size + 1) * 4 );
+                memset(vertical_line_continuous_count_buffer, 0, 2 * (init_center_line_filter_continuous_buffer_size + 1) * 4 );
 
 //                MLOGI("init_center_line_filter_continuous_buffer_size: %i",init_center_line_filter_continuous_buffer_size);
 
@@ -902,7 +966,7 @@ namespace perception{
                     int continuous_index = dist_alone_norm/init_center_line_filter_continuous_valid_resolution + init_center_line_filter_continuous_buffer_size;
                     continuous_index = std::max(0,std::min(continuous_index, init_center_line_filter_continuous_buffer_size+ init_center_line_filter_continuous_buffer_size));
 
-                    vertical_line_continuous_buffer[continuous_index] ++;
+                    vertical_line_continuous_count_buffer[continuous_index] ++;
 
 
                     dist_alone_norm_min = std::min(dist_alone_norm_min , dist_alone_norm);
@@ -912,20 +976,20 @@ namespace perception{
 
                 std::cout << "\nvertical_line_continuous_buffer: ";
                 for(int j = 0 ; j < 2*init_center_line_filter_continuous_buffer_size;j++){
-                    std::cout << vertical_line_continuous_buffer[j] << ", ";
+                    std::cout << vertical_line_continuous_count_buffer[j] << ", ";
                 }
 
                 int dist_alone_norm_continuous_max = init_center_line_filter_continuous_buffer_size;
                 int dist_alone_norm_continuous_min = init_center_line_filter_continuous_buffer_size;
                 for(int j = init_center_line_filter_continuous_buffer_size; j >=0 ; j--){
                     dist_alone_norm_continuous_min = j;
-                    if(vertical_line_continuous_buffer[j] == 0 ){
+                    if(vertical_line_continuous_count_buffer[j] == 0 ){
                         break;
                     }
                 }
                 for(int j = init_center_line_filter_continuous_buffer_size ;j < init_center_line_filter_continuous_buffer_size+init_center_line_filter_continuous_buffer_size; j++){
                     dist_alone_norm_continuous_max = j;
-                    if(vertical_line_continuous_buffer[j] == 0 ){
+                    if(vertical_line_continuous_count_buffer[j] == 0 ){
                         break;
                     }
                 }
@@ -1160,6 +1224,17 @@ namespace perception{
         return 0;
     }
 
+    PalletInfoBuffer_ptr PalletDetector::get_pallet(u32_t output_mode) {
+
+//        output_pallet_ptr_vec.resize(output_pallet_vec.size());
+//        for(size_t i = 0 ; i < output_pallet_vec.size();i++){
+//            output_pallet_ptr_vec[i] = &output_pallet_vec[i];
+//        }
+
+        output_pallet_info_buffer.buffer = output_pallet_vec.data();
+        output_pallet_info_buffer.pallet_num = output_pallet_vec.size();
+        return 0;
+    }
     PointCloudBuffer_ptr PalletDetector::filter_pallet(u32_t output_mode) {
         /*
          1. split line markers to cluster
@@ -1174,13 +1249,9 @@ namespace perception{
         int center_line_markers_len = center_line_markers.size();
         MLOGI("filter_pallet output_mode: %u,filter_vertical_status: %i, center_line_markers_len: %i", output_mode,filter_vertical_status,center_line_markers_len);
 
-        if(filter_vertical_status <= 0 || center_line_markers_len <2 ){
-            filter_pallet_status = -1;
-            return 0;
-        }
 
-        int cloud_height = config.cloud.dim.height;
-        int cloud_width = config.cloud.dim.width;
+        int cloud_dim_height = config.cloud.dim.height;
+        int cloud_dim_width = config.cloud.dim.width;
 
         float filter_pallet_x_min = config.filter_pallet.filter_pallet_x_min;
         float filter_pallet_x_max = config.filter_pallet.filter_pallet_x_max;
@@ -1191,6 +1262,21 @@ namespace perception{
         float filter_pallet_jx = config.filter_pallet.filter_pallet_jx;
         float filter_pallet_jy = config.filter_pallet.filter_pallet_jy;
         float filter_pallet_jz = config.filter_pallet.filter_pallet_jz;
+
+
+        float filter_pallet_line_x_min = config.filter_pallet.filter_pallet_line_x_min;
+        float filter_pallet_line_x_max= config.filter_pallet.filter_pallet_line_x_max;
+        float filter_pallet_line_y_min= config.filter_pallet.filter_pallet_line_y_min;
+        float filter_pallet_line_y_max= config.filter_pallet.filter_pallet_line_y_max;
+        float filter_pallet_line_z_min= config.filter_pallet.filter_pallet_line_z_min;
+        float filter_pallet_line_z_max= config.filter_pallet.filter_pallet_line_z_max;
+        float filter_pallet_line_continuous_min = config.filter_pallet.filter_pallet_line_continuous_min;
+
+
+        float filter_space_second_height_high = config.filter_pallet.filter_space_second_height_high;
+
+        float filter_space_second_move_mean_thresh = config.filter_pallet.filter_space_second_move_mean_thresh;
+
 
         float cluster_filter_pose_weight = config.filter_pallet.cluster_filter_pose_weight;
         cluster_filter_pose_weight = std::min(1.0f, cluster_filter_pose_weight);
@@ -1211,12 +1297,14 @@ namespace perception{
         float pallet_top_height = config.filter_pallet.pallet_top_height;
 
 
+        float filter_space_width_slip_len = config.filter_pallet.filter_space_width_slip_len;
 
-        float filter_pallet_space_left_y_min = pallet_space_width_center_2 + pallet_pocket_width;
-        float filter_pallet_space_left_y_max = pallet_space_width_center_2 + pallet_pocket_width + pallet_space_width_left;
 
-        float filter_pallet_space_center_y_min = -pallet_space_width_center_2;
-        float filter_pallet_space_center_y_max = pallet_space_width_center_2 ;
+        float filter_pallet_space_left_y_min = pallet_space_width_center_2 + pallet_pocket_width -filter_space_width_slip_len;
+        float filter_pallet_space_left_y_max = pallet_space_width_center_2 + pallet_pocket_width + pallet_space_width_left + filter_space_width_slip_len;
+
+        float filter_pallet_space_center_y_min = -pallet_space_width_center_2 - filter_space_width_slip_len;
+        float filter_pallet_space_center_y_max = pallet_space_width_center_2 + filter_space_width_slip_len;
 
         float filter_pallet_space_right_y_min = - filter_pallet_space_left_y_max;
         float filter_pallet_space_right_y_max = - filter_pallet_space_left_y_min;
@@ -1238,15 +1326,103 @@ namespace perception{
         float filter_space_continuous_thresh = config.filter_pallet.filter_space_continuous_thresh;
         float pallet_space_direction_diff_max = config.filter_pallet.pallet_space_direction_diff_max;
 
-        //
-        pallet_pocket_buffer = (f32_t*)ta_realloc(&mem_cfg,pallet_pocket_buffer,cloud_height*cloud_width*3*4);
+
+        // line
+        f32_t init_center_line_filter_continuous_valid_resolution = config.filter_vertical.init_center_line_filter_continuous_valid_resolution;
+        f32_t init_center_line_filter_continuous_buffer_len = config.filter_vertical.init_center_line_filter_continuous_buffer_len;
+        f32_t init_center_line_filter_continuous_len_min = config.filter_vertical.init_center_line_filter_continuous_len_min;
+
+        f32_t init_center_line_filter_continuous_len_max = config.filter_vertical.init_center_line_filter_continuous_len_max;
+
+        int init_center_line_filter_continuous_buffer_size = int(init_center_line_filter_continuous_buffer_len/init_center_line_filter_continuous_valid_resolution);
+
+        // filter space
+        float filter_space_continuous_resolution  = config.filter_pallet.filter_space_continuous_resolution;
+        float filter_space_move_window_x_search_start = config.filter_pallet.filter_space_move_window_x_search_start;
+        float filter_space_move_window_x_search_end = config.filter_pallet.filter_space_move_window_x_search_end;
+        float filter_space_move_window_x_search_step = config.filter_pallet.filter_space_move_window_x_search_step;
+        float filter_space_move_window_y_len = config.filter_pallet.filter_space_move_window_y_len;
+
+        float filter_space_move_window_x_thresh = config.filter_pallet.filter_space_move_window_x_thresh;
+        float filter_space_continuous_len_min = config.filter_pallet.filter_space_continuous_len_min;
 
 
-        if(!pallet_pocket_buffer){
+        float projector_dir_weight_p3 = config.filter_pallet.projector_dir_weight_p3;
 
-            filter_pallet_status = -2;
-            return 0;
-        }
+        float projector_dir_weight_p3t = config.filter_pallet.projector_dir_weight_p3t;
+
+        float projector_dir_weight_t = config.filter_pallet.projector_dir_weight_t;
+
+        float projector_dir_weight_0 = config.filter_pallet.projector_dir_weight_0;
+
+
+        float projector_offset_y= config.filter_pallet.projector_offset_y;
+        float projector_offset_z= config.filter_pallet.projector_offset_z;
+        float projector_resolution= config.filter_pallet.projector_resolution;
+        float projector_resolution_inv = 1.0f/projector_resolution;
+
+        float projector_search_y_range= config.filter_pallet.projector_search_y_range;
+        float projector_search_z_range= config.filter_pallet.projector_search_z_range;
+        float projector_search_maximum_distance= config.filter_pallet.projector_search_maximum_distance;
+        float projector_similarity_min= config.filter_pallet.projector_similarity_min;
+
+        float project_template_top_range[] = {-(pallet_space_width_center_2 + pallet_pocket_width + pallet_space_width_left ),
+                                              (pallet_space_width_center_2 + pallet_pocket_width + pallet_space_width_left ),
+                                              0.0,
+                                              pallet_top_height};
+        float project_template_left_range[] = {pallet_space_width_center_2 + pallet_pocket_width,
+                                               pallet_space_width_center_2 + pallet_pocket_width + pallet_space_width_left,
+                                               -pallet_space_height,
+                                               0.0};
+        float project_template_center_range[] = {-pallet_space_width_center_2,
+                                                 pallet_space_width_center_2,
+                                                 -pallet_space_height,
+                                                 0.0};
+        float project_template_right_range[] = {-(pallet_space_width_center_2 + pallet_pocket_width + pallet_space_width_left),
+                                                -(pallet_space_width_center_2 + pallet_pocket_width),
+                                                -pallet_space_height,
+                                                0.0};
+
+        int project_template_top_index[] = {static_cast<int>((project_template_top_range[0] + projector_offset_y) *
+                                                                   projector_resolution_inv),
+                                                  static_cast<int>((project_template_top_range[1] + projector_offset_y) *
+                                                                   projector_resolution_inv),
+                                                  static_cast<int>((project_template_top_range[2] + projector_offset_z) *
+                                                                   projector_resolution_inv),
+                                                  static_cast<int>((project_template_top_range[3] + projector_offset_z) *
+                                                                   projector_resolution_inv)};
+        int project_template_left_index[] = {static_cast<int>((project_template_left_range[0] + projector_offset_y) *
+                                                               projector_resolution_inv),
+                                              static_cast<int>((project_template_left_range[1] + projector_offset_y) *
+                                                               projector_resolution_inv),
+                                              static_cast<int>((project_template_left_range[2] + projector_offset_z) *
+                                                               projector_resolution_inv),
+                                              static_cast<int>((project_template_left_range[3] + projector_offset_z) *
+                                                               projector_resolution_inv)};
+
+        int project_template_center_index[] = {static_cast<int>((project_template_center_range[0] + projector_offset_y) *
+                                                              projector_resolution_inv),
+                                             static_cast<int>((project_template_center_range[1] + projector_offset_y) *
+                                                              projector_resolution_inv),
+                                             static_cast<int>((project_template_center_range[2] + projector_offset_z) *
+                                                              projector_resolution_inv),
+                                             static_cast<int>((project_template_center_range[3] + projector_offset_z) *
+                                                              projector_resolution_inv)};
+
+
+        int project_template_right_index[] = {static_cast<int>((project_template_right_range[0] + projector_offset_y) *
+                                                                projector_resolution_inv),
+                                               static_cast<int>((project_template_right_range[1] + projector_offset_y) *
+                                                                projector_resolution_inv),
+                                               static_cast<int>((project_template_right_range[2] + projector_offset_z) *
+                                                                projector_resolution_inv),
+                                               static_cast<int>((project_template_right_range[3] + projector_offset_z) *
+                                                                projector_resolution_inv)};
+
+
+
+
+
 
 
         // get filter boxes
@@ -1275,6 +1451,38 @@ namespace perception{
         int pallet_space_valid_num = config.filter_pallet.pallet_space_valid_num;
 
 
+        if(output_mode == 0){
+
+            filter_pallet_status = -1;
+            output_cloud_buffer.buffer = ground_output_buffer;
+            output_cloud_buffer.float_num = cloud_dim_height * cloud_dim_width * 3;
+            MLOGI("filter_ground use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
+
+            return &output_cloud_buffer;
+
+        }
+
+
+        if(filter_vertical_status < 0 || center_line_markers_len <cluster_filter_num_min ){
+            filter_pallet_status = -1;
+            return 0;
+        }
+
+
+        //
+        pallet_pocket_buffer = (f32_t*)ta_realloc(&mem_cfg, pallet_pocket_buffer, cloud_dim_height * cloud_dim_width * 3 * 4);
+        pallet_center_line_buffer = (f32_t*)ta_realloc(&mem_cfg, pallet_pocket_buffer, cloud_dim_height * cloud_dim_width * 3 * 4);
+        pallet_project_buffer = (f32_t*)ta_realloc(&mem_cfg, pallet_project_buffer, cloud_dim_height * cloud_dim_width * 3 * 4);
+
+        if(!pallet_pocket_buffer
+           || ! pallet_center_line_buffer
+           || !pallet_project_buffer
+                ){
+            MLOGW("allocate buffer fail: %p, %p, %p",pallet_pocket_buffer,pallet_center_line_buffer,pallet_project_buffer );
+
+            filter_pallet_status = -2;
+            return 0;
+        }
 
 
         MLOGI("center_line_markers_len: %i ",center_line_markers_len);
@@ -1325,10 +1533,7 @@ namespace perception{
             return 0;
         }
 
-        if(output_mode == 0){
-            MLOGI("filter_pallet use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
-            return 0;
-        }
+
 
         {
             /*
@@ -1348,12 +1553,10 @@ namespace perception{
 
                 f64_t tx, ty, tz, roll, pitch,yaw;
                 auto last_relative_pose = last_candidate.pallet_pose_inv *candidate.pallet_pose;
-                std::cout << "last_relative_pose:\n" << last_relative_pose.matrix()<< "\n";
                 transform::extractSe3(last_relative_pose,tx, ty, tz, roll, pitch,yaw );
                 MLOGI("last_relative_pose[%i]: tx: %f, ty: %f, tz: %f, roll: %f, pitch: %f,yaw: %f",i, tx, ty, tz, roll, pitch,yaw )
                 auto  __attribute__ ((aligned (32)))  start_relative_pose = pallet_candidates[start_id].pallet_pose_inv *candidate.pallet_pose;
                 candidate.pallet_pose_in_start = start_relative_pose;
-                std::cout << "start_relative_pose:\n" << start_relative_pose.matrix()<< "\n";
                 transform::extractSe3(start_relative_pose,tx, ty, tz, roll, pitch,yaw );
                 MLOGI("start_relative_pose[%i]: tx: %f, ty: %f, tz: %f, roll: %f, pitch: %f,yaw: %f",i, tx, ty, tz, roll, pitch,yaw )
 
@@ -1410,10 +1613,6 @@ namespace perception{
 
         }
 
-        if(output_mode == 1){
-            MLOGI("filter_pallet use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
-            return 0;
-        }
 
 
         {
@@ -1481,10 +1680,7 @@ namespace perception{
             }
         }
 
-        if(output_mode == 2){
-            MLOGI("filter_pallet use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
-            return 0;
-        }
+
 
         {
             /*
@@ -1515,32 +1711,172 @@ namespace perception{
                     int row_start = filter_pallet_row_high < 0 ? cluster.top_row_high + filter_pallet_row_high : cluster.top_row_low + filter_pallet_row_high;
                     int row_end = cluster.top_row_low + filter_pallet_row_low ;
 
-                    row_start = std::min(std::max(0, row_start), cloud_height);
-                    row_end = std::min(std::max(row_start+1, row_end), cloud_height);
-                    int point_num = (row_end - row_start) * cloud_width;
-                    int float_num  = (row_end - row_start) * cloud_width * 3;
+                    row_start = std::min(std::max(0, row_start), cloud_dim_height);
+                    row_end = std::min(std::max(row_start+1, row_end), cloud_dim_height);
+
 
 
                     MLOGI("filter row: [%i, %i] ", row_start, row_end);
 
+                    int float_num  = (row_end - row_start) * cloud_dim_width * 3;
 
                     {
 
                         {
+                            int point_num = (row_end - row_start) * cloud_dim_width;
+
                             f64_t tx, ty, tz, roll, pitch,yaw;
 
                             transform::extractSe3(cluster.est_pose_inv,tx, ty, tz, roll, pitch,yaw );
                             MLOGI("est_pose_inv[%i]: tx: %f, ty: %f, tz: %f, roll: %f, pitch: %f,yaw: %f",i, tx, ty, tz, roll, pitch,yaw )
 
-                            pointcloud_transform(ground_output_buffer + row_start * cloud_width * 3, float_num, pallet_pocket_buffer, tx, ty, tz, roll, pitch, yaw );
+                            pointcloud_transform(ground_output_buffer + row_start * cloud_dim_width * 3, point_num, pallet_pocket_buffer, tx, ty, tz, roll, pitch, yaw );
+
+                        }
+
+
+                        f32_t refined_y_offset = 0.0;
+                        f32_t continuous_len = 0.0;
+                        f32_t continuous_len_limit = 0.0;
+                        {
+                            int point_num = (row_end - cluster.top_row_low) * cloud_dim_width;
+
+                            int valid_num = 0;
+                            int row_offset = cloud_dim_width * 3;
+
+                            for(int j = cloud_dim_width ; j < point_num - cloud_dim_width; j++){
+                                const f32_t *p = pallet_pocket_buffer + j*3;
+                                const f32_t *p_pre = p - row_offset;
+                                const f32_t *p_nxt = p + row_offset;
+                                const f32_t *p_left = p - 3;
+                                const f32_t *p_right = p + 3;
+
+
+                                bool valid = p[0] > filter_pallet_line_x_min && p[0] < filter_pallet_line_x_max
+                                             && p[1] > filter_pallet_line_y_min && p[1] < filter_pallet_line_y_max
+                                             && p[2] > filter_pallet_line_z_min && p[2] < filter_pallet_line_z_max
+                                             && ( (
+                                                          abs(p[0] - p_pre[0]) < filter_pallet_jx
+                                                          &&  abs(p[1] - p_pre[1]) < filter_pallet_jy
+                                                          &&  abs(p[2] - p_pre[2]) < filter_pallet_jz
+
+                                                  ) && (abs(p[0] - p_nxt[0]) < filter_pallet_jx
+                                                        &&  abs(p[1] - p_nxt[1]) < filter_pallet_jy
+                                                        &&  abs(p[2] - p_nxt[2]) < filter_pallet_jz)
+                                                  && (abs(p[0] - p_left[0]) < filter_pallet_jx
+                                                      &&  abs(p[1] - p_left[1]) < filter_pallet_jy
+                                                      &&  abs(p[2] - p_left[2]) < filter_pallet_jz)
+                                                  && (abs(p[0] - p_right[0]) < filter_pallet_jx
+                                                      &&  abs(p[1] - p_right[1]) < filter_pallet_jy
+                                                      &&  abs(p[2] - p_right[2]) < filter_pallet_jz)
+
+
+
+
+                                             )
+
+                                ;
+
+                                pallet_center_line_buffer[valid_num*3] = p[0];
+                                pallet_center_line_buffer[valid_num*3 + 1] = p[1];
+                                pallet_center_line_buffer[valid_num*3 + 2] = p[2];
+
+                                valid_num += valid;
+
+                            }
+
+                            // map to array
+                            // compute new center
+                            memset(vertical_line_continuous_count_buffer, 0, 2 * (init_center_line_filter_continuous_buffer_size + 1) * 4 );
+
+                            memset(vertical_line_continuous_mean_buffer, 0, 2 * (init_center_line_filter_continuous_buffer_size + 1) * 4 );
+
+                            for(int j = 0 ; j < valid_num;j++){
+                                float *ptr = pallet_center_line_buffer + j*3;
+
+
+                                int continuous_index = ptr[1]/init_center_line_filter_continuous_valid_resolution + init_center_line_filter_continuous_buffer_size;
+                                continuous_index = std::max(0,std::min(continuous_index, init_center_line_filter_continuous_buffer_size+ init_center_line_filter_continuous_buffer_size));
+
+                                vertical_line_continuous_mean_buffer[continuous_index] =
+                                        ((float)(vertical_line_continuous_count_buffer[continuous_index])*vertical_line_continuous_mean_buffer[continuous_index] + ptr[1])/(float)(vertical_line_continuous_count_buffer[continuous_index] + 1) ;
+
+                                vertical_line_continuous_count_buffer[continuous_index] ++;
+
+                            }
+                            std::cout << "\nvertical_line_continuous_buffer: ";
+                            for(int j = 0 ; j < 2*init_center_line_filter_continuous_buffer_size;j++){
+                                std::cout <<"[" <<vertical_line_continuous_count_buffer[j] << ", " <<vertical_line_continuous_mean_buffer[j]  << "], " ;
+                            }
+                            int dist_alone_norm_continuous_max = init_center_line_filter_continuous_buffer_size;
+                            int dist_alone_norm_continuous_min = init_center_line_filter_continuous_buffer_size;
+                            for(int j = init_center_line_filter_continuous_buffer_size; j >=0 ; j--){
+                                if(vertical_line_continuous_count_buffer[j] == 0 ){
+                                    break;
+                                }
+                                dist_alone_norm_continuous_min = j;
+
+                            }
+                            for(int j = init_center_line_filter_continuous_buffer_size ;j < init_center_line_filter_continuous_buffer_size+init_center_line_filter_continuous_buffer_size; j++){
+                                if(vertical_line_continuous_count_buffer[j] == 0 ){
+                                    break;
+                                }
+                                dist_alone_norm_continuous_max = j;
+
+                            }
+
+                            f32_t dist_alone_norm_continuous_dist = (dist_alone_norm_continuous_max - dist_alone_norm_continuous_min) *init_center_line_filter_continuous_valid_resolution;
+
+                            int dist_alone_norm_continuous_center =  (dist_alone_norm_continuous_max + dist_alone_norm_continuous_min)/2 - init_center_line_filter_continuous_buffer_size;
+                            f32_t max_y = vertical_line_continuous_mean_buffer[dist_alone_norm_continuous_max];
+                            f32_t min_y = vertical_line_continuous_mean_buffer[dist_alone_norm_continuous_min];
+
+                            f32_t center_y = 0.5*( max_y+ min_y);
+                            continuous_len = max_y - min_y;
+                            continuous_len_limit = 0.5*(continuous_len) + init_center_line_filter_continuous_valid_resolution;
+                            MLOGW("get mean buffer: [%f, %f],continuous_len: %f, center: [%f]",min_y,max_y,continuous_len, center_y);
+                            refined_y_offset = center_y;
+
+                            cluster.refined_y = refined_y_offset;
+                            cluster.continuous_len = continuous_len;
+
+
+                            // compare filter_pallet_line_continuous_min
+
+                            if(continuous_len < filter_pallet_line_continuous_min){
+                                cluster.valid_status = -1;
+                            }
+
+                            auto pose_refine = transform::createSe3(0.0, double(refined_y_offset),0.0,0.0,0.0,0.0);
+
+                            cluster.est_pose = cluster.est_pose* pose_refine;
+                            cluster.est_pose_inv = cluster.est_pose.inverse();
+
+
+
+
+                            float dist_alone_norm_continuous_center_len = dist_alone_norm_continuous_center*init_center_line_filter_continuous_valid_resolution;
+                            MLOGI("init_center_line_filter_continuous_buffer_size: %i, dist_alone_norm_continuous: [%i, %i, %i] , dist: %f, center: %f ",init_center_line_filter_continuous_buffer_size,dist_alone_norm_continuous_min, dist_alone_norm_continuous_max, dist_alone_norm_continuous_center,dist_alone_norm_continuous_dist,dist_alone_norm_continuous_center_len);
+
+
+
 
                         }
                         {
-                            int valid_num = 0;
-                            int row_offset = cloud_width*3;
+                            int point_num = (row_end - row_start) * cloud_dim_width;
+                            float_num  =point_num* 3;
 
-                            for(int j = cloud_width ; j < point_num - cloud_width; j++){
-                                const f32_t *p = pallet_pocket_buffer + j*3;
+                            int valid_num = 0;
+                            int row_offset = cloud_dim_width * 3;
+
+                            for(int j = 0 ; j < point_num ; j++){
+                                f32_t *p = pallet_pocket_buffer + j*3;
+                                p[1] -= refined_y_offset;
+
+                            }
+
+                            for(int j = cloud_dim_width ; j < point_num - cloud_dim_width; j++){
+                                f32_t *p = pallet_pocket_buffer + j*3;
                                 const f32_t *p_pre = p - row_offset;
                                 const f32_t *p_nxt = p + row_offset;
                                 const f32_t *p_left = p - 3;
@@ -1571,7 +1907,6 @@ namespace perception{
                                                                                                                                                                                                                                                                                        )
 
                                 ;
-
                                 pallet_pocket_buffer[valid_num*3] = p[0];
                                 pallet_pocket_buffer[valid_num*3 + 1] = p[1];
                                 pallet_pocket_buffer[valid_num*3 + 2] = p[2];
@@ -1583,12 +1918,21 @@ namespace perception{
                             float_num = valid_num*3;
 
 
+                            f32_t  pallet_pocket_empty_x_inv = 1.0f/pallet_pocket_empty_x;
                             {
 
+
+                                MLOGW("check point: %i", valid_num);
                                 for(int j = 0 ; j < valid_num;j++){
                                     const f32_t *p = pallet_pocket_buffer + j*3;
+                                    f32_t x_dist = (pallet_pocket_empty_x - p[0])*pallet_pocket_empty_x_inv;
+                                    x_dist = std::max( std::min(x_dist,1.0f) , 0.0f);
+                                    f32_t z_max = fork_shape_height*x_dist;
+//                                    f32_t z_min = 0.0;
+//                                    std::cout << "p:[" << p[0] <<","<< p[1] <<"," << p[2] <<"], z:[" << filter_pallet_z_pocket_low<<", " <<filter_pallet_z_pocket_low +z_max<<"]\n";
 
-                                    if( p[2] > filter_pallet_z_pocket_low && p[2] < filter_pallet_z_pocket_high){
+
+                                    if( p[2] > filter_pallet_z_pocket_low && p[2] < (filter_pallet_z_pocket_low +z_max )){
                                         if( p[1] > filter_pallet_space_left_y_min && p[1] < filter_pallet_space_left_y_max){
                                             pallet_space_left.emplace_back(geometry::float3{p[0],p[1],p[2]});
                                         }
@@ -1613,6 +1957,16 @@ namespace perception{
 
                                 MLOGI("get pocket space cluster: %zu, %zu, %zu, %zu, %zu", pallet_space_left.size(), pallet_space_center.size(), pallet_space_right.size(),pallet_pocket_left.size(),pallet_pocket_right.size());
 
+                                bool valid = pallet_space_left.size() > 0
+                                             && pallet_space_center.size() > 0
+                                             && pallet_space_right.size() > 0;
+                                if(!valid){
+                                    MLOGW("get pocket space cluster: %zu, %zu, %zu, %zu, %zu", pallet_space_left.size(), pallet_space_center.size(), pallet_space_right.size(),pallet_pocket_left.size(),pallet_pocket_right.size());
+
+                                    continue;
+                                }
+
+
                                 std::sort(pallet_space_left.begin(), pallet_space_left.end(), [](auto& v1, auto& v2){
                                     return (v1.x + abs(v1.y)) < (v2.x + abs(v2.y));
                                 });
@@ -1633,11 +1987,32 @@ namespace perception{
                                     return (v1.x + abs(v1.y)) < (v2.x + abs(v2.y));
                                 });
 
+
+                                // find template box
+                                {
+                                    auto& space_cluster = pallet_space_left;
+
+                                    float start_x = pallet_space_left[0].x;
+
+                                    float step = 0.01;
+
+
+
+
+                                }
+
+
+
                                 float pallet_space_left_x = 0.0, pallet_space_left_y = 0.0, pallet_space_left_z = 0.0;
                                 float pallet_space_center_x = 0.0, pallet_space_center_y = 0.0, pallet_space_center_z = 0.0;
                                 float pallet_space_right_x = 0.0, pallet_space_right_y = 0.0, pallet_space_right_z = 0.0;
                                 float pallet_pocket_left_x = 0.0, pallet_pocket_left_y = 0.0, pallet_pocket_left_z = 0.0;
                                 float pallet_pocket_right_x = 0.0, pallet_pocket_right_y = 0.0, pallet_pocket_right_z = 0.0;
+
+                                // x_min, x_max, y_min, y_max,z_min, z_max
+                                float pallet_space_left_min_max[6] = {10.0, -10.0, 10.0, -10.0, 10.0, -10.0};
+                                float pallet_space_center_min_max[6] = {10.0, -10.0, 10.0, -10.0, 10.0, -10.0};
+                                float pallet_space_right_min_max[6] = {10.0, -10.0, 10.0, -10.0, 10.0, -10.0};
 
                                 int pallet_space_left_valid_count = 0;
                                 int pallet_space_center_valid_count = 0;
@@ -1648,6 +2023,8 @@ namespace perception{
 
                                 {
                                     auto& space_cluster = pallet_space_left;
+
+                                    auto& min_max = pallet_space_left_min_max;
                                     float sum_x = 0.0, sum_y = 0.0 , sum_z = 0.0;
                                     int cluster_valid_num = 0;
                                     {
@@ -1677,6 +2054,13 @@ namespace perception{
                                                     sum_x += p.x;
                                                     sum_y += p.y;
                                                     sum_z += p.z;
+
+                                                    min_max[0] = std::min(min_max[0], p.x);
+                                                    min_max[1] = std::max(min_max[1], p.x);
+                                                    min_max[2] = std::min(min_max[2], p.y);
+                                                    min_max[3] = std::max(min_max[3], p.y);
+                                                    min_max[4] = std::min(min_max[4], p.z);
+                                                    min_max[5] = std::max(min_max[5], p.z);
 
 
                                                 }else{
@@ -1697,6 +2081,8 @@ namespace perception{
                                 }
                                 {
                                     auto& space_cluster = pallet_space_center;
+                                    auto& min_max = pallet_space_center_min_max;
+
                                     float sum_x = 0.0, sum_y = 0.0 , sum_z = 0.0;
                                     int cluster_valid_num = 0;
                                     {
@@ -1727,6 +2113,12 @@ namespace perception{
                                                     sum_y += p.y;
                                                     sum_z += p.z;
 
+                                                    min_max[0] = std::min(min_max[0], p.x);
+                                                    min_max[1] = std::max(min_max[1], p.x);
+                                                    min_max[2] = std::min(min_max[2], p.y);
+                                                    min_max[3] = std::max(min_max[3], p.y);
+                                                    min_max[4] = std::min(min_max[4], p.z);
+                                                    min_max[5] = std::max(min_max[5], p.z);
 
                                                 }else{
                                                     break;
@@ -1746,6 +2138,8 @@ namespace perception{
                                 }
                                 {
                                     auto& space_cluster = pallet_space_right;
+                                    auto& min_max = pallet_space_right_min_max;
+
                                     float sum_x = 0.0, sum_y = 0.0 , sum_z = 0.0;
                                     int cluster_valid_num = 0;
                                     {
@@ -1776,6 +2170,12 @@ namespace perception{
                                                     sum_y += p.y;
                                                     sum_z += p.z;
 
+                                                    min_max[0] = std::min(min_max[0], p.x);
+                                                    min_max[1] = std::max(min_max[1], p.x);
+                                                    min_max[2] = std::min(min_max[2], p.y);
+                                                    min_max[3] = std::max(min_max[3], p.y);
+                                                    min_max[4] = std::min(min_max[4], p.z);
+                                                    min_max[5] = std::max(min_max[5], p.z);
 
                                                 }else{
                                                     break;
@@ -1904,6 +2304,201 @@ namespace perception{
                                 }
 
 
+                                MLOGI("filter_pallet_z_pocket [%f, %f]", filter_pallet_z_pocket_low,filter_pallet_z_pocket_high);
+                                MLOGI("space min_max range, left: [%f, %f, %f, %f, %f, %f], center: [%f, %f, %f, %f, %f, %f], right: [%f, %f, %f, %f, %f, %f]",
+                                      pallet_space_left_min_max[0],pallet_space_left_min_max[1],pallet_space_left_min_max[2],pallet_space_left_min_max[3],pallet_space_left_min_max[4],pallet_space_left_min_max[5],
+                                      pallet_space_center_min_max[0],pallet_space_center_min_max[1],pallet_space_center_min_max[2],pallet_space_center_min_max[3],pallet_space_center_min_max[4],pallet_space_center_min_max[5],
+                                      pallet_space_right_min_max[0],pallet_space_right_min_max[1],pallet_space_right_min_max[2],pallet_space_right_min_max[3],pallet_space_right_min_max[4],pallet_space_right_min_max[5]
+
+                                      );
+
+                                // filter second part of space form [filter_pallet_z_pocket_high, 0.0]
+                                float pallet_space_left_move_mean_x = 0.5f*(pallet_space_left_min_max[0] + pallet_space_left_min_max[1]);
+                                float pallet_space_center_move_mean_x = 0.5f*(pallet_space_center_min_max[0] + pallet_space_center_min_max[1]);
+
+                                float pallet_space_right_move_mean_x = 0.5f*(pallet_space_right_min_max[0] + pallet_space_right_min_max[1]);
+                                ;
+
+                                pallet_space_left.clear();
+                                pallet_space_center.clear();
+                                pallet_space_right.clear();
+                                pallet_top_line.clear();
+
+                                for(int j = valid_num - 1 ; j >= 0  ;j--){
+                                    const f32_t *p = pallet_pocket_buffer + j*3;
+
+
+                                    if( p[2] > filter_pallet_z_pocket_low && p[2] <  filter_space_second_height_high )
+
+                                    {
+                                        if( p[1] > filter_pallet_space_left_y_min && p[1] < filter_pallet_space_left_y_max
+                                        && std::abs(p[0] - pallet_space_left_move_mean_x) <filter_space_second_move_mean_thresh
+
+                                        ){
+                                            float c = static_cast<float>(pallet_space_left.size());
+                                            pallet_space_left_move_mean_x = (c*pallet_space_left_move_mean_x + p[0])/(c+ 1.0f);
+
+                                            pallet_space_left.emplace_back(geometry::float3{p[0],p[1],p[2]});
+                                        }
+                                        if( p[1] > filter_pallet_space_center_y_min && p[1] < filter_pallet_space_center_y_max
+                                                                                       && std::abs(p[0] - pallet_space_center_move_mean_x) < filter_space_second_move_mean_thresh
+
+                                        ){
+                                            float c = static_cast<float>(pallet_space_center.size());
+                                            pallet_space_center_move_mean_x = (c*pallet_space_center_move_mean_x + p[0])/(c+ 1.0f);
+
+                                            pallet_space_center.emplace_back(geometry::float3{p[0],p[1],p[2]});
+                                        }
+                                        if( p[1] > filter_pallet_space_right_y_min && p[1] < filter_pallet_space_right_y_max
+                                                                                      && std::abs(p[0] - pallet_space_right_move_mean_x) <filter_space_second_move_mean_thresh
+
+                                        ){
+                                            float c = static_cast<float>(pallet_space_right.size());
+                                            pallet_space_right_move_mean_x = (c*pallet_space_right_move_mean_x + p[0])/(c+ 1.0f);
+
+                                            pallet_space_right.emplace_back(geometry::float3{p[0],p[1],p[2]});
+                                        }
+
+
+                                    }else if(
+                                            p[0] > filter_pallet_line_x_min && p[0] < filter_pallet_line_x_max
+                                            && p[1] > -continuous_len_limit && p[1] < continuous_len_limit
+                                            && p[2] > filter_pallet_line_z_min && p[2] < filter_pallet_line_z_max
+                                    ){
+
+                                        pallet_top_line.emplace_back(geometry::float3{p[0],p[1],p[2]});
+
+                                    }
+
+
+                                }
+                                MLOGI("pallet_space_move_mean_x, %f, %f, %f",pallet_space_left_move_mean_x,pallet_space_center_move_mean_x,pallet_space_right_move_mean_x);
+                                MLOGI("get pocket space cluster: %zu, %zu, %zu, %zu, %zu", pallet_space_left.size(), pallet_space_center.size(), pallet_space_right.size(),pallet_pocket_left.size(),pallet_pocket_right.size());
+
+                                {
+
+                                    float pallet_space_left_sum_x = 0.0, pallet_space_left_sum_y = 0.0, pallet_space_left_sum_z = 0.0;
+                                    for( auto&p : pallet_space_left){
+                                        pallet_space_left_sum_x += p.x;
+                                        pallet_space_left_sum_y += p.y;
+                                        pallet_space_left_sum_z += p.z;
+                                    }
+
+                                    float pallet_space_center_sum_x = 0.0, pallet_space_center_sum_y = 0.0, pallet_space_center_sum_z = 0.0;
+                                    for( auto&p : pallet_space_center){
+                                        pallet_space_center_sum_x += p.x;
+                                        pallet_space_center_sum_y += p.y;
+                                        pallet_space_center_sum_z += p.z;
+                                    }
+
+                                    float pallet_space_right_sum_x = 0.0, pallet_space_right_sum_y = 0.0, pallet_space_right_sum_z = 0.0;
+                                    for( auto&p : pallet_space_right){
+                                        pallet_space_right_sum_x += p.x;
+                                        pallet_space_right_sum_y += p.y;
+                                        pallet_space_right_sum_z += p.z;
+                                    }
+                                    float pallet_space_left_mean_x = pallet_space_left_sum_x / static_cast<float >(pallet_space_left.size());
+                                    float pallet_space_left_mean_y = pallet_space_left_sum_y / static_cast<float >(pallet_space_left.size());
+                                    float pallet_space_left_mean_z = pallet_space_left_sum_z / static_cast<float >(pallet_space_left.size());
+
+                                    float pallet_space_center_mean_x = pallet_space_center_sum_x / static_cast<float >(pallet_space_center.size());
+                                    float pallet_space_center_mean_y = pallet_space_center_sum_y / static_cast<float >(pallet_space_center.size());
+                                    float pallet_space_center_mean_z = pallet_space_center_sum_z / static_cast<float >(pallet_space_center.size());
+
+                                    float pallet_space_right_mean_x = pallet_space_right_sum_x / static_cast<float >(pallet_space_right.size());
+                                    float pallet_space_right_mean_y = pallet_space_right_sum_y / static_cast<float >(pallet_space_right.size());
+                                    float pallet_space_right_mean_z = pallet_space_right_sum_z / static_cast<float >(pallet_space_right.size());
+
+
+                                    geometry::float3 pallet_space_left_point{
+                                            pallet_space_left_mean_x,
+                                            pallet_space_left_mean_y,
+                                            pallet_space_left_mean_z
+                                    };
+
+                                    geometry::float3 pallet_space_center_point{
+                                            pallet_space_center_mean_x,
+                                            pallet_space_center_mean_y,
+                                            pallet_space_center_mean_z
+                                    };
+
+                                    geometry::float3 pallet_space_right_point{
+                                            pallet_space_right_mean_x,
+                                            pallet_space_right_mean_y,
+                                            pallet_space_right_mean_z
+                                    };
+
+                                    float all_sum_x = pallet_space_left_sum_x + pallet_space_center_sum_x + pallet_space_right_sum_x;
+                                    float all_sum_y = pallet_space_left_sum_y + pallet_space_center_sum_y + pallet_space_right_sum_y;
+                                    float all_sum_z = pallet_space_left_sum_z + pallet_space_center_sum_z + pallet_space_right_sum_z;
+                                    float all_mean_x = all_sum_x/static_cast<float>(pallet_space_left.size() + pallet_space_center.size() + pallet_space_right.size());
+                                    float all_mean_y = all_sum_y/static_cast<float>(pallet_space_left.size() + pallet_space_center.size() + pallet_space_right.size());
+                                    float all_mean_z = all_sum_z/static_cast<float>(pallet_space_left.size() + pallet_space_center.size() + pallet_space_right.size());
+
+                                    if( pallet_space_width_center > 0.0){
+
+                                        float center_dist = geometry::distanceToLine(pallet_space_left_point, pallet_space_right_point - pallet_space_left_point,pallet_space_center_point);
+                                        MLOGI("refined pallet space center_dist: %f ",center_dist);
+
+                                        float line_dir_yaw =  std::atan2(pallet_space_right_sum_y - pallet_space_left_sum_y, pallet_space_right_sum_x - pallet_space_left_sum_x );
+
+                                        float pallet_direction = line_dir_yaw > 0.0 ? line_dir_yaw - M_PI_2: line_dir_yaw + M_PI_2;
+                                        bool space_dir_valid = std::abs(pallet_direction) < pallet_space_direction_diff_max;
+                                        MLOGI("refined pallet space pallet_direction: %f, tolerance: %f, valid: %i ",pallet_direction,pallet_space_direction_diff_max, space_dir_valid);
+
+                                        std::vector<geometry::float3> data_3_space[3] = {pallet_space_left,pallet_space_center, pallet_space_right};
+                                        std::vector<geometry::float3> data_3_space_and_top[4] = {pallet_space_left,pallet_space_center, pallet_space_right,pallet_top_line };
+                                        std::vector<geometry::float3> data_top[1] = { pallet_top_line };
+
+                                        f32_t tx = all_mean_x, ty = all_mean_y,tz = all_mean_z,nx,ny,nz,nd ;
+
+                                        compute_points_vec_norm2d(data_3_space,3,-1.0,0.0, tx, ty, tz, nx, ny, nz ,nd);
+                                        MLOGW("refined norm2d:[%f,%f,%f],[%f,%f,%f,%f] ", tx, ty,tz,nx,ny,nz,nd)
+
+                                        f32_t pallet_dir_3_space = angle_normal( std::atan2(ny, nx) + M_PIf32);
+                                        MLOGI("refined pallet_dir_3_space: %f", pallet_dir_3_space);
+
+                                        compute_points_vec_norm2d(data_3_space_and_top,4,-1.0,0.0, tx, ty, tz, nx, ny, nz ,nd);
+                                        MLOGW("refined norm2d:[%f,%f,%f],[%f,%f,%f,%f] ", tx, ty,tz,nx,ny,nz,nd)
+
+                                        f32_t pallet_dir_3_space_and_top = angle_normal( std::atan2(ny, nx) + M_PIf32);
+                                        MLOGI("refined pallet_dir_3_space_and_top: %f", pallet_dir_3_space_and_top);
+
+                                        compute_points_vec_norm2d(data_top,1,-1.0,0.0, tx, ty, tz, nx, ny, nz ,nd);
+                                        MLOGW("refined norm2d:[%f,%f,%f],[%f,%f,%f,%f] ", tx, ty,tz,nx,ny,nz,nd)
+
+                                        f32_t pallet_dir_top = angle_normal( std::atan2(ny, nx) + M_PIf32);
+                                        MLOGI("refined pallet_dir_top: %f", pallet_dir_3_space_and_top);
+
+
+                                        // find weighted mean dir
+                                        float weighted_mean_dir = (0.0f + pallet_dir_top*projector_dir_weight_t + pallet_dir_3_space_and_top*projector_dir_weight_p3t
+                                                + pallet_dir_3_space*projector_dir_weight_p3)/(projector_dir_weight_0 + projector_dir_weight_t+projector_dir_weight_p3t+ projector_dir_weight_p3);
+                                        MLOGI("refined weighted_mean_dir: %f", weighted_mean_dir);
+
+                                        __attribute__ ((aligned (32))) auto    relative_pose = transform::createSe3(0.0, 0.0, 0.0 ,0.0,0.0,static_cast<double>(weighted_mean_dir) );
+
+
+                                        cluster.est_pose_project = relative_pose;
+                                        cluster.est_pose_project_inv = relative_pose.inverse();
+
+                                        cluster.est_pose = cluster.est_pose* relative_pose;
+                                        cluster.est_pose_inv = cluster.est_pose.inverse();
+
+                                        std::cout << "relative_pose:\n" << relative_pose.matrix() <<"\n";
+                                        std::cout << "cluster.est_pose:\n" << cluster.est_pose.matrix() <<"\n";
+                                        std::cout << "cluster.est_pose_inv:\n" << cluster.est_pose_inv.matrix() <<"\n";
+
+
+
+
+
+
+                                    }
+
+
+
+                                }
                                 MLOGI("pallet space pose: [%f, %f, %f], [%f, %f, %f], [%f, %f, %f]",
                                       pallet_space_left_x , pallet_space_left_y , pallet_space_left_z ,
                                       pallet_space_center_x , pallet_space_center_y , pallet_space_center_z ,
@@ -1951,13 +2546,78 @@ namespace perception{
 
                                 bool detect_all_cond_valid = space_count_valid &&  space_dir_valid && space_center_to_line_dist_ok && empty_pocket_ok;
                                 MLOGI("space valid condition: detect_all_cond_valid: %i, space_count_valid:%i, space_dir_valid:%i, space_center_to_line_dist_ok:%i, empty_pocket_ok:%i ", detect_all_cond_valid, space_count_valid,space_dir_valid,space_center_to_line_dist_ok,empty_pocket_ok);
-                                cluster.valid_status = detect_all_cond_valid? 1: 0;
 
+                                // find  space index
+
+
+
+                                // compute center and norm_2d for all points
+                                f32_t tx, ty,tz,nx,ny,nz,nd ;
+                                pointcloud_norm2d(pallet_pocket_buffer, static_cast<u64_t>(float_num / 3), nullptr, 0,
+                                                  -1.0f, 0.0f, 0.0f,
+                                                  &tx, &ty, &tz, &nx, &ny, &nz, &nd );
+                                MLOGW("norm2d:[%f,%f,%f],[%f,%f,%f,%f] ", tx, ty,tz,nx,ny,nz,nd)
+
+
+                                f32_t pallet_dir = angle_normal( std::atan2(ny, nx) + M_PIf32);
+                                MLOGI("pallet_dir: %f", pallet_dir);
+
+
+                                if(detect_all_cond_valid){
+                                    cluster.valid_status = 1;
+                                }
                             }
 
                         }
 
-                        if ( (output_mode -50) == i){
+                        if ( (output_mode -30) == i){
+
+                            int valid_num = pallet_top_line.size() + pallet_space_left.size() +pallet_space_center.size() + pallet_space_right.size();
+
+                            int valid_num_count = 0;
+
+                            for( auto&p : pallet_space_left){
+                                pallet_pocket_buffer[valid_num_count*3 ] = p.x;
+                                pallet_pocket_buffer[valid_num_count*3 + 1 ] = p.y;
+                                pallet_pocket_buffer[valid_num_count*3 + 2] = p.z;
+                                valid_num_count++;
+                            }
+
+                            for( auto&p : pallet_space_center){
+                                pallet_pocket_buffer[valid_num_count*3 ] = p.x;
+                                pallet_pocket_buffer[valid_num_count*3 + 1 ] = p.y;
+                                pallet_pocket_buffer[valid_num_count*3 + 2] = p.z;
+                                valid_num_count++;
+                            }
+
+                            for( auto&p : pallet_space_right){
+                                pallet_pocket_buffer[valid_num_count*3 ] = p.x;
+                                pallet_pocket_buffer[valid_num_count*3 + 1 ] = p.y;
+                                pallet_pocket_buffer[valid_num_count*3 + 2] = p.z;
+                                valid_num_count++;
+                            }
+                            for( auto&p : pallet_top_line){
+                                pallet_pocket_buffer[valid_num_count*3 ] = p.x;
+                                pallet_pocket_buffer[valid_num_count*3 + 1 ] = p.y;
+                                pallet_pocket_buffer[valid_num_count*3 + 2] = p.z;
+                                valid_num_count++;
+                            }
+
+                            f64_t tx, ty, tz, roll, pitch,yaw;
+
+                            transform::extractSe3(cluster.est_pose_project_inv,tx, ty, tz, roll, pitch,yaw );
+                            MLOGI("est_pose_project_inv[%i]: tx: %f, ty: %f, tz: %f, roll: %f, pitch: %f,yaw: %f",i, tx, ty, tz, roll, pitch,yaw )
+
+                            pointcloud_transform(pallet_pocket_buffer , valid_num, pallet_project_buffer, tx, ty, tz, roll, pitch, yaw );
+
+
+                            output_cloud_buffer.buffer = pallet_project_buffer;
+                            output_cloud_buffer.float_num = valid_num*3;
+                            MLOGI("filter_ground use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
+                            return &output_cloud_buffer;
+                        }
+
+                        if ( (output_mode -20) == i){
                             output_cloud_buffer.buffer = pallet_pocket_buffer;
                             output_cloud_buffer.float_num = float_num;
                             MLOGI("filter_ground use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
@@ -2081,8 +2741,44 @@ namespace perception{
             return nullptr;
         }
 
+
+        if(output_mode == 0){
+            memcpy(ground_output_buffer, cloud_buffer, cloud_dim_height*cloud_dim_width*3*4);
+            for(int i = 0 ; i < cloud_dim_height;i++){
+                for(int j = 0 ;j < cloud_dim_width;j++){
+                    int k = (i * cloud_dim_width + j)*3;
+//                    const f32_t *p = cloud_buffer + k;
+                    f32_t *p_dst = ground_output_buffer + k;
+
+//                Eigen::Matrix <float, 3, 1> vp (p[0] -cx, p[1] - cy, p[2] - cz);
+//                float cos_theta = vp.dot (normal);
+//                    p_dst[0] = p[0];
+//                    p_dst[1] = p[1];
+                    // dist alone norm
+//                p_dst[2] = cos_theta;//std::abs(cos_theta) < 0.05 ? 0.0 : cos_theta;
+                    // z sub
+                    p_dst[2] = p_dst[2] < adaptive_z_thresh_max ? p_dst[2] - 0.5 : p_dst[2];
+
+                }
+            }
+
+
+
+            filter_ground_status = 0;
+
+
+            output_cloud_buffer.buffer = ground_output_buffer;
+            output_cloud_buffer.float_num = cloud_dim_height * cloud_dim_width * 3;
+            MLOGI("filter_ground use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
+
+            return &output_cloud_buffer;
+
+        }
+
+
         memset(cloud_label_table,0,cloud_dim_height*cloud_dim_width);
         memset(ground_pixel_count_buffer,0,cloud_dim_height*row_scan_fold);
+
 
 
         f32_t init_ground_x_min = config.filter_ground.init_ground_cx_min;
@@ -2117,8 +2813,27 @@ namespace perception{
         if(valid_num < config.filter_ground.init_valid_num_min){
             MLOGW("valid_num: %i < %i", valid_num, config.filter_ground.init_valid_num_min);
             memcpy(ground_output_buffer, cloud_buffer, cloud_dim_height*cloud_dim_width*3*4);
-            filter_ground_status = -3;
-            return nullptr;
+            for(int i = 0 ; i < cloud_dim_height;i++){
+                for(int j = 0 ;j < cloud_dim_width;j++){
+                    int k = (i * cloud_dim_width + j)*3;
+//                    const f32_t *p = cloud_buffer + k;
+                    f32_t *p_dst = ground_output_buffer + k;
+
+//                Eigen::Matrix <float, 3, 1> vp (p[0] -cx, p[1] - cy, p[2] - cz);
+//                float cos_theta = vp.dot (normal);
+//                    p_dst[0] = p[0];
+//                    p_dst[1] = p[1];
+                    // dist alone norm
+//                p_dst[2] = cos_theta;//std::abs(cos_theta) < 0.05 ? 0.0 : cos_theta;
+                    // z sub
+                    p_dst[2] = p_dst[2] < adaptive_z_thresh_max ? p_dst[2] - 0.5 : p_dst[2];
+
+                }
+            }
+
+            filter_ground_status = 0;
+            return &output_cloud_buffer;
+
         }
 
         f32_t init_ground_x_sum = 0.0;
@@ -2154,7 +2869,30 @@ namespace perception{
 
         if (cnz < init_ground_nz_min
         ){
-            MLOGI("find norm: [%f, %f, %f, %f] error with nz_limit [%f, %f]", cnx, cny, cnz,cnd,init_ground_nz_min );
+            MLOGI("find norm: [%f, %f, %f, %f] error with nz_limit [%f]", cnx, cny, cnz,cnd,init_ground_nz_min );
+            memcpy(ground_output_buffer, cloud_buffer, cloud_dim_height*cloud_dim_width*3*4);
+            for(int i = 0 ; i < cloud_dim_height;i++){
+                for(int j = 0 ;j < cloud_dim_width;j++){
+                    int k = (i * cloud_dim_width + j)*3;
+//                    const f32_t *p = cloud_buffer + k;
+                    f32_t *p_dst = ground_output_buffer + k;
+
+//                Eigen::Matrix <float, 3, 1> vp (p[0] -cx, p[1] - cy, p[2] - cz);
+//                float cos_theta = vp.dot (normal);
+//                    p_dst[0] = p[0];
+//                    p_dst[1] = p[1];
+                    // dist alone norm
+//                p_dst[2] = cos_theta;//std::abs(cos_theta) < 0.05 ? 0.0 : cos_theta;
+                    // z sub
+                    p_dst[2] = p_dst[2] < adaptive_z_thresh_max ? p_dst[2] - 0.5 : p_dst[2];
+
+                }
+            }
+
+            filter_ground_status = 0;
+            return &output_cloud_buffer;
+
+
 
         }
 
@@ -2165,11 +2903,14 @@ namespace perception{
                 const f32_t *p = cloud_buffer + k;
                 f32_t *p_dst = ground_output_buffer + k;
 
-                Eigen::Matrix <float, 3, 1> vp (p[0] -cx, p[1] - cy, p[2] - cz);
-                float cos_theta = vp.dot (normal);
+//                Eigen::Matrix <float, 3, 1> vp (p[0] -cx, p[1] - cy, p[2] - cz);
+//                float cos_theta = vp.dot (normal);
                 p_dst[0] = p[0];
                 p_dst[1] = p[1];
-                p_dst[2] = cos_theta;//std::abs(cos_theta) < 0.05 ? 0.0 : cos_theta;
+                // dist alone norm
+//                p_dst[2] = cos_theta;//std::abs(cos_theta) < 0.05 ? 0.0 : cos_theta;
+                // z sub
+                p_dst[2] = p[2] - cz;//std::abs(cos_theta) < 0.05 ? 0.0 : cos_theta;
 
             }
         }
@@ -2332,11 +3073,13 @@ namespace perception{
                 }
 
             }else{
+                filter_ground_status = -10;
+
                 return 0;
             }
         }
 
-        if (output_mode == 0){
+        if (output_mode == 1){
 
             output_cloud_buffer.buffer = ground_init_buffer;
             output_cloud_buffer.float_num = valid_num * 3;
@@ -2344,7 +3087,7 @@ namespace perception{
 
             return &output_cloud_buffer;
 
-        }else {
+        }else if(output_mode == 2) {
 
             output_cloud_buffer.buffer = ground_output_buffer;
             output_cloud_buffer.float_num = cloud_dim_height * cloud_dim_width * 3;

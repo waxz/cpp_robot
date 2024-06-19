@@ -19,6 +19,8 @@ namespace perception{
 
     };
 
+    int compute_points_vec_norm2d(std::vector<geometry::float3> data[], size_t data_len, float vx, float vy, float & cx, float &cy, float &cz, float &nx, float& ny, float& nz, float& nd);
+
     struct LineMark{
         geometry::float3 point_left;
         geometry::float3 point_center;
@@ -66,7 +68,13 @@ namespace perception{
          Eigen::Transform<double,3,Eigen::Isometry> est_pose;
          Eigen::Transform<double,3,Eigen::Isometry> est_pose_inv;
 
+        Eigen::Transform<double,3,Eigen::Isometry> est_pose_project;
+        Eigen::Transform<double,3,Eigen::Isometry> est_pose_project_inv;
+
         i32_t valid_status;
+        f32_t refined_y;
+        f32_t continuous_len;
+
 
         u32_t top_row_high;
         u32_t top_row_low;
@@ -118,6 +126,10 @@ namespace perception{
         perception::DetectorConfig config;
         ta_cfg_t mem_cfg = {0};
         PointCloudBuffer output_cloud_buffer;
+        PalletInfoBuffer output_pallet_info_buffer;
+        std::vector<PalletInfo> output_pallet_vec;
+//        std::vector<PalletInfo_ptr > output_pallet_ptr_vec;
+
         f32_t * ground_init_buffer = nullptr;
         f32_t * ground_output_buffer = nullptr;
         i32_t * ground_pixel_count_buffer = nullptr;
@@ -129,10 +141,19 @@ namespace perception{
         u64_t * vertical_filter_index_buffer = nullptr;
         u32_t * vertical_output_index_buffer = nullptr;
 
-        u32_t * vertical_line_continuous_buffer;
+        u32_t * vertical_line_continuous_count_buffer = nullptr;
+        f32_t * vertical_line_continuous_mean_buffer = nullptr;
+
 //        u32_t * vertical_line_continuous_right_buffer;
 
         f32_t * pallet_pocket_buffer = nullptr;
+        f32_t * pallet_center_line_buffer = nullptr;
+        u32_t * pallet_space_continuous_count_buffer = nullptr;
+        f32_t * pallet_space_continuous_mean_buffer = nullptr;
+
+        f32_t * pallet_project_buffer = nullptr;
+        u32_t * pallet_project_index_buffer = nullptr;
+
         f32_t * pallet_output_buffer = nullptr;
 
 
@@ -149,6 +170,7 @@ namespace perception{
         std::vector<geometry::float3> pallet_pocket_right;
         std::vector<geometry::float3> pallet_space_right;
 
+        std::vector<geometry::float3> pallet_top_line;
 
         // 0: not define
         // 1: ground
@@ -165,6 +187,7 @@ namespace perception{
         f32_t viewpoint_y = 0.0;
         f32_t viewpoint_z = 0.0;
         void set_input( f32_t * buffer,u64_t height, u64_t width, f32_t vx, f32_t vy, f32_t vz);
+        void reset();
 
         void set_ground_init_dim( u64_t height_min , u64_t height_max ,u64_t width_min, u64_t width_max);
         void set_ground_init_thresh( f32_t x_min, f32_t x_max, f32_t y_min, f32_t y_max, f32_t z_min, f32_t z_max, f32_t nz_min);
@@ -186,6 +209,8 @@ namespace perception{
         i8_t filter_pallet_status = 0;
 
         PointCloudBuffer_ptr filter_pallet(u32_t output_mode);
+        PalletInfoBuffer_ptr  get_pallet(u32_t output_mode);
+
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     };

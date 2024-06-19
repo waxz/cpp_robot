@@ -152,6 +152,44 @@ namespace perception{
         int filter_pallet_row_high;
         int filter_pallet_row_low;
 
+        // filter center line
+        float filter_pallet_line_x_min;
+        float filter_pallet_line_x_max;
+        float filter_pallet_line_y_min;
+        float filter_pallet_line_y_max;
+        float filter_pallet_line_z_min;
+        float filter_pallet_line_z_max;
+        float filter_pallet_line_continuous_min;
+
+        // space filter
+        float filter_space_continuous_resolution;
+        float filter_space_move_window_x_search_start;
+        float filter_space_move_window_x_search_end;
+        float filter_space_move_window_x_search_step;
+        float filter_space_move_window_y_len;
+
+        float filter_space_move_window_x_thresh;
+        float filter_space_continuous_len_min;
+
+        float filter_space_second_height_high;
+        float filter_space_second_move_mean_thresh;
+        float filter_space_width_slip_len;
+
+        float projector_dir_weight_p3;
+        float projector_dir_weight_p3t;
+        float projector_dir_weight_t;
+        float projector_dir_weight_0;
+
+        float projector_offset_y;
+        float projector_offset_z;
+        float projector_resolution;
+        float projector_search_y_range;
+        float projector_search_z_range;
+        float projector_search_maximum_distance;
+        float projector_similarity_min;
+
+
+
         // filter
         float filter_pallet_x_min;
         float filter_pallet_x_max;

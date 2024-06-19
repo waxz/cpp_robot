@@ -13,7 +13,7 @@ interface_blocklist = ["eno1", "enx00e04d71ffe7", "wlp4s0", "wlp3s0", "docker0",
 
 
 [dds.writers.cloud_pub]
-topic_name = "cloud"
+topic_name = "pallet_detector/cloud"
 topic_type = "Message::Pointcloud640x480x3"
 #topic_type = "Message::Pointcloud1920x1080x3"
 
@@ -24,7 +24,7 @@ qos_queue_size = 1
 
 #
 [dds.writers.detector_cmd_pub]
-topic_name = "detector/cmd"
+topic_name = "pallet_detector/cmd"
 topic_type = "Message::HeaderString1024"
 #topic_type = "Message::Pointcloud1920x1080x3"
 
@@ -36,7 +36,7 @@ qos_queue_size = 10
 
 
 [dds.readers.detector_status_sub]
-topic_name = "detector/status"
+topic_name = "pallet_detector/status"
 topic_type = "Message::HeaderString1024"
 #topic_type = "Message::Pointcloud1920x1080x3"
 
@@ -46,7 +46,7 @@ reader_profile = ""
 qos_queue_size = 100
 
 [dds.readers.detector_result_sub]
-topic_name = "detector/result"
+topic_name = "pallet_detector/result"
 topic_type = "Message::Path1024"
 #topic_type = "Message::Pointcloud1920x1080x3"
 

@@ -20,19 +20,19 @@ qos_queue_size = 1
 
 [ros.readers.detector_cmd_sub]
 #topic_name = "velodyne_points"
-topic_name = "detector/cmd"
+topic_name = "pallet_detector/cmd"
 topic_type = "HeaderString"
 qos_queue_size = 1
 
 [ros.writers.detector_status_pub]
 #topic_name = "velodyne_points"
-topic_name = "detector/status"
+topic_name = "pallet_detector/status"
 topic_type = "HeaderString"
 qos_queue_size = 1
 
 
 [ros.writers.detector_result_pub]
 #topic_name = "velodyne_points"
-topic_name = "detector/result"
+topic_name = "pallet_detector/result"
 topic_type = "Path"
 qos_queue_size = 1

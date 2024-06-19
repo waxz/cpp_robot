@@ -302,6 +302,36 @@ struct PalletFilter{
      // check pocket hole existence
      int filter_pallet_row_high;
      int filter_pallet_row_low;
+     // filter center line
+     float filter_pallet_line_x_min;
+     float filter_pallet_line_x_max;
+     float filter_pallet_line_y_min;
+     float filter_pallet_line_y_max;
+     float filter_pallet_line_z_min;
+     float filter_pallet_line_z_max;
+     float filter_pallet_line_continuous_min;
+     // space filter
+     float filter_space_continuous_resolution;
+     float filter_space_move_window_x_search_start;
+     float filter_space_move_window_x_search_end;
+     float filter_space_move_window_x_search_step;
+     float filter_space_move_window_y_len;
+     float filter_space_move_window_x_thresh;
+     float filter_space_continuous_len_min;
+     float filter_space_second_height_high;
+     float filter_space_second_move_mean_thresh;
+     float filter_space_width_slip_len;
+     float projector_dir_weight_p3;
+     float projector_dir_weight_p3t;
+     float projector_dir_weight_t;
+     float projector_dir_weight_0;
+     float projector_offset_y;
+     float projector_offset_z;
+     float projector_resolution;
+     float projector_search_y_range;
+     float projector_search_z_range;
+     float projector_search_maximum_distance;
+     float projector_similarity_min;
      // filter
      float filter_pallet_x_min;
      float filter_pallet_x_max;
@@ -383,6 +413,34 @@ struct PalletFilter{
         cluster_filter_num_min= toml::get<decltype(cluster_filter_num_min)>(value.at("cluster_filter_num_min"));
         filter_pallet_row_high= toml::get<decltype(filter_pallet_row_high)>(value.at("filter_pallet_row_high"));
         filter_pallet_row_low= toml::get<decltype(filter_pallet_row_low)>(value.at("filter_pallet_row_low"));
+        filter_pallet_line_x_min= toml::get<decltype(filter_pallet_line_x_min)>(value.at("filter_pallet_line_x_min"));
+        filter_pallet_line_x_max= toml::get<decltype(filter_pallet_line_x_max)>(value.at("filter_pallet_line_x_max"));
+        filter_pallet_line_y_min= toml::get<decltype(filter_pallet_line_y_min)>(value.at("filter_pallet_line_y_min"));
+        filter_pallet_line_y_max= toml::get<decltype(filter_pallet_line_y_max)>(value.at("filter_pallet_line_y_max"));
+        filter_pallet_line_z_min= toml::get<decltype(filter_pallet_line_z_min)>(value.at("filter_pallet_line_z_min"));
+        filter_pallet_line_z_max= toml::get<decltype(filter_pallet_line_z_max)>(value.at("filter_pallet_line_z_max"));
+        filter_pallet_line_continuous_min= toml::get<decltype(filter_pallet_line_continuous_min)>(value.at("filter_pallet_line_continuous_min"));
+        filter_space_continuous_resolution= toml::get<decltype(filter_space_continuous_resolution)>(value.at("filter_space_continuous_resolution"));
+        filter_space_move_window_x_search_start= toml::get<decltype(filter_space_move_window_x_search_start)>(value.at("filter_space_move_window_x_search_start"));
+        filter_space_move_window_x_search_end= toml::get<decltype(filter_space_move_window_x_search_end)>(value.at("filter_space_move_window_x_search_end"));
+        filter_space_move_window_x_search_step= toml::get<decltype(filter_space_move_window_x_search_step)>(value.at("filter_space_move_window_x_search_step"));
+        filter_space_move_window_y_len= toml::get<decltype(filter_space_move_window_y_len)>(value.at("filter_space_move_window_y_len"));
+        filter_space_move_window_x_thresh= toml::get<decltype(filter_space_move_window_x_thresh)>(value.at("filter_space_move_window_x_thresh"));
+        filter_space_continuous_len_min= toml::get<decltype(filter_space_continuous_len_min)>(value.at("filter_space_continuous_len_min"));
+        filter_space_second_height_high= toml::get<decltype(filter_space_second_height_high)>(value.at("filter_space_second_height_high"));
+        filter_space_second_move_mean_thresh= toml::get<decltype(filter_space_second_move_mean_thresh)>(value.at("filter_space_second_move_mean_thresh"));
+        filter_space_width_slip_len= toml::get<decltype(filter_space_width_slip_len)>(value.at("filter_space_width_slip_len"));
+        projector_dir_weight_p3= toml::get<decltype(projector_dir_weight_p3)>(value.at("projector_dir_weight_p3"));
+        projector_dir_weight_p3t= toml::get<decltype(projector_dir_weight_p3t)>(value.at("projector_dir_weight_p3t"));
+        projector_dir_weight_t= toml::get<decltype(projector_dir_weight_t)>(value.at("projector_dir_weight_t"));
+        projector_dir_weight_0= toml::get<decltype(projector_dir_weight_0)>(value.at("projector_dir_weight_0"));
+        projector_offset_y= toml::get<decltype(projector_offset_y)>(value.at("projector_offset_y"));
+        projector_offset_z= toml::get<decltype(projector_offset_z)>(value.at("projector_offset_z"));
+        projector_resolution= toml::get<decltype(projector_resolution)>(value.at("projector_resolution"));
+        projector_search_y_range= toml::get<decltype(projector_search_y_range)>(value.at("projector_search_y_range"));
+        projector_search_z_range= toml::get<decltype(projector_search_z_range)>(value.at("projector_search_z_range"));
+        projector_search_maximum_distance= toml::get<decltype(projector_search_maximum_distance)>(value.at("projector_search_maximum_distance"));
+        projector_similarity_min= toml::get<decltype(projector_similarity_min)>(value.at("projector_similarity_min"));
         filter_pallet_x_min= toml::get<decltype(filter_pallet_x_min)>(value.at("filter_pallet_x_min"));
         filter_pallet_x_max= toml::get<decltype(filter_pallet_x_max)>(value.at("filter_pallet_x_max"));
         filter_pallet_y_min= toml::get<decltype(filter_pallet_y_min)>(value.at("filter_pallet_y_min"));
@@ -427,6 +485,34 @@ struct PalletFilter{
         {"cluster_filter_num_min", this->cluster_filter_num_min},
         {"filter_pallet_row_high", this->filter_pallet_row_high},
         {"filter_pallet_row_low", this->filter_pallet_row_low},
+        {"filter_pallet_line_x_min", this->filter_pallet_line_x_min},
+        {"filter_pallet_line_x_max", this->filter_pallet_line_x_max},
+        {"filter_pallet_line_y_min", this->filter_pallet_line_y_min},
+        {"filter_pallet_line_y_max", this->filter_pallet_line_y_max},
+        {"filter_pallet_line_z_min", this->filter_pallet_line_z_min},
+        {"filter_pallet_line_z_max", this->filter_pallet_line_z_max},
+        {"filter_pallet_line_continuous_min", this->filter_pallet_line_continuous_min},
+        {"filter_space_continuous_resolution", this->filter_space_continuous_resolution},
+        {"filter_space_move_window_x_search_start", this->filter_space_move_window_x_search_start},
+        {"filter_space_move_window_x_search_end", this->filter_space_move_window_x_search_end},
+        {"filter_space_move_window_x_search_step", this->filter_space_move_window_x_search_step},
+        {"filter_space_move_window_y_len", this->filter_space_move_window_y_len},
+        {"filter_space_move_window_x_thresh", this->filter_space_move_window_x_thresh},
+        {"filter_space_continuous_len_min", this->filter_space_continuous_len_min},
+        {"filter_space_second_height_high", this->filter_space_second_height_high},
+        {"filter_space_second_move_mean_thresh", this->filter_space_second_move_mean_thresh},
+        {"filter_space_width_slip_len", this->filter_space_width_slip_len},
+        {"projector_dir_weight_p3", this->projector_dir_weight_p3},
+        {"projector_dir_weight_p3t", this->projector_dir_weight_p3t},
+        {"projector_dir_weight_t", this->projector_dir_weight_t},
+        {"projector_dir_weight_0", this->projector_dir_weight_0},
+        {"projector_offset_y", this->projector_offset_y},
+        {"projector_offset_z", this->projector_offset_z},
+        {"projector_resolution", this->projector_resolution},
+        {"projector_search_y_range", this->projector_search_y_range},
+        {"projector_search_z_range", this->projector_search_z_range},
+        {"projector_search_maximum_distance", this->projector_search_maximum_distance},
+        {"projector_similarity_min", this->projector_similarity_min},
         {"filter_pallet_x_min", this->filter_pallet_x_min},
         {"filter_pallet_x_max", this->filter_pallet_x_max},
         {"filter_pallet_y_min", this->filter_pallet_y_min},
