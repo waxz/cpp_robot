@@ -84,7 +84,7 @@ target_include_directories(pointcloud_process PUBLIC ${CMAKE_SOURCE_DIR}/include
 
 #target_link_libraries(pointcloud_process PUBLIC Ceres::ceres)
 target_link_libraries (pointcloud_process PUBLIC Eigen3::Eigen)
-target_link_libraries (pointcloud_process PUBLIC tinyalloc)
+target_link_libraries (pointcloud_process PUBLIC tinyalloc lodepng)
 
 #target_link_libraries(pointcloud_process PUBLIC autodiff::autodiff )
 add_executable(pointcloud_process_test pointcloud_process_test.c)

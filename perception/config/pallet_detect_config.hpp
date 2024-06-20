@@ -211,6 +211,8 @@ namespace perception{
         float pallet_space_center_to_line_dist_max;
         float pallet_pocket_empty_x;
         int pallet_space_valid_num;
+        int pallet_pocket_max_num;
+
 
 
 
@@ -277,6 +279,7 @@ namespace perception{
         float pallet_space_width_center;
         float pallet_space_height;
         float pallet_top_height;
+        float pallet_top_tail_height_ratio;
 
 
     };

@@ -23,6 +23,15 @@ find_package(absl REQUIRED)
 build_external_project(toml11 lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/toml11-3.8.1.tar.gz  -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_SHARED_LIBS=ON)
 find_package(toml11 REQUIRED)
 
+# CImg_latest.zip
+#build_external_project(CImg lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/CImg_latest.zip -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_SHARED_LIBS=ON)
+#find_package(CImg REQUIRED)
+
+add_library(lodepng STATIC ${CMAKE_SOURCE_DIR}/include/lodepng/lodepng.cpp)
+set_pic(lodepng)
+target_include_directories(lodepng PUBLIC ${CMAKE_SOURCE_DIR}/include/lodepng/ )
+
+
 #--enable-static
 build_external_project_command(tinycc lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/tinycc-mob-20240330.zip "./configure --prefix=${CMAKE_BINARY_DIR}/force_tinycc/install --disable-static " "make -j6" " make install" )
 #build_external_project_command(tinycc lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/tinycc-mob_2023_1220.zip "./configure --prefix=${CMAKE_BINARY_DIR}/force_tinycc/install --enable-static --debug --extra-cflags='-std=c11 -Wpedantic -fsanitize=address,undefined -g' " "make -j6" " make install" )

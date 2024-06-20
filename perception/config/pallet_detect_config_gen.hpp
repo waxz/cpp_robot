@@ -351,6 +351,7 @@ struct PalletFilter{
      float pallet_space_center_to_line_dist_max;
      float pallet_pocket_empty_x;
      int pallet_space_valid_num;
+     int pallet_pocket_max_num;
      // check if a line is pallet marker ot not
      // 1. check if the line continuous, compute center position
      // not real fork size, just for checking cloud shape
@@ -396,6 +397,7 @@ struct PalletFilter{
      float pallet_space_width_center;
      float pallet_space_height;
      float pallet_top_height;
+     float pallet_top_tail_height_ratio;
  
 
     explicit PalletFilter(const toml::value& value) {
@@ -458,6 +460,7 @@ struct PalletFilter{
         pallet_space_center_to_line_dist_max= toml::get<decltype(pallet_space_center_to_line_dist_max)>(value.at("pallet_space_center_to_line_dist_max"));
         pallet_pocket_empty_x= toml::get<decltype(pallet_pocket_empty_x)>(value.at("pallet_pocket_empty_x"));
         pallet_space_valid_num= toml::get<decltype(pallet_space_valid_num)>(value.at("pallet_space_valid_num"));
+        pallet_pocket_max_num= toml::get<decltype(pallet_pocket_max_num)>(value.at("pallet_pocket_max_num"));
         fork_shape_width= toml::get<decltype(fork_shape_width)>(value.at("fork_shape_width"));
         fork_shape_height= toml::get<decltype(fork_shape_height)>(value.at("fork_shape_height"));
         fork_pos_y= toml::get<decltype(fork_pos_y)>(value.at("fork_pos_y"));
@@ -466,6 +469,7 @@ struct PalletFilter{
         pallet_space_width_center= toml::get<decltype(pallet_space_width_center)>(value.at("pallet_space_width_center"));
         pallet_space_height= toml::get<decltype(pallet_space_height)>(value.at("pallet_space_height"));
         pallet_top_height= toml::get<decltype(pallet_top_height)>(value.at("pallet_top_height"));
+        pallet_top_tail_height_ratio= toml::get<decltype(pallet_top_tail_height_ratio)>(value.at("pallet_top_tail_height_ratio"));
 
     }
 
@@ -530,6 +534,7 @@ struct PalletFilter{
         {"pallet_space_center_to_line_dist_max", this->pallet_space_center_to_line_dist_max},
         {"pallet_pocket_empty_x", this->pallet_pocket_empty_x},
         {"pallet_space_valid_num", this->pallet_space_valid_num},
+        {"pallet_pocket_max_num", this->pallet_pocket_max_num},
         {"fork_shape_width", this->fork_shape_width},
         {"fork_shape_height", this->fork_shape_height},
         {"fork_pos_y", this->fork_pos_y},
@@ -537,7 +542,8 @@ struct PalletFilter{
         {"pallet_pocket_width", this->pallet_pocket_width},
         {"pallet_space_width_center", this->pallet_space_width_center},
         {"pallet_space_height", this->pallet_space_height},
-        {"pallet_top_height", this->pallet_top_height}};
+        {"pallet_top_height", this->pallet_top_height},
+        {"pallet_top_tail_height_ratio", this->pallet_top_tail_height_ratio}};
     }
    PalletFilter() = default;
 

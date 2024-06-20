@@ -1,7 +1,0 @@
-malloc_test
-stress_test
-test
-*.o
-*.gcda
-*.gcno
-*.gcov

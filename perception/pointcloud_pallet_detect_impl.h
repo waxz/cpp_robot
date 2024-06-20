@@ -12,6 +12,8 @@
 #include "math/transform/eigen_transform.h"
 
 #include <list>
+#include <set>
+#include <forward_list>
 namespace perception{
 
     struct StableFilter{
@@ -74,6 +76,9 @@ namespace perception{
         i32_t valid_status;
         f32_t refined_y;
         f32_t continuous_len;
+        f32_t confidence;
+        geometry::float3 pallet_pose_center;
+        f32_t pallet_pose_yaw;
 
 
         u32_t top_row_high;
@@ -153,12 +158,18 @@ namespace perception{
 
         f32_t * pallet_project_buffer = nullptr;
         u32_t * pallet_project_index_buffer = nullptr;
+        f32_t * pallet_project_template_score_buffer = nullptr;
+        u8_t* projector_output_img_buffer = nullptr;
+        std::vector<unsigned char> projector_output_img_encode_buffer;
 
         f32_t * pallet_output_buffer = nullptr;
 
 
-        std::list<u64_t> vertical_filter_index_list;
+//        std::list<u64_t> vertical_filter_index_list;
         std::vector<u64_t> vertical_filter_index_vec;
+
+//        std::set<std::array<u64_t ,2>> pallet_projector_index_buffer_list;
+        std::vector<std::array<i32_t,2>> pallet_projector_index_buffer_vec;
 
         std::vector<LineMark> center_line_markers;
         std::vector<PalletCandidate,Eigen::aligned_allocator<PalletCandidate>> pallet_candidates;
