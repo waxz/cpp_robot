@@ -1206,6 +1206,151 @@ namespace Message
     namespace detail {
 
     template<typename Tag, typename Tag::type M>
+    struct HeaderString4096_rob
+    {
+        friend constexpr typename Tag::type get(
+                Tag)
+        {
+            return M;
+        }
+
+    };
+
+    struct HeaderString4096_f
+    {
+        typedef uint32_t HeaderString4096::* type;
+        friend constexpr type get(
+                HeaderString4096_f);
+    };
+
+    template struct HeaderString4096_rob<HeaderString4096_f, &HeaderString4096::m_data_size>;
+
+    template <typename T, typename Tag>
+    inline size_t constexpr HeaderString4096_offset_of()
+    {
+        return ((::size_t) &reinterpret_cast<char const volatile&>((((T*)0)->*get(Tag()))));
+    }
+
+    } // namespace detail
+    #endif // ifndef SWIG
+
+
+    /*!
+     * @brief This class represents the TopicDataType of the type HeaderString4096 defined by the user in the IDL file.
+     * @ingroup Message
+     */
+    class HeaderString4096PubSubType : public eprosima::fastdds::dds::TopicDataType
+    {
+    public:
+
+        typedef HeaderString4096 type;
+
+        eProsima_user_DllExport HeaderString4096PubSubType();
+
+        eProsima_user_DllExport ~HeaderString4096PubSubType() override;
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload) override
+        {
+            return serialize(data, payload, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport bool serialize(
+                void* data,
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool deserialize(
+                eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+                void* data) override;
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data) override
+        {
+            return getSerializedSizeProvider(data, eprosima::fastdds::dds::DEFAULT_DATA_REPRESENTATION);
+        }
+
+        eProsima_user_DllExport std::function<uint32_t()> getSerializedSizeProvider(
+                void* data,
+                eprosima::fastdds::dds::DataRepresentationId_t data_representation) override;
+
+        eProsima_user_DllExport bool getKey(
+                void* data,
+                eprosima::fastrtps::rtps::InstanceHandle_t* ihandle,
+                bool force_md5 = false) override;
+
+        eProsima_user_DllExport void* createData() override;
+
+        eProsima_user_DllExport void deleteData(
+                void* data) override;
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+        eProsima_user_DllExport inline bool is_bounded() const override
+        {
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_BOUNDED
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+        eProsima_user_DllExport inline bool is_plain() const override
+        {
+            return is_plain_xcdrv1_impl();
+        }
+
+        eProsima_user_DllExport inline bool is_plain(
+            eprosima::fastdds::dds::DataRepresentationId_t data_representation) const override
+        {
+            if(data_representation == eprosima::fastdds::dds::DataRepresentationId_t::XCDR2_DATA_REPRESENTATION)
+            {
+                return is_plain_xcdrv2_impl();
+            }
+            else
+            {
+                return is_plain_xcdrv1_impl();
+            }
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_IS_PLAIN
+
+    #ifdef TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+        eProsima_user_DllExport inline bool construct_sample(
+                void* memory) const override
+        {
+            new (memory) HeaderString4096();
+            return true;
+        }
+
+    #endif  // TOPIC_DATA_TYPE_API_HAS_CONSTRUCT_SAMPLE
+
+        MD5 m_md5;
+        unsigned char* m_keyBuffer;
+
+    private:
+
+        static constexpr bool is_plain_xcdrv1_impl()
+        {
+            return 4164ULL ==
+                   (detail::HeaderString4096_offset_of<HeaderString4096, detail::HeaderString4096_f>() +
+                   sizeof(uint32_t));
+        }
+
+        static constexpr bool is_plain_xcdrv2_impl()
+        {
+            return 4160ULL ==
+                   (detail::HeaderString4096_offset_of<HeaderString4096, detail::HeaderString4096_f>() +
+                   sizeof(uint32_t));
+        }
+
+    };
+
+
+
+    #ifndef SWIG
+    namespace detail {
+
+    template<typename Tag, typename Tag::type M>
     struct PointD_rob
     {
         friend constexpr typename Tag::type get(

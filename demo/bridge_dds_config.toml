@@ -25,7 +25,7 @@ qos_queue_size = 1
 #
 [dds.writers.detector_cmd_pub]
 topic_name = "pallet_detector/cmd"
-topic_type = "Message::HeaderString1024"
+topic_type = "Message::HeaderString4096"
 #topic_type = "Message::Pointcloud1920x1080x3"
 
 pub_profile = ""
@@ -37,7 +37,7 @@ qos_queue_size = 10
 
 [dds.readers.detector_status_sub]
 topic_name = "pallet_detector/status"
-topic_type = "Message::HeaderString1024"
+topic_type = "Message::HeaderString4096"
 #topic_type = "Message::Pointcloud1920x1080x3"
 
 sub_profile = ""

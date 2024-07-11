@@ -16,6 +16,8 @@
 
 #include "lodepng.h"
 
+#define MLOGI(__format,...)
+#define MLOGW(__format,...)
 
 namespace perception{
 
@@ -391,7 +393,7 @@ namespace perception{
         if( filter_ground_status < 0 ){
             MLOGW("filter_ground_status error : [%i}]",filter_ground_status );
             filter_vertical_status = -1;
-            return 0;
+            return nullptr;
         }
 
         if( init_center_height < 3
@@ -400,7 +402,7 @@ namespace perception{
             MLOGW("init_center_dim contains wrong value: [%i, %i}]",init_center_height, init_center_width );
 
             filter_vertical_status = -1;
-            return 0;
+            return nullptr;
         }
 
         // reallocate buffer
@@ -571,7 +573,7 @@ namespace perception{
             int row_end = 0;
 
             for( int i = 1; i < init_center_height -1 ;i++){
-                std::cout <<i  << ": [ " << vertical_center_index_row_valid_num_buffer[i] <<  " ] , ";
+//                std::cout <<i  << ": [ " << vertical_center_index_row_valid_num_buffer[i] <<  " ] , ";
                 if (vertical_center_index_row_valid_num_buffer[i] == 0){
                     continue;
                 }
@@ -593,7 +595,7 @@ namespace perception{
         }
 
         {
-            std::cout << "center_vertical_valid_row_num: " << center_vertical_valid_row_num << "\n";
+//            std::cout << "center_vertical_valid_row_num: " << center_vertical_valid_row_num << "\n";
             for(int i = 0 ; i < center_vertical_valid_row_num; i ++){
 
                 int row_start = vertical_center_vertical_index_buffer[i*2] ;
@@ -798,7 +800,7 @@ namespace perception{
 //            MLOGI("center_line_markers_len: %i",center_line_markers_len);
             for(int i = 0; i < center_line_markers_len;i++){
                 auto& l1 = center_line_markers[i];
-                MLOGI("get center_line_markers[%i], point_left:[%f, %f, %f], point_center:[%f, %f, %f], point_right:[%f, %f, %f], dir_left_to_right:[%f, %f, %f], intersection:[%f, %f, %f]",i,l1.point_left.x,l1.point_left.y,l1.point_left.z ,l1.point_center.x,l1.point_center.y,l1.point_center.z ,l1.point_right.x,l1.point_right.y,l1.point_right.z,l1.dir_left_to_right.x,l1.dir_left_to_right.y,l1.dir_left_to_right.z,l1.intersection_to_a_axis.x,l1.intersection_to_a_axis.y,l1.intersection_to_a_axis.z );
+//                MLOGI("get center_line_markers[%i], point_left:[%f, %f, %f], point_center:[%f, %f, %f], point_right:[%f, %f, %f], dir_left_to_right:[%f, %f, %f], intersection:[%f, %f, %f]",i,l1.point_left.x,l1.point_left.y,l1.point_left.z ,l1.point_center.x,l1.point_center.y,l1.point_center.z ,l1.point_right.x,l1.point_right.y,l1.point_right.z,l1.dir_left_to_right.x,l1.dir_left_to_right.y,l1.dir_left_to_right.z,l1.intersection_to_a_axis.x,l1.intersection_to_a_axis.y,l1.intersection_to_a_axis.z );
 
                 int index_left = l1.index_left;
                 int index_center = l1.index_center;
@@ -969,7 +971,9 @@ namespace perception{
                     };
                     f32_t dist_alone_norm = l1.filtered_line_dir.dot( point  - filter_line_norm_center);
 
-                    int continuous_index = dist_alone_norm/init_center_line_filter_continuous_valid_resolution + init_center_line_filter_continuous_buffer_size;
+                    int continuous_index = static_cast<int>(
+                            dist_alone_norm / init_center_line_filter_continuous_valid_resolution) +
+                                           init_center_line_filter_continuous_buffer_size;
                     continuous_index = std::max(0,std::min(continuous_index, init_center_line_filter_continuous_buffer_size+ init_center_line_filter_continuous_buffer_size));
 
                     vertical_line_continuous_count_buffer[continuous_index] ++;
@@ -979,12 +983,12 @@ namespace perception{
                     dist_alone_norm_max = std::max(dist_alone_norm_max , dist_alone_norm);
 //                    MLOGI("point: [%f, %f, %f], dist_alone_norm: %f, continuous_index: %i, cmp [%i, %i]", point.x,point.y,point.z, dist_alone_norm,continuous_index,(continuous_index < init_center_line_filter_continuous_buffer_size)  ,(continuous_index > -init_center_line_filter_continuous_buffer_size));
                 }
-
+#if 0
                 std::cout << "\nvertical_line_continuous_buffer: ";
                 for(int j = 0 ; j < 2*init_center_line_filter_continuous_buffer_size;j++){
                     std::cout << vertical_line_continuous_count_buffer[j] << ", ";
                 }
-
+#endif
                 int dist_alone_norm_continuous_max = init_center_line_filter_continuous_buffer_size;
                 int dist_alone_norm_continuous_min = init_center_line_filter_continuous_buffer_size;
                 for(int j = init_center_line_filter_continuous_buffer_size; j >=0 ; j--){
@@ -1005,7 +1009,7 @@ namespace perception{
                 int dist_alone_norm_continuous_center =  (dist_alone_norm_continuous_max + dist_alone_norm_continuous_min)/2 - init_center_line_filter_continuous_buffer_size;
 
                 float dist_alone_norm_continuous_center_len = dist_alone_norm_continuous_center*init_center_line_filter_continuous_valid_resolution;
-                MLOGI("dist_alone_norm_continuous: [%i, %i, %i] , dist: %f, center: %f ",dist_alone_norm_continuous_min, dist_alone_norm_continuous_max, dist_alone_norm_continuous_center,dist_alone_norm_continuous_dist,dist_alone_norm_continuous_center_len);
+//                MLOGI("dist_alone_norm_continuous: [%i, %i, %i] , dist: %f, center: %f ",dist_alone_norm_continuous_min, dist_alone_norm_continuous_max, dist_alone_norm_continuous_center,dist_alone_norm_continuous_dist,dist_alone_norm_continuous_center_len);
 
                 l1.filtered_line_center  -= l1.filtered_line_dir * dist_alone_norm_continuous_center_len;
 
@@ -1229,13 +1233,13 @@ namespace perception{
 
 
 
-        return 0;
+        return nullptr;
     }
 
     PalletInfoBuffer_ptr PalletDetector::get_pallet(u32_t output_mode) {
 
         if(filter_pallet_status <= 0){
-            return 0;
+            return nullptr;
         }
 
         output_pallet_vec.resize(pallet_cluster.size());
@@ -1516,7 +1520,7 @@ namespace perception{
 
         if(filter_vertical_status < 0 || center_line_markers_len <cluster_filter_num_min ){
             filter_pallet_status = -1;
-            return 0;
+            return nullptr;
         }
 
 
@@ -1538,7 +1542,7 @@ namespace perception{
             MLOGW("allocate buffer fail: %p, %p, %p, %p",pallet_pocket_buffer,pallet_center_line_buffer,pallet_project_buffer,projector_output_img_buffer );
 
             filter_pallet_status = -2;
-            return 0;
+            return nullptr;
         }
         memset(pallet_project_template_score_buffer, 0,projector_search_y_range_num * projector_search_z_range_num*4 );
 
@@ -1581,14 +1585,14 @@ namespace perception{
 
 
 
-             std::cout << "pose:\n" << candidate.pallet_pose.matrix()<< "\n";
+//             std::cout << "pose:\n" << candidate.pallet_pose.matrix()<< "\n";
         }
 
 
-        if(pallet_candidates.size() ==0 ){
+        if(pallet_candidates.empty() ){
             MLOGI("filter_pallet use time: %ld ms\n", common::ToMillSeconds(common::FromUnixNow() - start_time));
             filter_pallet_status = -3;
-            return 0;
+            return nullptr;
         }
 
 
@@ -1649,12 +1653,12 @@ namespace perception{
                 if (is_new_cluster){
                     int end_id = i;
 
-                    if((i == (pallet_candidates_len - 1))){
+                    if(i == (pallet_candidates_len - 1)){
                         end_id = pallet_candidates_len;
                     }
 
                     MLOGI("get cluster from [%i, %i]", start_id, end_id);
-
+#if 0
                     for(int j =start_id; j < end_id; j++ ){
                         std::cout << "[" << j << "] pose:\n"<< pallet_candidates[j].pallet_pose.matrix() << "\n";
 
@@ -1662,6 +1666,8 @@ namespace perception{
 
 
                     }
+#endif
+
                     cluster.candidates.assign(pallet_candidates.begin() + start_id, pallet_candidates.begin() + end_id);
                     pallet_cluster.emplace_back(std::move(cluster));
                     start_id = end_id;
@@ -1719,7 +1725,7 @@ namespace perception{
 
                 cluster.top_row_high =candidates.back().raw_index_center[0];
 
-                std::cout << "final_pose: \n" << cluster.est_pose.matrix() << "\n";
+//                std::cout << "final_pose: \n" << cluster.est_pose.matrix() << "\n";
 
 
             }
@@ -1734,7 +1740,7 @@ namespace perception{
             if( pallet_cluster_len == 0 ){
                 filter_pallet_status = -3;
 
-                return 0;
+                return nullptr;
             }
         }
 
@@ -1862,10 +1868,13 @@ namespace perception{
                                 vertical_line_continuous_count_buffer[continuous_index] ++;
 
                             }
+#if 0
                             std::cout << "\nvertical_line_continuous_buffer: ";
                             for(int j = 0 ; j < 2*init_center_line_filter_continuous_buffer_size;j++){
                                 std::cout <<"[" <<vertical_line_continuous_count_buffer[j] << ", " <<vertical_line_continuous_mean_buffer[j]  << "], " ;
                             }
+#endif
+
                             int dist_alone_norm_continuous_max = init_center_line_filter_continuous_buffer_size;
                             int dist_alone_norm_continuous_min = init_center_line_filter_continuous_buffer_size;
                             for(int j = init_center_line_filter_continuous_buffer_size; j >=0 ; j--){
@@ -2540,9 +2549,9 @@ namespace perception{
                                     cluster.est_pose = cluster.est_pose* relative_pose;
                                     cluster.est_pose_inv = cluster.est_pose.inverse();
 
-                                    std::cout << "relative_pose:\n" << relative_pose.matrix() <<"\n";
-                                    std::cout << "cluster.est_pose:\n" << cluster.est_pose.matrix() <<"\n";
-                                    std::cout << "cluster.est_pose_inv:\n" << cluster.est_pose_inv.matrix() <<"\n";
+//                                    std::cout << "relative_pose:\n" << relative_pose.matrix() <<"\n";
+//                                    std::cout << "cluster.est_pose:\n" << cluster.est_pose.matrix() <<"\n";
+//                                    std::cout << "cluster.est_pose_inv:\n" << cluster.est_pose_inv.matrix() <<"\n";
 
 
 
@@ -2671,7 +2680,7 @@ namespace perception{
                             f32_t best_score = -100.0;
 
 
-                            std::cout << "compute score:\n";
+//                            std::cout << "compute score:\n";
                             MLOGI("get match score [%i, %i], [%i, %i]\n",-projector_search_z_range_len, projector_search_z_range_len,-projector_search_y_range_len,projector_search_y_range_len );
 
                             for( int iz = - projector_search_z_range_len ; iz <projector_search_z_range_len; iz++ ){
@@ -2748,16 +2757,16 @@ namespace perception{
                             cluster.est_pose =  cluster.est_pose*relative_pose;
 
                             {
-                                f64_t tx, ty, tz, roll, pitch, yaw;
-                                transform::extractSe3(cluster.est_pose , tx, ty, tz, roll, pitch, yaw );
-                                cluster.pallet_pose_center.x = tx;
-                                cluster.pallet_pose_center.y = ty;
-                                cluster.pallet_pose_center.z = tz;
-                                cluster.pallet_pose_yaw = yaw;
+                                f64_t est_tx, est_ty, est_tz, est_roll, est_pitch, est_yaw;
+                                transform::extractSe3(cluster.est_pose , est_tx, est_ty, est_tz, est_roll, est_pitch, est_yaw );
+                                cluster.pallet_pose_center.x = est_tx;
+                                cluster.pallet_pose_center.y = est_ty;
+                                cluster.pallet_pose_center.z = est_tz;
+                                cluster.pallet_pose_yaw = est_yaw;
                             }
                             cluster.est_pose_inv =  cluster.est_pose.inverse();
                             cluster.confidence = best_score ;
-                            std::cout << "final pallet pose:\n" << cluster.est_pose.matrix()  << "\n";
+//                            std::cout << "final pallet pose:\n" << cluster.est_pose.matrix()  << "\n";
 
                         }
                         else{
@@ -2898,7 +2907,7 @@ namespace perception{
                                 f32_t best_score = -100.0;
 
 
-                                std::cout << "compute score:\n";
+//                                std::cout << "compute score:\n";
                                 MLOGI("get match score [%i, %i], [%i, %i]\n",-projector_search_z_range_len, projector_search_z_range_len,-projector_search_y_range_len,projector_search_y_range_len );
                                 for( int iz = - projector_search_z_range_len ; iz <projector_search_z_range_len; iz++ ){
 
@@ -2949,7 +2958,7 @@ namespace perception{
                                         }
 
 
-                                        printf("[%i, %.3f, %.3f], ", match_count,p, score);
+//                                        printf("[%i, %.3f, %.3f], ", match_count,p, score);
                                         if (score > best_score){
                                             best_score = score;
                                             best_core_id_y = iy;
@@ -2982,6 +2991,12 @@ namespace perception{
                                 f64_t template_match_best_y = static_cast<f64_t>(-best_core_id_y) * projector_resolution;
                                 f64_t template_match_best_z = static_cast<f64_t>(-best_core_id_z) * projector_resolution;
 
+                                for(int ia = 0 ; ia < valid_num; ia++){
+
+                                    pallet_project_buffer[ia * 3 + 1 ] -= static_cast<f32_t>(template_match_best_y);
+                                    pallet_project_buffer[ia * 3 + 2] -= static_cast<f32_t>(template_match_best_z);
+                                }
+
                                 MLOGI("template_match_best  [%f, %f], %f",template_match_best_y,template_match_best_z,best_score   );
 
                                 __attribute__ ((aligned (32))) auto relative_pose = transform::createSe3(0.0, template_match_best_y, template_match_best_z ,0.0,0.0,0.0 );
@@ -2989,16 +3004,16 @@ namespace perception{
                                 cluster.est_pose =  cluster.est_pose*relative_pose;
 
                                 {
-                                    f64_t tx, ty, tz, roll, pitch, yaw;
-                                    transform::extractSe3(cluster.est_pose , tx, ty, tz, roll, pitch, yaw );
-                                    cluster.pallet_pose_center.x = tx;
-                                    cluster.pallet_pose_center.y = ty;
-                                    cluster.pallet_pose_center.z = tz;
-                                    cluster.pallet_pose_yaw = yaw;
+                                    f64_t est_tx, est_ty, est_tz, est_roll, est_pitch, est_yaw;
+                                    transform::extractSe3(cluster.est_pose , est_tx, est_ty, est_tz, est_roll, est_pitch, est_yaw );
+                                    cluster.pallet_pose_center.x = est_tx;
+                                    cluster.pallet_pose_center.y = est_ty;
+                                    cluster.pallet_pose_center.z = est_tz;
+                                    cluster.pallet_pose_yaw = est_yaw;
                                 }
                                 cluster.est_pose_inv =  cluster.est_pose.inverse();
                                 cluster.confidence = best_score ;
-                                std::cout << "final pallet pose:\n" << cluster.est_pose.matrix()  << "\n";
+//                                std::cout << "final pallet pose:\n" << cluster.est_pose.matrix()  << "\n";
 
 
 
@@ -3028,7 +3043,7 @@ namespace perception{
             }else{
                 filter_pallet_status = -4;
 
-                return 0;
+                return nullptr;
             }
 
 
@@ -3037,7 +3052,7 @@ namespace perception{
         if(pallet_cluster.empty()){
             filter_pallet_status = -4;
 
-            return 0;
+            return nullptr;
         }
 
 
@@ -3049,7 +3064,7 @@ namespace perception{
         if(pallet_cluster.empty()){
             filter_pallet_status = -4;
 
-            return 0;
+            return nullptr;
         }
 
         std::sort(pallet_cluster.begin(), pallet_cluster.end(),[](auto& v1, auto& v2){
@@ -3075,7 +3090,7 @@ namespace perception{
         if(pallet_cluster.empty()){
 
             filter_pallet_status = -4;
-            return 0;
+            return nullptr;
         }
         filter_pallet_status = 1;
 
@@ -3087,7 +3102,7 @@ namespace perception{
 
 
 
-        return 0;
+        return nullptr;
 
     }
 
@@ -3134,7 +3149,7 @@ namespace perception{
             MLOGW("init_ground_dim contains zero value: [%i, %i}]",init_ground_height, init_ground_width );
 
             filter_ground_status = -1;
-            return 0;
+            return nullptr;
         }
 
 
@@ -3248,6 +3263,9 @@ namespace perception{
             }
 
             filter_ground_status = 0;
+
+            output_cloud_buffer.buffer = ground_output_buffer;
+            output_cloud_buffer.float_num = cloud_dim_height * cloud_dim_width * 3;
             return &output_cloud_buffer;
 
         }
@@ -3306,6 +3324,9 @@ namespace perception{
             }
 
             filter_ground_status = 0;
+
+            output_cloud_buffer.buffer = ground_output_buffer;
+            output_cloud_buffer.float_num = cloud_dim_height * cloud_dim_width * 3;
             return &output_cloud_buffer;
 
 
@@ -3491,7 +3512,7 @@ namespace perception{
             }else{
                 filter_ground_status = -10;
 
-                return 0;
+                return nullptr;
             }
         }
 
@@ -3512,6 +3533,6 @@ namespace perception{
             return &output_cloud_buffer;
 
         }
-        return 0;
+        return nullptr;
     }
 }

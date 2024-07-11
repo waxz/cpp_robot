@@ -33,7 +33,6 @@ else()
     #configure_file(./libros/libros/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libros/ros_comm-noetic-devel/clients/roscpp/src/libros/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/libros/ros_comm-noetic-devel/clients/roscpp/src/libros/config.h)
 
-    configure_file(${CMAKE_BINARY_DIR}/ros1/console_bridge/console_bridge_export.h ${CMAKE_CURRENT_SOURCE_DIR}/libros/console_bridge-master/include/console_bridge/console_bridge_export.h COPYONLY)
 
 
 
@@ -53,6 +52,8 @@ else()
 
     set(BUILD_SHARED_LIBS ON)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libros/console_bridge-master console_bridge)
+
+    configure_file(${CMAKE_BINARY_DIR}/ros1/console_bridge/console_bridge_export.h ${CMAKE_CURRENT_SOURCE_DIR}/libros/console_bridge-master/include/console_bridge/console_bridge_export.h COPYONLY)
 
     set(LIBROS_SOURCE_FILES
             ${CMAKE_CURRENT_SOURCE_DIR}/libros/actionlib-noetic-devel/actionlib/src/connection_monitor.cpp

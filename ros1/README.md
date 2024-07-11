@@ -17,3 +17,9 @@ cd build/bin
 - https://github.com/ros/geometry2
 - https://github.com/ros/roscpp_core
 - https://github.com/ros/geometry
+
+
+# cons
+- subscriber loses first message  
+https://answers.ros.org/question/11167/how-do-i-publish-exactly-one-message/
+https://answers.ros.org/question/287548/ros_tutorials-roscpp-talkerlistener-loses-first-message-or-two/

@@ -80,6 +80,14 @@ module Message{
         unsigned long data_size;
 
     };
+        @final
+        struct HeaderString4096{
+            char frame_id[50];
+            unsigned long long stamp;
+            char data[4096];
+            unsigned long data_size;
+
+        };
 
     @final
     struct PointD{

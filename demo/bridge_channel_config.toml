@@ -35,5 +35,6 @@ ros_dds_type = [
     ["PointCloud2","Message::Pointcloud640x480x3"],
     ["Path","Message::Path1024"],
     ["HeaderString","Message::HeaderString1024"],
+    ["HeaderString","Message::HeaderString4096"],
 
 ]

@@ -1833,6 +1833,207 @@ uint32_t& HeaderString1024::data_size()
 
 
 
+HeaderString4096::HeaderString4096()
+{
+}
+
+HeaderString4096::~HeaderString4096()
+{
+}
+
+HeaderString4096::HeaderString4096(
+        const HeaderString4096& x)
+{
+    m_frame_id = x.m_frame_id;
+    m_stamp = x.m_stamp;
+    m_data = x.m_data;
+    m_data_size = x.m_data_size;
+}
+
+HeaderString4096::HeaderString4096(
+        HeaderString4096&& x) noexcept
+{
+    m_frame_id = std::move(x.m_frame_id);
+    m_stamp = x.m_stamp;
+    m_data = std::move(x.m_data);
+    m_data_size = x.m_data_size;
+}
+
+HeaderString4096& HeaderString4096::operator =(
+        const HeaderString4096& x)
+{
+
+    m_frame_id = x.m_frame_id;
+    m_stamp = x.m_stamp;
+    m_data = x.m_data;
+    m_data_size = x.m_data_size;
+    return *this;
+}
+
+HeaderString4096& HeaderString4096::operator =(
+        HeaderString4096&& x) noexcept
+{
+
+    m_frame_id = std::move(x.m_frame_id);
+    m_stamp = x.m_stamp;
+    m_data = std::move(x.m_data);
+    m_data_size = x.m_data_size;
+    return *this;
+}
+
+bool HeaderString4096::operator ==(
+        const HeaderString4096& x) const
+{
+    return (m_frame_id == x.m_frame_id &&
+           m_stamp == x.m_stamp &&
+           m_data == x.m_data &&
+           m_data_size == x.m_data_size);
+}
+
+bool HeaderString4096::operator !=(
+        const HeaderString4096& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function copies the value in member frame_id
+ * @param _frame_id New value to be copied in member frame_id
+ */
+void HeaderString4096::frame_id(
+        const std::array<char, 50>& _frame_id)
+{
+    m_frame_id = _frame_id;
+}
+
+/*!
+ * @brief This function moves the value in member frame_id
+ * @param _frame_id New value to be moved in member frame_id
+ */
+void HeaderString4096::frame_id(
+        std::array<char, 50>&& _frame_id)
+{
+    m_frame_id = std::move(_frame_id);
+}
+
+/*!
+ * @brief This function returns a constant reference to member frame_id
+ * @return Constant reference to member frame_id
+ */
+const std::array<char, 50>& HeaderString4096::frame_id() const
+{
+    return m_frame_id;
+}
+
+/*!
+ * @brief This function returns a reference to member frame_id
+ * @return Reference to member frame_id
+ */
+std::array<char, 50>& HeaderString4096::frame_id()
+{
+    return m_frame_id;
+}
+
+
+/*!
+ * @brief This function sets a value in member stamp
+ * @param _stamp New value for member stamp
+ */
+void HeaderString4096::stamp(
+        uint64_t _stamp)
+{
+    m_stamp = _stamp;
+}
+
+/*!
+ * @brief This function returns the value of member stamp
+ * @return Value of member stamp
+ */
+uint64_t HeaderString4096::stamp() const
+{
+    return m_stamp;
+}
+
+/*!
+ * @brief This function returns a reference to member stamp
+ * @return Reference to member stamp
+ */
+uint64_t& HeaderString4096::stamp()
+{
+    return m_stamp;
+}
+
+
+/*!
+ * @brief This function copies the value in member data
+ * @param _data New value to be copied in member data
+ */
+void HeaderString4096::data(
+        const std::array<char, 4096>& _data)
+{
+    m_data = _data;
+}
+
+/*!
+ * @brief This function moves the value in member data
+ * @param _data New value to be moved in member data
+ */
+void HeaderString4096::data(
+        std::array<char, 4096>&& _data)
+{
+    m_data = std::move(_data);
+}
+
+/*!
+ * @brief This function returns a constant reference to member data
+ * @return Constant reference to member data
+ */
+const std::array<char, 4096>& HeaderString4096::data() const
+{
+    return m_data;
+}
+
+/*!
+ * @brief This function returns a reference to member data
+ * @return Reference to member data
+ */
+std::array<char, 4096>& HeaderString4096::data()
+{
+    return m_data;
+}
+
+
+/*!
+ * @brief This function sets a value in member data_size
+ * @param _data_size New value for member data_size
+ */
+void HeaderString4096::data_size(
+        uint32_t _data_size)
+{
+    m_data_size = _data_size;
+}
+
+/*!
+ * @brief This function returns the value of member data_size
+ * @return Value of member data_size
+ */
+uint32_t HeaderString4096::data_size() const
+{
+    return m_data_size;
+}
+
+/*!
+ * @brief This function returns a reference to member data_size
+ * @return Reference to member data_size
+ */
+uint32_t& HeaderString4096::data_size()
+{
+    return m_data_size;
+}
+
+
+
+
 PointD::PointD()
 {
 }

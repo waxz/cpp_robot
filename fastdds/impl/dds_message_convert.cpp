@@ -92,7 +92,26 @@ namespace dds_helper {
         auto &framed_id = dds_value->frame_id();
         std::strcpy(framed_id.data(), target_ptr->frame_id);
         dds_value->stamp(target_ptr->stamp);
-        std::copy(target_ptr->data, target_ptr->data + size, data.data());
+        std::strcpy(data.data(), target_ptr->data);
+        dds_value->data_size(size);
+
+        return 0;
+
+
+    }
+    int to_dds(Message::HeaderString4096 *dds_value,const void *common_ptr){
+        HeaderString_ptr target_ptr = (HeaderString_ptr) common_ptr;
+        u32_t size = target_ptr->element_size;
+
+        auto &data = dds_value->data();
+        if (size > data.size()) {
+            return -1;
+        }
+
+        auto &framed_id = dds_value->frame_id();
+        std::strcpy(framed_id.data(), target_ptr->frame_id);
+        dds_value->stamp(target_ptr->stamp);
+        std::strcpy(data.data(), target_ptr->data);
         dds_value->data_size(size);
 
         return 0;
@@ -134,6 +153,38 @@ namespace dds_helper {
 
 // from_dds
     void from_dds(const Message::HeaderString1024 &dds_value, MemPoolHandler *mem_pool){
+
+        static_cast<void>(dds_value);
+        static_cast<void>(mem_pool);
+
+        u32_t size = dds_value.data_size();
+
+
+        HeaderString_ptr target_ptr = nullptr;
+        if (mem_pool->count >= mem_pool->buffer.size() ) {
+            target_ptr = HeaderString_alloc(size, &mem_pool->cfg);
+            if (target_ptr)
+                mem_pool->buffer.push_back(target_ptr);
+        } else {
+            target_ptr = (HeaderString_ptr) mem_pool->buffer[mem_pool->count];
+            target_ptr = HeaderString_realloc(size, target_ptr, &mem_pool->cfg);
+            mem_pool->buffer[mem_pool->count] = target_ptr;
+        }
+        if (!target_ptr) {
+            return;
+        }
+
+
+        mem_pool->count += 1;
+
+        target_ptr->stamp = dds_value.stamp();
+        auto &framed_id = dds_value.frame_id();
+        auto &data = dds_value.data();
+
+        std::strcpy(target_ptr->frame_id, framed_id.data());
+        std::strcpy(target_ptr->data, data.data());
+    }
+    void from_dds(const Message::HeaderString4096 &dds_value, MemPoolHandler *mem_pool){
 
         static_cast<void>(dds_value);
         static_cast<void>(mem_pool);

@@ -7,7 +7,7 @@ https://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
 
 
 https://stackoverflow.com/questions/36211864/how-can-i-apply-attribute-aligned32-to-an-int
-https://github.com/Twon/Alignment/blob/master/docs/alignment_in_C++.md
+
 
 
 use `EIGEN_MAKE_ALIGNED_OPERATOR_NEW` and `Eigen::aligned_allocator` in class
@@ -19,10 +19,6 @@ use `__attribute__ ((aligned (32))) `
 ```
 
 ```c++
-#define EIGEN_MAX_ALIGN_BYTES 32
-#define EIGEN_MAX_STATIC_ALIGN_BYTES 32
-    
-
     struct PalletCluster{
         std::vector<PalletCandidate,Eigen::aligned_allocator<PalletCandidate>> candidates;
 
@@ -41,4 +37,4 @@ use `__attribute__ ((aligned (32))) `
 # math
 
 https://github.com/artivis/manif
-https://github.com/selavy/EECS672_Proj4/blob/master/cryphutil/Matrix4x4.h
+

@@ -227,6 +227,7 @@ namespace dds_helper {
         BIND_DDS(Message::Pointcloud640x480x3)
         BIND_DDS(Message::Path1024)
         BIND_DDS(Message::HeaderString1024)
+        BIND_DDS(Message::HeaderString4096)
 
 
     }

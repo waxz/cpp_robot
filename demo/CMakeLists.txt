@@ -24,5 +24,8 @@ if (BUILD_DDS AND BUILD_ROS1)
     INSTALL(TARGETS dds_ros_bridge DESTINATION bin )
     INSTALL(FILES  ${COMBINED_LIST} DESTINATION bin )
 
+    add_executable(pallet_detector pallet_detector.cpp)
+    target_link_libraries(pallet_detector pointcloud_process dds_helper_shared)
+
 
 endif ()

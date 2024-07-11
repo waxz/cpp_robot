@@ -1,4 +1,14 @@
+# cpp_robot
 
+There are libraries for ros1 and fastdds communication, and pallet detection.
+- [unified message layer for ros1&&fastdds library](message_center)
+- [pallet detection library](perception)
+- [dds ros bridge demo](demo/dds_ros_bridge.cpp)
+- [pallet detection demo](demo/pallet_detector.cpp)
+
+# rust
+
+The c binding of [unified message layer for ros1&&fastdds library](message_center) and [pallet detection library](perception) are used in [rs_robot](https://github.com/waxz/rs_robot).
 
 # dependencies
 ### for fastdds
@@ -14,14 +24,26 @@ sudo apt install libboost-thread-dev libboost-filesystem-dev
 ```shell
 sudo apt-get install libblas-dev liblapack-dev
 ```
+# usage
+### compile
+```shell
+mkdir build && cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=./install
+```
 
-# reference
-### pic option
-https://stackoverflow.com/questions/38296756/what-is-the-idiomatic-way-in-cmake-to-add-the-fpic-compiler-option
+### dds_ros_bridge demo
+this demo is used to bridge ros1 layer and fastdds layer
+```shell
+cd build/bin
+dds_ros_bridge  -r bridge_ros_config.toml -d bridge_dds_config.toml -b bridge_channel_config.toml
+```
 
-### stack protector
-https://stackoverflow.com/questions/48754619/what-are-cmake-build-type-debug-release-relwithdebinfo-and-minsizerel
-https://stackoverflow.com/questions/78322480/improve-g-compiler-flags-for-debug-and-release
-https://developers.redhat.com/articles/2022/06/02/use-compiler-flags-stack-protection-gcc-and-clang#control_flow_integrity
+### pallet detection demo
+The depth camera ros driver publishes pointcloud data.
+But this demo uses fastdds layer, so dds_ros_bridge is needed.
+```shell
+cd build/bin
+pallet_detector -d gui_config.toml
+```
 
-`-fsplit-stack` may cause crash
+

@@ -32,13 +32,14 @@ static const ta_cfg_t memory_pool_cfg = {
         memory_pool,
         &memory_pool[sizeof(memory_pool)],
         1024,
-        128,
-        8,
+        512,
+        64,
 };
 
 
 int main(int argc, char** argv){
 
+    MLOGW("base %p, align: %zu",memory_pool_cfg.base,size_t(memory_pool_cfg.base)%8)
     ta_init(&memory_pool_cfg);
     cxxopts::Options options("MyProgram", "One line description of MyProgram");
     options.add_options()
@@ -86,7 +87,7 @@ int main(int argc, char** argv){
 
 
     common::TaskManager taskManager{20};
-    taskManager.set_loop(100.0, 0);
+    taskManager.set_loop(20.0, 0);
 
     std::atomic_bool program_run(true);
     auto my_handler = common::fnptr<void(int)>([&](int sig) {
@@ -111,19 +112,28 @@ int main(int argc, char** argv){
     bool new_cloud_update = false;
 
     bool task_start_detect = true;
+    int task_start_detect_retry_max_num = 2;
+    int task_start_detect_retry_count = 0;
 
 
 
 
     if(detector_config.cloud.filter.enable_mean_window){
 
-        taskManager.add_task("recv_cloud",[&palletDetector, &dds_handler,detector_config,&transform_cloud_buffer, &raw_cloud_buffer,&filter_cloud_buffer,&mean_window_filter_count,&mean_window_filter_count_reach,mean_window_filter_max, &new_cloud_update]{
+        taskManager.add_task("recv_cloud",[&palletDetector, &dds_handler,detector_config,&transform_cloud_buffer, &raw_cloud_buffer,&filter_cloud_buffer,&mean_window_filter_count,&mean_window_filter_count_reach,mean_window_filter_max, &new_cloud_update, &task_start_detect]{
+
+
 
             ChannelBuffer_ptr recv_cloud =  dds_handler.read_data(&dds_handler,"cloud_sub");
 
             if(recv_cloud && recv_cloud->buffer_size >0){
 
                 for(int i = 0 ; i < recv_cloud->buffer_size; i++){
+                    if(!task_start_detect){
+
+                        return true;
+                    }
+
                     PointCloud2_ptr data = PointCloud2_ptr(recv_cloud->buffer[i]);
                     std::cout << "recv data: " << data->frame_id << " height: " << data->height << ", width: " << data->width << "\n";
 
@@ -170,19 +180,49 @@ int main(int argc, char** argv){
     }else{
 
     }
+    common::Time boot_up_time = common::FromUnixNow();
+    common::Time current_time = common::FromUnixNow();
+    common::Time last_current_time = common::FromUnixNow();
 
+    auto cycle_time = current_time - last_current_time;
+    auto max_cycle_time = cycle_time;
 
-    taskManager.add_task("detect",[&new_cloud_update,&palletDetector](){
+    taskManager.add_task("check_time",[&boot_up_time, & current_time, & last_current_time, &cycle_time, &max_cycle_time]{
+        current_time = common::FromUnixNow();
+        cycle_time = current_time - last_current_time;
+        last_current_time = current_time;
+        max_cycle_time = cycle_time > max_cycle_time? cycle_time:max_cycle_time;
+        MLOGW("cur_cycle_time: %ld us", common::ToMicroSeconds(cycle_time))
+        MLOGW("max_cycle_time: %ld us", common::ToMicroSeconds(max_cycle_time))
+        return true;
+        },99.0);
 
-        if(new_cloud_update){
+    taskManager.add_task("detect",[&new_cloud_update,&palletDetector, &task_start_detect](){
+
+        if(new_cloud_update && task_start_detect){
             new_cloud_update = false;
+            std::cout << "need detect" << "\n";
+            common::Time t1 = common::FromUnixNow();
 
             palletDetector.filter_ground(1);
             palletDetector.filter_vertical(1);
-            palletDetector.filter_pallet(10);
+            palletDetector.filter_pallet(1);
+            auto pallet_vec = palletDetector.get_pallet(0);
+            MLOGW("detect use time %zu us", common::ToMicroSeconds(common::FromUnixNow() - t1))
+
+            MLOGI("get_pallet: %p", pallet_vec)
+            if(pallet_vec && pallet_vec->pallet_num > 0){
+
+                for(int i = 0 ; i  < pallet_vec->pallet_num; i++){
+                    auto& p = pallet_vec->buffer[i];
+                    MLOGI("pallet[%i], confidence: %f,  center: [%f, %f, %f], rpy[%f, %f, %f]",
+                          i,p.confidence, p.tx, p.ty, p.tz, p.roll, p.pitch, p.yaw );
+
+                }
+
+            }
 
 
-            std::cout << "need detect" << "\n";
 
 
         }

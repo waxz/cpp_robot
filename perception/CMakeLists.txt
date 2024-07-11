@@ -79,6 +79,7 @@ set_arch_native(pointcloud_process)
 
 target_include_directories(pointcloud_process PUBLIC ${CMAKE_SOURCE_DIR}/include  ${optim_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIRS}
         ${toml11_ROOT}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}
 
 )
 
@@ -93,8 +94,6 @@ target_link_libraries(pointcloud_process_test PUBLIC pointcloud_process )
 add_executable(pointcloud_process_cpp_test pointcloud_process_test.cpp)
 target_link_libraries(pointcloud_process_cpp_test PUBLIC pointcloud_process )
 
-add_executable(pallet_detector pallet_detector.cpp)
-target_link_libraries(pallet_detector pointcloud_process dds_helper_shared)
 
 
 INSTALL(TARGETS pointcloud_process DESTINATION lib)

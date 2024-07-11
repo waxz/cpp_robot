@@ -161,16 +161,20 @@ HeaderString_ptr HeaderString_alloc(u32_t size, const ta_cfg_t* cfg){
     HeaderString target = HeaderString_create();
     HeaderString_set_buffer(&target,size);
     HeaderString_ptr ptr = ta_alloc(cfg, target.base_size + target.buffer_size);
-    if(ptr)
+    if(ptr) {
         *ptr = target;
+        ptr->data[size] = 0;
+    }
     return ptr;
 }
 HeaderString_ptr HeaderString_realloc(u32_t size, HeaderString_ptr ptr, const ta_cfg_t* cfg){
     HeaderString target = HeaderString_create();
     HeaderString_set_buffer(&target,size);
     HeaderString_ptr new_ptr = ta_realloc(cfg, ptr, target.base_size + target.buffer_size);
-    if(new_ptr)
+    if(new_ptr) {
         *new_ptr = target;
+        new_ptr->data[size] = 0;
+    }
     return new_ptr;
 }
 // string need etra byte
