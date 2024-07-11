@@ -154,4 +154,4 @@ set_rpath_origin(dds_simple_participant)
 
 add_dependencies(dds_simple_participant dds_test_file_copy)
 #set_asan(dds_simple_participant )
-install(TARGETS dds_simple_participant DESTINATION bin)
+#install(TARGETS dds_simple_participant DESTINATION bin)
